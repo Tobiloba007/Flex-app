@@ -1,20 +1,36 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { View } from 'react-native';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+import { useCallback } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import AppStack from './src/AppStack';
+
+SplashScreen.preventAutoHideAsync();
 
 export default function App() {
+  const [fontsLoaded, fontError] = useFonts({
+    'sans-bold': require('./fonts/OpenSans-Bold.ttf'),
+    'sans-light': require('./fonts/OpenSans-Light.ttf'),
+    'sans-medium': require('./fonts/OpenSans-Medium.ttf'),
+    'sans-regular': require('./fonts/OpenSans-Regular.ttf'),
+    'sans-semibold': require('./fonts/OpenSans-SemiBold.ttf'),
+  });
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded || fontError) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, fontError]);
+
+  if (!fontsLoaded && !fontError) {
+    return null;
+  }
+
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+        <View onLayout={onLayoutRootView}></View>
+         <AppStack />
+      </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

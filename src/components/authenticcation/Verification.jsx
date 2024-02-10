@@ -1,11 +1,17 @@
 
 import { useState } from 'react';
-import { Pressable, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { useNavigation } from "@react-navigation/native";
+import { ActivityIndicator, Pressable, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { useDispatch, useSelector } from 'react-redux';
+import { confirmEmail } from '../../features/authentication/AuthActions';
 
 
 export default function Verification() {
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
+    const [errorMssg, setErrorMssg] = useState(false);
+    const route = useRoute();
+    const regValues = route.params?.regValues
+
     const handleOtpChange = (value, index) => {
       const newOtp = [...otp];
       newOtp[index] = value;
@@ -18,20 +24,33 @@ export default function Verification() {
     const inputs = [];
 
     const navigation = useNavigation();
+    const loading = useSelector((state) => state.auth.loading)
+    const dispatch = useDispatch();
+
+    const combinedString = otp.join('');
+    const codes = {"verification_code" : combinedString}
+    const type = {"request_type": "verify_code"}
 
      const handleSubmit = () => {
-        console.log(otp);
-        navigation.navigate('home')
+        const getmail = regValues.email
+        const mail = {"email": getmail}
+        const data = {...codes, ...type, ...mail}
+        const verifyData = new FormData();
+        // Append form field values to FormData
+        Object.keys(data).forEach((key) => {
+          verifyData.append(key, data[key]);
+        });
+        dispatch(confirmEmail(verifyData, setErrorMssg, navigation))
       };
 
   return (
     <SafeAreaView className="w-full h-full">
         <View className="items-start w-full px-5 mt-9">
           <Text className={`text-[27px] font-["sans-semibold"]`}>
-               We just sent you an email
+               We just sent you an email 
            </Text>
           <Text className={`text-13px] font-["sans-regular"] pt-1`}>
-               Enter the security code we just sent to name@gmail.com to confirm your email address.
+               Enter the security code we just sent your email to confirm your email address.
            </Text>
         </View>
 
@@ -51,18 +70,30 @@ export default function Verification() {
                  />
                ))}
             </View>
+
+             <View className="flex items-start w-full mt-10">
+                   {errorMssg && <Text className="text-sm text-red-600">{errorMssg}</Text>}
+             </View>
+
           <TouchableOpacity onPress={handleSubmit}
-           className="items-center justify-center w-full h-[49px] rounded-[6px] bg-[#029CFC] mt-12">
+          disabled={!otp}
+           className={`items-center justify-center w-full h-[49px] rounded-[6px] ${!loading ? 'bg-[#029CFC]' : 'bg-[#dddddd]' } mt-2`}>
                 <Text className={`text-[15px] font-["sans-regular"] text-white`}>
-                     Confirm your email
+                    {
+                      loading
+                      ?<ActivityIndicator style={{flex: 1, alignItems: 'center', justifyContent: 'center'}} size={'large'} />
+                      :'Confirm your email'
+                    }
                 </Text>
             </TouchableOpacity>
 
-            <Pressable>
+            <Pressable onPress={()=>navigation.navigate('resendCode')}
+            >
                <Text className={`text-[11px] font-["sans-regular"] text-[#029CFC] mt-3`}>
                       Didn't receive the otp?
                 </Text>
             </Pressable>
+            
         </View>
     </SafeAreaView>
   )

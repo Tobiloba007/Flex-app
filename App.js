@@ -4,6 +4,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useCallback } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import AppStack from './src/AppStack';
+import { Provider } from 'react-redux';
+import store from './src/store';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -28,9 +30,11 @@ export default function App() {
 
 
   return (
-    <NavigationContainer>
+    <Provider store={store}>
+     <NavigationContainer>
         <View onLayout={onLayoutRootView}></View>
          <AppStack />
       </NavigationContainer>
+    </Provider>
   );
 }

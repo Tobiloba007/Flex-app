@@ -4,6 +4,7 @@ import PagerView from 'react-native-pager-view';
 import Registration1 from '../../components/authenticcation/Registration1';
 import RegistrationHeader from '../../components/authenticcation/RegistrationHeader';
 import Verification from '../../components/authenticcation/Verification';
+import AccountType from './AccountType';
 
 export default function Registration({navigation}) {
     const pagerRef = useRef(null);
@@ -23,13 +24,13 @@ export default function Registration({navigation}) {
       <RegistrationHeader navigation={navigation} scroll={scroll} />
       <PagerView style={styles.viewPager} ref={pagerRef} initialPage={0} onPageSelected={onPageSelected} scrollEnabled={false}>
         <View key="1">
-            <Registration1  handleBtn={() => handleNextPage(1)}/>
+           <AccountType handleNextPage={handleNextPage} />
         </View>
         <View style={styles.page} key="2">
-            <Verification />
+            <Registration1 handleNextPage={handleNextPage}  />
         </View>
         <View style={styles.page} key="3">
-          <Text>Third page</Text>
+            <Verification />
         </View>
       </PagerView>
     </SafeAreaView>

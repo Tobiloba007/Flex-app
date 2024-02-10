@@ -13,13 +13,11 @@ import { BASE_URL } from '../../config';
           if (response.data.status === 'success') {
             console.log('Registration successfull');
             console.log(response.data.message);
-            // handleNextPage(2)
+            handleNextPage(2)
             navigation.navigate('verification', {regValues})
           } else if (response.data.status === 'error') {
             console.log('Registration failed with status code:', response.status);
             setError(response.data.message)
-            // handleNextPage(2)
-            navigation.navigate('verification', {regValues})
             console.log(regValues);
           } 
         } catch(error) {

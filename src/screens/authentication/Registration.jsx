@@ -23,13 +23,13 @@ export default function Registration({navigation}) {
     <SafeAreaView className="flex-1">
       <RegistrationHeader navigation={navigation} scroll={scroll} />
       <PagerView style={styles.viewPager} ref={pagerRef} initialPage={0} onPageSelected={onPageSelected} scrollEnabled={false}>
-        <View key="1">
+        {/* <View key="1">
            <AccountType handleNextPage={handleNextPage} />
-        </View>
-        <View style={styles.page} key="2">
+        </View> */}
+        <View style={styles.page} key="1">
             <Registration1 handleNextPage={handleNextPage}  />
         </View>
-        <View style={styles.page} key="3">
+        <View style={styles.page} key="2">
             <Verification />
         </View>
       </PagerView>

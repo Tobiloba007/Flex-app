@@ -8,9 +8,10 @@ export default function Choose({navigation}) {
 
   const handleLogin = async () => {
     try {
-      await AsyncStorage.setItem('splash_token', JSON.stringify('seenSplashSeen'));
+      await AsyncStorage.setItem('seen_token', JSON.stringify('seenSplashScreen'));
       console.log('User data stored successfully!');
       navigation.navigate('login')
+      navigation.navigate('loginScreen')
     } catch (error) {
       console.error('Error storing user data:', error);
     }
@@ -19,7 +20,7 @@ export default function Choose({navigation}) {
 
   const handleRegister = async () => {
     try {
-      await AsyncStorage.setItem('splash_token', JSON.stringify('seenSplashSeen'));
+      await AsyncStorage.setItem('seen_token', JSON.stringify('seenSplashSeen'));
       console.log('User data stored successfully!');
       navigation.navigate('registration')
     } catch (error) {

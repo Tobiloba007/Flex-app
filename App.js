@@ -1,11 +1,12 @@
-import { View } from 'react-native';
-import { useFonts } from 'expo-font';
-import * as SplashScreen from 'expo-splash-screen';
-import { useCallback } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import AppStack from './src/AppStack';
-import { Provider } from 'react-redux';
-import store from './src/store';
+import React from 'react'
+import { View } from 'react-native'
+import { useFonts } from 'expo-font'
+import * as SplashScreen from 'expo-splash-screen'
+import { useCallback } from 'react'
+import { NavigationContainer } from '@react-navigation/native'
+import AppStack from './src/AppStack'
+import { Provider } from 'react-redux'
+import store from './src/store'
 
 SplashScreen.preventAutoHideAsync();
 

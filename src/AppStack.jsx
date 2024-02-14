@@ -17,7 +17,7 @@ const AppStack = () => {
   useEffect(() => {
     const checkSplashScreen = async () => {
       try {
-        const hasShownSplash = await AsyncStorage.getItem('splash_token');
+        const hasShownSplash = await AsyncStorage.getItem('seen_token');
         if (hasShownSplash !== null) {
           setShowSplash(false);
         }
@@ -30,13 +30,14 @@ const AppStack = () => {
   }, []);
 
   return (
-    <Stack.Navigator initialRouteName='splash'>
+    <Stack.Navigator initialRouteName={showSplash ? 'splash' : 'login'}>
       {
         showSplash
       ?<Stack.Screen name="splash" component={Splash} options={{headerShown: false}} />
       :<Stack.Screen name="login" component={Login} options={{headerShown: false}} />
       }
       <Stack.Screen name="choose" component={Choose} options={{headerShown: false}} />
+      <Stack.Screen name="loginScreen" component={Login} options={{headerShown: false}} />
       <Stack.Screen name="registration" component={Registration} options={{headerShown: false}} />
       <Stack.Screen name="verification" component={Verification} options={{headerShown: false}} />
       <Stack.Screen name="resendCode" component={ResendCode} options={{headerShown: false}} />

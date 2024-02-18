@@ -7,6 +7,7 @@ import { NavigationContainer } from '@react-navigation/native'
 import AppStack from './src/AppStack'
 import { Provider } from 'react-redux'
 import store from './src/store'
+import Home from './src/screens/Home'
 
 SplashScreen.preventAutoHideAsync();
 
@@ -34,7 +35,8 @@ export default function App() {
     <Provider store={store}>
      <NavigationContainer>
         <View onLayout={onLayoutRootView}></View>
-         <AppStack />
+         {/*<AppStack />*/}
+         <Home />
       </NavigationContainer>
     </Provider>
   );

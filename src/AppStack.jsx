@@ -7,6 +7,11 @@ import Registration from './screens/authentication/Registration';
 import Home from './screens/Home';
 import Verification from './components/authenticcation/Verification';
 import ResendCode from './screens/authentication/ResendCode';
+
+import ChatRoom from './screens/chat/ChatRoom';
+import FriendRequests from './screens/chat/AddFriends';
+import MessagingRoom from './screens/chat/MessagingRoom';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createStackNavigator();

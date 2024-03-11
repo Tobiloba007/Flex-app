@@ -11,6 +11,8 @@ import { createAccount } from '../../features/authentication/AuthActions';
 import { setError } from '../../features/authentication/AuthSlice';
 import { useNavigation } from '@react-navigation/native';
 import Verification from './Verification';
+import * as FileSystem from 'expo-file-system';
+
 
 
 
@@ -42,6 +44,19 @@ export default function Registration1({handleNextPage}) {
     const screenWidth = Dimensions.get('window').width;
 
     const [image, setImage] = useState(null);
+    const [imageDetails, setImageDetails] = useState(null);
+
+
+    useEffect(() => {
+     (async () => {
+       if (Platform.OS !== 'web') {
+         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+         if (status !== 'granted') {
+           alert('Sorry, we need camera roll permissions to make this work!');
+         }
+       }
+     })();
+   }, []);
   
     const pickImage = async () => {
      let result = await ImagePicker.launchImageLibraryAsync({
@@ -51,12 +66,10 @@ export default function Registration1({handleNextPage}) {
        quality: 1,
      });
  
-     // console.log(result.assets[0].fileName);
-     // setImage(result.assets[0].fileName)
- 
      if (!result.canceled) {
        setImage(result.assets[0].fileName);
-       console.log(image);
+       setImage('image uploaded');
+       console.log(image, 'imageeee');
      }
    };
 

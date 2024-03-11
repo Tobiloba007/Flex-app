@@ -1,4 +1,4 @@
-import { ActivityIndicator, Image, Platform, Pressable, SafeAreaView, StatusBar, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Image, Platform, Pressable, SafeAreaView, ScrollView, StatusBar, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import { SimpleLineIcons } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
@@ -28,12 +28,13 @@ export default function Login() {
 
 
     const handleSubmit = (values) => {
-        const loginData = new FormData();
-        // Append form field values to FormData
-        Object.keys(values).forEach((key) => {
-            loginData.append(key, values[key]);
-        });
-        dispatch(loginUser(loginData, setLoginError, navigation, isLoggedIn))
+        const formData = new FormData();
+      Object.keys(values).forEach((key) => {
+        formData.append(key, values[key]);
+      });
+
+        console.log(formData)
+        dispatch(loginUser(formData, setLoginError, navigation, isLoggedIn))
       };
 
   return (
@@ -46,7 +47,7 @@ export default function Login() {
             </TouchableOpacity>
         </View>
 
-
+        <ScrollView>
         <View className="items-center w-full px-5 mt-20">
             <TouchableOpacity className="flex-row items-center justify-center w-full h-[49px] border-[0.5px] border-[#8A8A8A] rounded-[37px] mb-4">
                 <Image className="w-[18px] h-[19px] mr-5"
@@ -142,6 +143,7 @@ export default function Login() {
                <Text className={`text-[12px] font-["sans-regular"] text-[#029CFC]`}>Create New Account</Text>
             </Pressable>
         </View>
+        </ScrollView>
 
     </SafeAreaView>
   )

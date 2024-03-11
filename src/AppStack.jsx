@@ -8,6 +8,9 @@ import Home from './screens/Home';
 import Verification from './components/authenticcation/Verification';
 import ResendCode from './screens/authentication/ResendCode';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Tab from './components/Tab';
+import SeeRequests from './screens/SeeRequests';
+import Notification from './screens/Notification';
 
 const Stack = createStackNavigator();
 
@@ -30,18 +33,21 @@ const AppStack = () => {
   }, []);
 
   return (
+    <Stack.Navigator initialRouteName='tab'>
+    {/* 
     <Stack.Navigator initialRouteName={showSplash ? 'splash' : 'login'}>
-      {
-        showSplash
+      {showSplash
       ?<Stack.Screen name="splash" component={Splash} options={{headerShown: false}} />
-      :<Stack.Screen name="login" component={Login} options={{headerShown: false}} />
-      }
+      :<Stack.Screen name="login" component={Login} options={{headerShown: false}} />}
+      */}
       <Stack.Screen name="choose" component={Choose} options={{headerShown: false}} />
       <Stack.Screen name="loginScreen" component={Login} options={{headerShown: false}} />
       <Stack.Screen name="registration" component={Registration} options={{headerShown: false}} />
       <Stack.Screen name="verification" component={Verification} options={{headerShown: false}} />
       <Stack.Screen name="resendCode" component={ResendCode} options={{headerShown: false}} />
-      <Stack.Screen name="home" component={Home} options={{headerShown: false}} />
+      <Stack.Screen name="tab" component={Tab} options={{headerShown: false}} />
+      <Stack.Screen name="seeRequests" component={SeeRequests} options={{headerShown: false}} />
+      <Stack.Screen name="notification" component={Notification} options={{headerShown: false}} />
     </Stack.Navigator>
   );
 };

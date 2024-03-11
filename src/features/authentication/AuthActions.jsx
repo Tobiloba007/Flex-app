@@ -107,10 +107,10 @@ export const confirmEmail = (verifyData, setErrorMssg, navigation) => async (dis
 
 
           // LOGIN ACTIONS
-export const loginUser = (loginData, setLoginError, navigation) => async (dispatch) => {
+export const loginUser = (formData, setLoginError, navigation) => async (dispatch) => {
   dispatch(setLoading(true));
   try{
-    const response = await axios.post(`${BASE_URL}/simplelogin_v6.php`, loginData);
+    const response = await axios.post(`${BASE_URL}/simplelogin_v6.php`, formData);
     if (response.data.status === 'true') {
       console.log('Registration successful');
       console.log(response.data.message);
@@ -122,7 +122,7 @@ export const loginUser = (loginData, setLoginError, navigation) => async (dispat
         console.log('User data stored in AsyncStorage.');
       })
       dispatch(setIsLoggedIn(true))
-      navigation.navigate('home')
+      navigation.navigate('tab')
     } else if (response.data.status === 'false') {
       console.log('Registration failed with status code:', response.status);
       console.log(response.data.message)

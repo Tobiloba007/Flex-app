@@ -31,10 +31,10 @@ export default function Home() {
   const screenWidth = Dimensions.get('window').width;
 
   return (
-    <SafeAreaView className="flex-1 items-center justify-start mt-1 px-4" style={{paddingTop: StatusBar.currentHeight}}>
+    <SafeAreaView className="flex-1 items-center justify-start w-full mt-4 px-4 bg-white" style={{paddingTop: StatusBar.currentHeight}}>
         <HomeTop />
         <FriendsOnline />
-        <ScrollView contentContainerStyle={{width: screenWidth}}
+        <ScrollView
         showsVerticalScrollIndicator={false}
         >
             <HomeFeeds />

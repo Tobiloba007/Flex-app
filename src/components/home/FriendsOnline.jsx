@@ -11,12 +11,12 @@ export default function FriendsOnline() {
     const friends = [image1, image2, image3, image4, image5, image1,]
 
   return (
-    <View style={styles.wrapper} className={'flex flex-col items-start justify-start w-full overflow-hidden h-[135px] p-4 rounded-2xl bg-[#E6F6FF] mt-5'}>
+    <View style={styles.wrapper} className={'flex flex-col items-start justify-start w-full overflow-hidden h-[110px] p-3 rounded-2xl bg-[#E6F6FF] mt-3'}>
       <View className={'flex flex-row items-center justify-between w-full'}>
-           <Text className={'text-[16px] font-["sans-semibold"] text-[#565657]'}>
+           <Text className={'text-[13px] font-["sans-semibold"] text-[#565657]'}>
                 Friends online
            </Text>
-           <Text className={'text-[12px] font-["sans-semibold"] text-[#000000]'}>
+           <Text className={'text-[10px] font-["sans-semibold"] text-[#000000]'}>
                 Show all
            </Text>
       </View>
@@ -24,10 +24,10 @@ export default function FriendsOnline() {
       <View className={'flex flex-row items-center justify-start overflow-hidden w-full mt-3'}>
            {friends.map((item, index) => {
             return(
-                <View key={index} className={'h-[60px] w-14 mr-4'}>
-                     <Image className={'h-[59px] w-[59px] rounded-full'}
+                <View key={index} className={'h-[60px] w-14 mr-2'}>
+                     <Image className={'h-[50px] w-[50px] rounded-full'}
                      source={item} />
-                     <View className={'absolute right-0 top-[2px] h-3 w-3 bg-[#97FC73] rounded-full'}></View>
+                     <View className={'absolute right-3 top-[2px] h-2 w-2 bg-[#97FC73] rounded-full'}></View>
                 </View>
             )
            })}

@@ -8,6 +8,7 @@ import AppStack from './src/AppStack'
 import { Provider } from 'react-redux'
 import store from './src/store'
 import Home from './src/screens/Home'
+import Tab from './src/components/Tab'
 
 SplashScreen.preventAutoHideAsync();
 
@@ -35,8 +36,7 @@ export default function App() {
     <Provider store={store}>
      <NavigationContainer>
         <View onLayout={onLayoutRootView}></View>
-         {/*<AppStack />*/}
-         <Home />
+          <AppStack /> 
       </NavigationContainer>
     </Provider>
   );

@@ -1,1 +1,1 @@
-export const BASE_URL = 'https://gotflexapp.com/swift';
+export const BASE_URL = "https://gotflexapp.com/swift";

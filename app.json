@@ -15,7 +15,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.innodev.flex-app"
     },
     "android": {
       "adaptiveIcon": {
@@ -27,6 +28,7 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "scheme": "FlexApp",
     "plugins": [
       "expo-font",
       "expo-router"
@@ -36,7 +38,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "82b2941d-9f72-492e-8ad9-38a2b0575648"
+        "projectId": "c08d4033-28e0-4fe2-b48b-b0650290cddd"
       }
     }
   }

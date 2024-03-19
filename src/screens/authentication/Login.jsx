@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
@@ -19,6 +19,12 @@ import * as yup from "yup";
 import { useNavigation } from "@react-navigation/native";
 import { loginUser } from "../../features/authentication/AuthActions";
 import { useDispatch, useSelector } from "react-redux";
+import * as WebBrowser from "expo-web-browser";
+import * as Google from "expo-auth-session/providers/google";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { android, ios } from "../../../env.config";
+
+WebBrowser.maybeCompleteAuthSession();
 
 const validationSchema = yup.object().shape({
   email: yup.string().email("Invalid email").required("Email is required"),
@@ -31,12 +37,49 @@ const validationSchema = yup.object().shape({
 export default function Login() {
   const [close, setClose] = useState(false);
   const [loginError, setLoginError] = useState("");
+  const [userInfo, setUserInfo] = useState(null);
 
   const loading = useSelector((state) => state.auth.loading);
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    androidClientId: android,
+    iosClientId: ios,
+    // clientId: '438953293671-s4vi8t83gfqqk3qrb2dee3lljatn2qvu.apps.googleusercontent.com'
+  });
+
   const dispatch = useDispatch();
 
   const navigation = useNavigation();
+
+  const getUserInfo = async (token) => {
+    if (!token) return;
+    const response = await fetch("https://www.googleapis.com/userinfo/v2/me", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const googleUser = await response.json();
+
+    await AsyncStorage.setItem("@user", JSON.stringify(user));
+
+    setUserInfo(googleUser);
+    try {
+    } catch (error) {}
+  };
+
+  const handleSignInWithGoogle = async () => {
+    const googleUser = await AsyncStorage.getItem("@user");
+
+    if (response?.type === "success") {
+      await getUserInfo(response.authentication.accessToken);
+    }
+  };
+
+  // console.log(request)
+
+  useEffect(() => {
+    handleSignInWithGoogle();
+  }, [response]);
 
   const handleSubmit = (values) => {
     const loginData = new FormData();
@@ -63,7 +106,10 @@ export default function Login() {
       </View>
 
       <View className="items-center w-full px-5 mt-20">
-        <TouchableOpacity className="flex-row items-center justify-center w-full h-[49px] border-[0.5px] border-[#8A8A8A] rounded-[37px] mb-4">
+        <TouchableOpacity
+          className="flex-row items-center justify-center w-full h-[49px] border-[0.5px] border-[#8A8A8A] rounded-[37px] mb-4"
+          onPress={() => promptAsync()}
+        >
           <Image
             className="w-[18px] h-[19px] mr-5"
             source={require("../../../assets/icons/google.png")}
@@ -73,7 +119,10 @@ export default function Login() {
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity className="flex-row items-center justify-center w-full h-[49px] border-[0.5px] border-[#8A8A8A] rounded-[37px]">
+        <TouchableOpacity
+          className="flex-row items-center justify-center w-full h-[49px] border-[0.5px] border-[#8A8A8A] rounded-[37px]"
+          onPress={() => promptAsync()}
+        >
           <Image
             className="w-[16px] h-[25px] mr-5"
             source={require("../../../assets/icons/apple.png")}

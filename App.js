@@ -1,22 +1,24 @@
-import React from 'react'
-import { View } from 'react-native'
-import { useFonts } from 'expo-font'
-import * as SplashScreen from 'expo-splash-screen'
-import { useCallback } from 'react'
-import { NavigationContainer } from '@react-navigation/native'
-import AppStack from './src/AppStack'
-import { Provider } from 'react-redux'
-import store from './src/store'
+import React from "react";
+import { View } from "react-native";
+import { useFonts } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
+import { useCallback } from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import AppStack from "./src/AppStack";
+import { Provider } from "react-redux";
+import store from "./src/store";
+import Home from "./src/screens/Home";
+import Tab from "./src/components/Tab";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [fontsLoaded, fontError] = useFonts({
-    'sans-bold': require('./fonts/OpenSans-Bold.ttf'),
-    'sans-light': require('./fonts/OpenSans-Light.ttf'),
-    'sans-medium': require('./fonts/OpenSans-Medium.ttf'),
-    'sans-regular': require('./fonts/OpenSans-Regular.ttf'),
-    'sans-semibold': require('./fonts/OpenSans-SemiBold.ttf'),
+    "sans-bold": require("./fonts/OpenSans-Bold.ttf"),
+    "sans-light": require("./fonts/OpenSans-Light.ttf"),
+    "sans-medium": require("./fonts/OpenSans-Medium.ttf"),
+    "sans-regular": require("./fonts/OpenSans-Regular.ttf"),
+    "sans-semibold": require("./fonts/OpenSans-SemiBold.ttf"),
   });
 
   const onLayoutRootView = useCallback(async () => {
@@ -29,12 +31,15 @@ export default function App() {
     return null;
   }
 
+  // <Provider store={store}>
+
+  // </Provider>
 
   return (
     <Provider store={store}>
-     <NavigationContainer>
+      <NavigationContainer>
         <View onLayout={onLayoutRootView}></View>
-         <AppStack />
+        <AppStack />
       </NavigationContainer>
     </Provider>
   );

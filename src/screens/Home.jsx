@@ -1,21 +1,13 @@
 import {
-  Dimensions,
   SafeAreaView,
   ScrollView,
   StatusBar,
-  StyleSheet,
-  Text,
-  View,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import HomeTop from "../components/home/HomeTop";
 import FriendsOnline from "../components/home/FriendsOnline";
 import HomeFeeds from "../components/home/HomeFeeds";
-import { styles } from "../constants/styles";
-import { colors } from "../../colors";
-import BottomNav from "../components/bottomNav/BottomNav";
 
 export default function Home() {
   const [user, setUser] = useState([]);

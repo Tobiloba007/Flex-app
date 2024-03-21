@@ -10,7 +10,7 @@ export default function Choose({navigation}) {
     try {
       await AsyncStorage.setItem('seen_token', JSON.stringify('seenSplashScreen'));
       console.log('User data stored successfully!');
-      // navigation.navigate('login')
+      navigation.navigate('login')
       navigation.navigate('loginScreen')
     } catch (error) {
       console.error('Error storing user data:', error);

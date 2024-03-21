@@ -21,8 +21,13 @@ import { loginUser } from "../../features/authentication/AuthActions";
 import { useDispatch, useSelector } from "react-redux";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { android, ios } from "../../../env.config";
+import { android, clientId, ios } from "../../../env.config";
+import {
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithCredential,
+} from "firebase/auth";
+import { auth } from "../../../firebaseConfig";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -38,48 +43,61 @@ export default function Login() {
   const [close, setClose] = useState(false);
   const [loginError, setLoginError] = useState("");
   const [userInfo, setUserInfo] = useState(null);
+  const [idToken, setIdToken] = useState("");
 
   const loading = useSelector((state) => state.auth.loading);
-  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
 
   const [request, response, promptAsync] = Google.useAuthRequest({
-    androidClientId: android,
     iosClientId: ios,
-    // clientId: '438953293671-s4vi8t83gfqqk3qrb2dee3lljatn2qvu.apps.googleusercontent.com'
+    androidClientId: android,
+    clientId: clientId,
   });
 
   const dispatch = useDispatch();
 
   const navigation = useNavigation();
 
-  const getUserInfo = async (token) => {
-    if (!token) return;
-    const response = await fetch("https://www.googleapis.com/userinfo/v2/me", {
-      headers: { Authorization: `Bearer ${token}` },
+  useEffect(() => {
+    if (response && response?.type === "success") {
+      const { id_token } = response.params;
+
+      const credential = GoogleAuthProvider.credential(id_token);
+      signInWithCredential(auth, credential);
+      setIdToken(id_token);
+    }
+  }, [response]);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const userData = JSON.stringify(user, null, 2);
+        setUserInfo(JSON.parse(userData));
+      } else {
+        console.log("null");
+      }
     });
 
-    const googleUser = await response.json();
+    return () => unsubscribe();
+  }, []);
 
-    await AsyncStorage.setItem("@user", JSON.stringify(user));
+  // console.log(userInfo?.email, userInfo)
+  // console.log(idToken)
 
-    setUserInfo(googleUser);
-    try {
-    } catch (error) {}
-  };
+  const handleGoogleLogin = () => {
+    if (userInfo) {
+      const loginData = new FormData();
+      loginData.append("email", userInfo?.email);
+      loginData.append("id_token", idToken);
 
-  const handleSignInWithGoogle = async () => {
-    const googleUser = await AsyncStorage.getItem("@user");
-
-    if (response?.type === "success") {
-      await getUserInfo(response.authentication.accessToken);
+      dispatch(loginUser(loginData, setLoginError, navigation));
     }
   };
 
-  // console.log(request)
-
   useEffect(() => {
-    handleSignInWithGoogle();
-  }, [response]);
+    if (userInfo) {
+      handleGoogleLogin();
+    }
+  }, [userInfo]);
 
   const handleSubmit = (values) => {
     const loginData = new FormData();

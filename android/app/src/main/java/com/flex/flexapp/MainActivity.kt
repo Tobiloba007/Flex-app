@@ -1,4 +1,4 @@
-package com.demo_007.flexapp
+package com.flex.flexapp
 
 import android.os.Build
 import android.os.Bundle

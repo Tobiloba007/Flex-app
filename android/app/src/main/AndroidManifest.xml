@@ -26,7 +26,9 @@
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
-        <data android:scheme="com.demo_007.flexapp"/>
+        <data android:scheme="flex-app"/>
+        <data android:scheme="com.flex.flexapp"/>
+        <data android:scheme="exp+flex-app"/>
       </intent-filter>
     </activity>
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" android:exported="false"/>

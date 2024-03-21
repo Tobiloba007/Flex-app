@@ -133,21 +133,20 @@ export const loginUser =
       const data = await response.json();
 
       if (data.status === "true") {
-        console.log("Registration successful");
-        // console.log(data.message);
-        // console.log(data.data[0]);
+        // console.log("Registration successful");
+
         const userData = data.data[0];
-        // console.log(userData.email);
+
         await AsyncStorage.setItem("user_data", JSON.stringify(userData)).then(
           () => {
             console.log("User data stored in AsyncStorage.");
           }
         );
+
         dispatch(setIsLoggedIn(true));
         navigation.navigate("pin");
       } else if (data.status === "false") {
         console.log("Registration failed with status code:", data.status);
-        // console.log(data.message);
         setLoginError(data.message);
       }
     } catch (error) {

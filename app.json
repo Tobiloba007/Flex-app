@@ -11,35 +11,31 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.innodev.flex-app"
+      "bundleIdentifier": "com.flex.flexapp"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.demo_007.flexapp"
+      "package": "com.flex.flexapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "scheme": "FlexApp",
     "plugins": [
+      "@react-native-google-signin/google-signin",
       "expo-font",
       "expo-router"
     ],
     "extra": {
-      "router": {
-        "origin": false
-      },
       "eas": {
         "projectId": "c08d4033-28e0-4fe2-b48b-b0650290cddd"
       }
-    }
+    },
+    "scheme": "flex-app"
   }
 }

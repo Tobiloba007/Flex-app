@@ -51,12 +51,11 @@ export default function Registration1({handleNextPage}) {
        quality: 1,
      });
  
-     // console.log(result.assets[0].fileName);
+     // console.log(result.assets[0].uri);
      // setImage(result.assets[0].fileName)
  
      if (!result.canceled) {
-       setImage(result.assets[0].fileName);
-       console.log(image);
+       setImage(result.assets[0].uri);
      }
    };
 
@@ -79,6 +78,8 @@ export default function Registration1({handleNextPage}) {
      dispatch(createAccount(formData, setError, navigation, handleNextPage, regValues))
      // console.log(regValues);
    };
+
+//    console.log(image, loading, check1, check2)
 
   return (
     <SafeAreaView className="items-center w-full" style={{paddingTop: StatusBar.currentHeight}}>

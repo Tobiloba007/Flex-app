@@ -7,18 +7,24 @@ import {
   Pressable,
   Dimensions,
   Keyboard,
+  ScrollView,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { colors } from "../../../colors";
 import { Entypo, MaterialIcons } from "@expo/vector-icons";
 import { styles } from "../../constants/styles";
+import axios from "axios";
+import { BASE_URL2 } from "../../config";
 
 const itemHeight = Dimensions.get("window").height;
 const itemWidth = Dimensions.get("window").width;
 
-const Comments = () => {
+const Comments = ({ route }) => {
+  const { post_id, user_id } = route.params;
+
   const [message, setMessage] = useState("");
   const [inputHeight, setInputHeight] = useState(itemHeight * 0.06);
+  const [postComments, setPostComments] = useState([]);
 
   const handleContentSizeChange = (event) => {
     // Set a maximum height for the input container
@@ -27,41 +33,55 @@ const Comments = () => {
     );
   };
 
-  const handleSendMessage = async () => {
-    // const messageData = new FormData();
+  const fetchPostComments = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL2}/comment/post/${post_id}`);
+
+      setPostComments(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPostComments();
+  }, [post_id]);
+
+  const handleSendComment = async () => {
+    const messageData = {
+      user: user_id,
+      post: post_id,
+      comment: message,
+    };
 
     setMessage("");
     Keyboard.dismiss();
 
-    // messageData.append("user_id", user?.id);
-    // item && messageData.append("message_to", item?.id);
-    // channel && messageData.append("channel_id", channel?.id);
-    // messageData.append("message", message.trim());
-    // image && messageData.append("image", image);
+    if (message.trim() !== "") {
+      try {
+        const res = await fetch(`${BASE_URL2}/comment`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(messageData),
+        });
 
-    // if (message.trim() !== "" || image) {
-    //   try {
-    //     await fetch(
-    //       item
-    //         ? `${BASE_URL}/api/v1/chat/private_message.php`
-    //         : `${BASE_URL}/api/v1/chat/channel_message.php`,
-    //       {
-    //         method: "POST",
-    //         body: messageData,
-    //       }
-    //     );
+        const data = await res.json();
+        console.log(data);
 
-    //     setMessage("");
-    //     setImage(null);
-    //     Keyboard.dismiss();
+        setMessage("");
+        setImage(null);
+        Keyboard.dismiss();
 
-    //     fetchMessages();
-    //     fetchChannelMessages();
-    //   } catch (error) {}
-    // } else {
-    //   setMessage("");
-    //   Keyboard.dismiss();
-    // }
+        fetchPostComments();
+      } catch (error) {
+        console.log(error?.response?.data);
+      }
+    } else {
+      setMessage("");
+      Keyboard.dismiss();
+    }
   };
 
   return (
@@ -76,60 +96,46 @@ const Comments = () => {
             alignItems: "center",
           }}
         >
-          <View
-            style={[
-              styles.chatBubbleRight,
-              { maxWidth: itemWidth, alignSelf: "center" },
-            ]}
-          >
-            <Text
-              style={[
-                styles.smallTxt,
-                {
-                  textAlign: "left",
-                  color: "#eee",
-                  marginBottom: 8,
-                  fontSize: itemWidth * 0.04,
-                  fontWeight: "500",
-                },
-              ]}
-            >
-              Isaac Isaac
-            </Text>
+          <View style={{ height: "90%" }}>
+            {postComments.length === 0 && (
+              <Text
+                style={[styles.smallTxt, { fontWeight: "400", marginTop: 50 }]}
+              >
+                Comments will appear here
+              </Text>
+            )}
 
-            <Text className={`float-right ${"text-[#fff]"}`}>
-              This is a coment. Lorem, ipsum dolor sit amet consectetur
-              adipisicing elit. Accusamus perspiciatis quibusdam dicta error
-              magnam nisi?
-            </Text>
-          </View>
+            {postComments.length > 0 && (
+              <ScrollView showsVerticalScrollIndicator={false}>
+                <View
+                  style={[
+                    styles.chatBubbleRight,
+                    { maxWidth: itemWidth, alignSelf: "center" },
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.smallTxt,
+                      {
+                        textAlign: "left",
+                        color: "#eee",
+                        marginBottom: 8,
+                        fontSize: itemWidth * 0.04,
+                        fontWeight: "500",
+                      },
+                    ]}
+                  >
+                    Isaac Isaac
+                  </Text>
 
-          <View
-            style={[
-              styles.chatBubbleRight,
-              { maxWidth: itemWidth, alignSelf: "center" },
-            ]}
-          >
-            <Text
-              style={[
-                styles.smallTxt,
-                {
-                  textAlign: "left",
-                  color: "#eee",
-                  marginBottom: 8,
-                  fontSize: itemWidth * 0.04,
-                  fontWeight: "500",
-                },
-              ]}
-            >
-              Isaac Isaac
-            </Text>
-
-            <Text className={`float-right ${"text-[#fff]"}`}>
-              This is a coment. Lorem, ipsum dolor sit amet consectetur
-              adipisicing elit. Accusamus perspiciatis quibusdam dicta error
-              magnam nisi?
-            </Text>
+                  <Text className={`float-right ${"text-[#fff]"}`}>
+                    This is a coment. Lorem, ipsum dolor sit amet consectetur
+                    adipisicing elit. Accusamus perspiciatis quibusdam dicta
+                    error magnam nisi?
+                  </Text>
+                </View>
+              </ScrollView>
+            )}
           </View>
 
           <View style={styles.msgInputCon}>
@@ -154,7 +160,7 @@ const Comments = () => {
 
             <Entypo name="emoji-happy" size={24} color="black" />
 
-            <Pressable disabled={!message} onPress={handleSendMessage}>
+            <Pressable disabled={!message} onPress={handleSendComment}>
               <MaterialIcons name={"send"} size={24} color="black" />
             </Pressable>
           </View>

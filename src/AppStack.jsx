@@ -19,6 +19,15 @@ import SeeRequests from "./screens/SeeRequests";
 import Notification from "./screens/Notification";
 import Pin from "./screens/authentication/Pin";
 import Comments from "./screens/chat/Comments";
+import Buy from "./screens/sendMoney/Buy";
+import Offers from "./screens/sendMoney/Offers";
+import AboutOffers from "./screens/sendMoney/AboutOffers";
+import Wallet from "./screens/wallet/Wallet";
+import Trade from "./screens/trade/Trade";
+import WalletOffer from "./screens/wallet/WalletOfer";
+import Payment from "./screens/payment/Payment";
+import ChannelRequests from "./screens/chat/ChannelRequests";
+import MyOffers from "./screens/sendMoney/MyOffers";
 
 const Stack = createStackNavigator();
 
@@ -107,96 +116,42 @@ const AppStack = () => {
       initialRouteName={showSplash ? "splash" : "tab"}
       screenOptions={{
         transitionSpec: { open: MyTransition, close: MyTransition },
+        headerShown: false,
       }}
     >
-      {showSplash && (
-        <Stack.Screen
-          name="splash"
-          component={Splash}
-          options={{ headerShown: false }}
-        />
-      )}
+      {showSplash && <Stack.Screen name="splash" component={Splash} />}
 
-      {!user && (
-        <Stack.Screen
-          name="login"
-          component={Login}
-          options={{ headerShown: false }}
-        />
-      )}
+      {!user && <Stack.Screen name="login" component={Login} />}
 
-      <Stack.Screen
-        name="tab"
-        component={Tab}
-        options={{ headerShown: false }}
-      />
+      <Stack.Screen name="tab" component={Tab} />
 
-      <Stack.Screen
-        name="ChatRoom"
-        component={ChatRoom}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="MessagingRoom"
-        component={MessagingRoom}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Friend"
-        component={Friend}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="home"
-        component={Home}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="choose"
-        component={Choose}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="loginScreen"
-        component={Login}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="registration"
-        component={Registration}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="verification"
-        component={Verification}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="resendCode"
-        component={ResendCode}
-        options={{ headerShown: false }}
-      />
+      <Stack.Screen name="ChatRoom" component={ChatRoom} />
+      <Stack.Screen name="MessagingRoom" component={MessagingRoom} />
+      <Stack.Screen name="Friend" component={Friend} />
+      <Stack.Screen name="home" component={Home} />
+      <Stack.Screen name="choose" component={Choose} />
+      <Stack.Screen name="loginScreen" component={Login} />
+      <Stack.Screen name="registration" component={Registration} />
+      <Stack.Screen name="verification" component={Verification} />
+      <Stack.Screen name="resendCode" component={ResendCode} />
 
-      <Stack.Screen
-        name="pin"
-        component={Pin}
-        options={{ headerShown: false }}
-      />
+      <Stack.Screen name="pin" component={Pin} />
       <Stack.Screen
         name="Comments"
         component={Comments}
         options={{ headerShown: true }}
       />
-      <Stack.Screen
-        name="seeRequests"
-        component={SeeRequests}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="notification"
-        component={Notification}
-        options={{ headerShown: false }}
-      />
+      <Stack.Screen name="seeRequests" component={SeeRequests} />
+      <Stack.Screen name="channelRequests" component={ChannelRequests} />
+      <Stack.Screen name="notification" component={Notification} />
+      <Stack.Screen name="buy" component={Buy} />
+      <Stack.Screen name="offers" component={Offers} />
+      <Stack.Screen name="myOffers" component={MyOffers} />
+      <Stack.Screen name="aboutOffers" component={AboutOffers} />
+      <Stack.Screen name="wallet" component={Wallet} />
+      <Stack.Screen name="walletOffer" component={WalletOffer} />
+      <Stack.Screen name="payment" component={Payment} />
+      <Stack.Screen name="trade" component={Trade} />
     </Stack.Navigator>
   );
 };

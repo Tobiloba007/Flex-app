@@ -8,3 +8,5 @@ export const webClientId =
   "496932386651-t7laa9ej2it167hk9b8tv3fl8mbvo20e.apps.googleusercontent.com";
 
 export const clientId = "AIzaSyAM6HQIqngHYanK4MLO-UUYojy-YJ-JPoI";
+
+export const dynamicLinkApiKey = "AIzaSyDXRpPTcT2RohGV9fvzsZMxYyhFRog6MTQ";

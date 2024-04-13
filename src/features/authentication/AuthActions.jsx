@@ -16,24 +16,28 @@ export const createAccount =
   async (dispatch) => {
     dispatch(setLoading(true));
     try {
-      const response = await axios.post(
+      const response = await fetch(
         `${BASE_URL}/api/v1/account/registration/account_registration.php`,
-        formData
+        { method: "POST", body: formData }
       );
-      if (response.data.status === "success") {
-        console.log("Registration successfull");
-        console.log(response.data.message);
+
+      const data = await response.json();
+
+      if (data.status === "success") {
+        // console.log("Registration successfull");
+        // console.log(data.message);
         handleNextPage(2);
         navigation.navigate("verification", { regValues });
-      } else if (response.data.status === "error") {
-        console.log("Registration failed with status code:", response.status);
-        setError(response.data.message);
-        console.log(regValues);
+      } else if (data.status === "error") {
+        // console.log("Registration failed with status code:", data.status);
+        setError(data.message);
+        // console.log(regValues);
       }
     } catch (error) {
+      console.log(error);
       if (error.response) {
-        console.log("this is an error");
-        console.error("API Error:", error.response.status);
+        // console.log("this is an error");
+        // console.error("API Error:", error.response.status);
         setError(
           "An Errror occurred while processing your request!, please try again."
         );
@@ -41,16 +45,16 @@ export const createAccount =
       } else if (error.request) {
         // The request was made but no response was received (e.g., network issue)
         setError("Please check your internet connection...");
-        console.error("Network Error:", error.request);
+        // console.error("Network Error:", error.request);
       } else {
         setError(error.request);
         // Something happened in setting up the request or processing the response
-        console.error("Request Error:", error.message);
+        // console.error("Request Error:", error.message);
       }
       dispatch(setLoading(false));
     }
     dispatch(setLoading(false));
-    console.log(formData);
+    // console.log(formData);
   };
 
 // EMAIL CONFIRMATION TOKEN
@@ -58,21 +62,24 @@ export const confirmEmail =
   (verifyData, setErrorMssg, navigation) => async (dispatch) => {
     dispatch(setLoading(true));
     try {
-      const response = await axios.post(
+      const response = await fetch(
         `${BASE_URL}/api/v1/account/verification/email_verification.php`,
-        verifyData
+        { method: "POST", body: verifyData }
       );
-      if (response.data.status === "success") {
+
+      const data = await response.json();
+
+      if (data.status === "success") {
         console.log("Email confirmed");
-        console.log(response.data.message);
+        console.log(data.message);
         navigation.navigate("home");
-      } else if (response.data.status === "error") {
+      } else if (data.status === "error") {
         console.log(
           "Email Confirmation failed with status code:",
           response.status
         );
-        setErrorMssg(response.data.message);
-        console.log(response.data.message);
+        setErrorMssg(data.message);
+        console.log(data.message);
       }
     } catch (error) {
       if (error.response) {
@@ -86,7 +93,7 @@ export const confirmEmail =
       }
     }
     dispatch(setLoading(false));
-    console.log(verifyData);
+    // console.log(verifyData);
   };
 
 // RESEND CODE
@@ -123,14 +130,21 @@ export const ResendMyCode =
 
 // LOGIN ACTIONS
 export const loginUser =
-  (loginData, setLoginError, navigation) => async (dispatch) => {
+  (loginData, setLoginError, navigation, url) => async (dispatch) => {
     dispatch(setLoading(true));
     try {
-      const response = await fetch(`${BASE_URL}/simplelogin_v6.php`, {
+      const response = await fetch(`${BASE_URL}/${url}`, {
         method: "POST",
         body: loginData,
       });
       const data = await response.json();
+
+      if (
+        data?.message ===
+        "It appears this is your first time here. To continue, please take a moment to create a new account."
+      ) {
+        setLoginError(data?.message);
+      }
 
       if (data.status === "true") {
         // console.log("Registration successful");
@@ -150,6 +164,8 @@ export const loginUser =
         setLoginError(data.message);
       }
     } catch (error) {
+      console.log(error);
+
       if (error.response) {
         // The server responded with an error (e.g., HTTP status code 4xx or 5xx)
         console.error("API Error:", error.response.status);
@@ -159,7 +175,8 @@ export const loginUser =
         console.error("Network Error:", error.request);
       } else {
         // Something happened in setting up the request or processing the response
-        console.error("Request Error:", error.message);
+        // console.error("Request Error:", error.message);
+        setLoginError(error?.message);
       }
     }
     dispatch(setLoading(false));

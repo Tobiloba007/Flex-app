@@ -16,6 +16,12 @@ export const styles = StyleSheet.create({
 
   row: { flexDirection: "row", alignItems: "center", gap: 15 },
 
+  rowSpace: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+
   circularBtn: {
     backgroundColor: colors.white,
     borderRadius: 100,
@@ -65,7 +71,7 @@ export const styles = StyleSheet.create({
 
   smallTxt: {
     textAlign: "center",
-    fontSize: itemWidth * 0.035,
+    fontSize: itemWidth * 0.036,
     fontWeight: "600",
   },
 
@@ -110,6 +116,7 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
+    zIndex:999
   },
 
   // bottom nav
@@ -216,5 +223,94 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 2,
     borderRadius: 10,
+  },
+
+  buyButton: {
+    flexDirection: "row",
+    gap: 5,
+    alignItems: "center",
+    backgroundColor: "rgba(236, 236, 236, 0.8)",
+    padding: 2,
+    paddingHorizontal: 4,
+    borderRadius: 4,
+  },
+
+  btcOfferTxt: {
+    fontSize: itemWidth * 0.075,
+    width: itemWidth * 0.5,
+    textAlign: "left",
+    fontWeight: "500",
+  },
+
+  btcButton: {
+    flexDirection: "row",
+    borderWidth: 2,
+    borderColor: "lightgrey",
+    borderRadius: 10,
+    borderLeftWidth: 0,
+    paddingRight: 8,
+    paddingVertical: 2,
+    gap: 5,
+  },
+
+  btcImgCon: {
+    backgroundColor: "#F9AA4B",
+    width: 20,
+    height: 20,
+    borderRadius: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 6,
+  },
+
+  paymentMethodBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "lightgray",
+    padding: 10,
+    borderRadius: 10,
+    gap: 10,
+  },
+
+  paymentMethodIconBox: {
+    backgroundColor: "rgba(2, 156, 252, 0.71)",
+    paddingHorizontal: 20,
+    paddingVertical: 4,
+    borderRadius: 10,
+  },
+
+  radio: {
+    width: 15,
+    height: 15,
+    borderRadius: 50,
+    borderWidth: 1,
+    borderColor: "#333",
+  },
+
+  box: {
+    backgroundColor: "white",
+    padding: 10,
+    gap: 6,
+    width: "100%",
+    paddingVertical: 15,
+  },
+
+  sideMenu: {
+    backgroundColor: "white",
+    elevation: 5,
+    height: itemHeight * 0.4,
+    width: itemWidth * 0.55,
+    position: "absolute",
+    zIndex: 999,
+    top: 0,
+  },
+
+  textButton: {
+    backgroundColor: colors.primary,
+    color: "white",
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+    borderRadius: 4,
   },
 });

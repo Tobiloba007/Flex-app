@@ -1,0 +1,122 @@
+{
+  "project_info": {
+    "project_number": "553859054314",
+    "firebase_url": "https://gotflexapp-cfcf1-default-rtdb.firebaseio.com",
+    "project_id": "gotflexapp-cfcf1",
+    "storage_bucket": "gotflexapp-cfcf1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:553859054314:android:3359715f2dc04f68dcf593",
+        "android_client_info": {
+          "package_name": "com.flex.flexapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "553859054314-0ap2lc1tjc9b8nto23e7r90egt1jinj7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXRpPTcT2RohGV9fvzsZMxYyhFRog6MTQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "553859054314-0ap2lc1tjc9b8nto23e7r90egt1jinj7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:553859054314:android:88644173d027ac56dcf593",
+        "android_client_info": {
+          "package_name": "com.gotflexapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "553859054314-iu7gpbq3r8bgof660qfrt0jq8sm38c45.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gotflexapp",
+            "certificate_hash": "e8a316edc714199f22111bb7bbcbf04d265b769e"
+          }
+        },
+        {
+          "client_id": "553859054314-rql7mam15vdhu6smr1va6nm5g4qducjo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gotflexapp",
+            "certificate_hash": "286eb5f6da7edf02d9987a0db09b6a660b055d39"
+          }
+        },
+        {
+          "client_id": "553859054314-0ap2lc1tjc9b8nto23e7r90egt1jinj7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXRpPTcT2RohGV9fvzsZMxYyhFRog6MTQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "553859054314-0ap2lc1tjc9b8nto23e7r90egt1jinj7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:553859054314:android:97495affebe8f14adcf593",
+        "android_client_info": {
+          "package_name": "com.gotflexapp.test"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "553859054314-a8rjjttspkseducueunp1b7eaiefiot7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gotflexapp.test",
+            "certificate_hash": "61ed377e85d386a8dfee6b864bd85b0bfaa5af81"
+          }
+        },
+        {
+          "client_id": "553859054314-0ap2lc1tjc9b8nto23e7r90egt1jinj7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXRpPTcT2RohGV9fvzsZMxYyhFRog6MTQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "553859054314-0ap2lc1tjc9b8nto23e7r90egt1jinj7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

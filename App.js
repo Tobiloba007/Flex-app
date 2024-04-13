@@ -1,5 +1,5 @@
 import React from "react";
-import { View } from "react-native";
+import { StatusBar, View } from "react-native";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback } from "react";
@@ -39,6 +39,7 @@ export default function App() {
     <Provider store={store}>
       <NavigationContainer>
         <View onLayout={onLayoutRootView}></View>
+        <StatusBar barStyle={'dark-content'} backgroundColor={'white'} />
         <AppStack />
       </NavigationContainer>
     </Provider>

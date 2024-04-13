@@ -21,7 +21,9 @@ import BottomNav from "../../components/bottomNav/BottomNav";
 import ChannelLink from "../../components/bottomSheets/ChannelLink";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import { BASE_URL } from "../../config";
+import { BASE_URL, BASE_URL2 } from "../../config";
+import ChatHistory from "../../components/chat/ChatHistory";
+import ChannelSearch from "../../components/chat/ChannelSearch";
 
 const itemWidth = Dimensions.get("window").width;
 
@@ -66,6 +68,8 @@ const ChatRoom = () => {
   const [user, setUser] = useState();
   const [channelLink, setChannelLink] = useState("");
   const [channelLists, setChannelLists] = useState([]);
+  const [channelSearch, setChannelSearch] = useState([]);
+  const [channelQuery, setChannelQuery] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -86,9 +90,7 @@ const ChatRoom = () => {
 
   const fetchChannelList = async () => {
     try {
-      const res = await axios.get(
-        `${BASE_URL}/api/v1/channel/index.php?user_id=${user?.id}`
-      );
+      const res = await axios.get(`${BASE_URL2}/channel?name=`);
 
       setChannelLists(res.data);
     } catch (error) {
@@ -102,21 +104,47 @@ const ChatRoom = () => {
     }
   }, [user, channelLink]);
 
+  useEffect(() => {
+    if (channelQuery.length > 2) {
+      const handleChannelQuery = async () => {
+        try {
+          const res = await axios.get(
+            `${BASE_URL2}/channel?name=${channelQuery}`
+          );
+
+          setChannelSearch(res.data);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
+      handleChannelQuery();
+    } else if (channelQuery.length > 0 && channelQuery.length <= 2) {
+      setChannelSearch([]);
+    }
+  }, [channelQuery]);
+
+  // console.log(user)
+
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar backgroundColor={colors.white} barStyle={"dark-content"} />
 
       <View className={"flex-1 flex-row pl-2"} style={styles.container}>
         <>
-          <View className={"w-[65px] items-center"}>
+          <View className={"w-[68px] items-center"}>
             <Text className={"text-l font-semibold text-[#000] pt-6"}>
-              Friends
+              Channels
             </Text>
 
             <ScrollView>
               <View style={{ alignItems: "center", gap: 4, marginTop: 5 }}>
                 {channelLists?.map((channel) => (
-                  <View key={channel?.id} className="flex-row items-center p-1">
+                  <View
+                    key={channel?.channel_id}
+                    className="flex-row items-center p-1"
+                  >
                     <TouchableWithoutFeedback
                       onPress={() =>
                         navigation.navigate("MessagingRoom", { channel })
@@ -124,8 +152,8 @@ const ChatRoom = () => {
                     >
                       <Image
                         source={
-                          channel?.ChannelIcon
-                            ? { uri: channel?.ChannelIcon }
+                          channel?.icon
+                            ? { uri: channel?.icon }
                             : require("../../../assets/images/flexLogo.png")
                         }
                         style={[
@@ -160,38 +188,22 @@ const ChatRoom = () => {
               </Text>
             </View>
 
-            <View className={"p-4"}>
+            <View className={"p-4"} style={{ zIndex: 9 }}>
               <TextInput
-                className={"p-1 pl-6 bg-[#02CFFC] rounded-lg"}
-                placeholder="Find or start a conversation"
-                editable={false}
+                className={"p-1 pl-6 bg-[#ebebeb] rounded-lg"}
+                placeholder="Find a channel"
+                style={{ height: 50 }}
+                onChangeText={(value) => setChannelQuery(value.trim())}
               />
             </View>
 
-            <View className={"flex-1 justify-center items-center p-0"}>
-              <Image source={require("../../../assets/icons/chat-svg.png")} />
+            {channelSearch.length > 0 && (
+              <ChannelSearch channelSearch={channelSearch} />
+            )}
 
-              <Text className={"text-xl font-semibold text-[#000] pt-6"}>
-                Your Chat Is Empty
-              </Text>
-
-              <Text
-                className={
-                  'text-center text-[#000000] p-8 text-[15px] font-["sans-regular"]'
-                }
-              >
-                It looks like you haven’t messaged anyone yet. Simply click on
-                button below to begin chatting with your friends and colleagues.
-              </Text>
-
-              <TouchableOpacity
-                style={styles.button}
-                activeOpacity={0.8}
-                onPress={() => refRBConversationSheet?.current?.open()}
-              >
-                <Text className={"text-white font-bold "}>New Chat</Text>
-              </TouchableOpacity>
-            </View>
+            {channelSearch.length === 0 && (
+              <ChatHistory refRBConversationSheet={refRBConversationSheet} />
+            )}
           </View>
 
           {/* bottom sheets */}
@@ -207,7 +219,7 @@ const ChatRoom = () => {
             refRBSheet={refRBChannelLinkSheet}
           />
 
-          <NewConversation  user={user} refRBSheet={refRBConversationSheet} />
+          <NewConversation user={user} refRBSheet={refRBConversationSheet} />
         </>
 
         {/* Add navigation and friends list components here */}

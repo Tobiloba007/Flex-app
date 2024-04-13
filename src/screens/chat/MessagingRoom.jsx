@@ -4,7 +4,6 @@ import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
   StatusBar,
   Image,
   ImageBackground,
@@ -12,6 +11,7 @@ import {
   Dimensions,
   Pressable,
   Keyboard,
+  Alert,
 } from "react-native";
 import { styles } from "../../constants/styles";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -20,7 +20,7 @@ import { colors } from "../../../colors";
 import { Entypo } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 import axios from "axios";
-import { BASE_URL } from "../../config";
+import { BASE_URL, BASE_URL2 } from "../../config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
 import ChannelMsg from "./ChannelMsg";
@@ -31,7 +31,6 @@ const itemHeight = Dimensions.get("window").height;
 const MessagingRoom = ({ route }) => {
   const channel = route.params?.channel;
   const item = route.params?.item;
-  // console.log( item)
 
   const navigation = useNavigation();
 
@@ -41,6 +40,9 @@ const MessagingRoom = ({ route }) => {
   const [user, setUser] = useState();
   const [message, setMessage] = useState("");
   const [image, setImage] = useState(null);
+  const [dropDown, setDropDown] = useState(false);
+  const [channelMemberStatus, setChannelmemberStatus] = useState({});
+  const [createChannel, setCreateChannel] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -69,7 +71,7 @@ const MessagingRoom = ({ route }) => {
   const fetchChannelMessages = async () => {
     try {
       const res = await axios.get(
-        `${BASE_URL}/api/v1/chat/channel_message.php?channel_id=${channel?.id}`
+        `${BASE_URL2}/post/channel/${channel?.channel_id}`
       );
 
       setChannels(res.data);
@@ -85,7 +87,22 @@ const MessagingRoom = ({ route }) => {
           `${BASE_URL}/api/v1/chat/private_message.php?user_id=${user?.id}&message_to=${item?.id}`
         );
 
-        setMessages(res.data);
+        // Define a regular expression to match JSON data within the response
+        const jsonRegex = /\[.*\]/;
+
+        // Use the regular expression to extract the JSON data
+        const jsonDataMatch = res.data?.match(jsonRegex);
+
+        // If a match is found, parse the JSON data
+        let jsonData;
+        if (jsonDataMatch) {
+          jsonData = JSON.parse(jsonDataMatch[0]);
+        } else {
+          console.error("No JSON data found in the response");
+        }
+
+        // Now 'jsonData' contains only the data without HTML elements
+        setMessages(jsonData);
       } catch (error) {
         console.log(error);
       }
@@ -93,11 +110,15 @@ const MessagingRoom = ({ route }) => {
   };
 
   useEffect(() => {
-    fetchChannelMessages();
+    if (channel) {
+      fetchChannelMessages();
+    }
   }, [channel]);
 
   useEffect(() => {
-    fetchMessages();
+    if (item) {
+      fetchMessages();
+    }
   }, [item, user]);
 
   const handleDelete = async () => {
@@ -146,17 +167,30 @@ const MessagingRoom = ({ route }) => {
     messageData.append("message", message.trim());
     image && messageData.append("image", image);
 
+    const channelData = {
+      user: user?.id,
+      channel: channel?.channel_id,
+      post: message.trim(),
+      likes_users: [],
+    };
+
     if (message.trim() !== "" || image) {
       try {
-        await fetch(
+        const res = await fetch(
           item
             ? `${BASE_URL}/api/v1/chat/private_message.php`
-            : `${BASE_URL}/api/v1/chat/channel_message.php`,
+            : `${BASE_URL2}/post`,
           {
             method: "POST",
-            body: messageData,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: item ? messageData : JSON.stringify(channelData),
           }
         );
+
+        const data = await res.json();
+        console.log(data);
 
         setMessage("");
         setImage(null);
@@ -177,7 +211,40 @@ const MessagingRoom = ({ route }) => {
     }
   }, [image]);
 
-  // console.log( channel?.channel?.id, user?.id);
+  const checkIsChannelMember = async () => {
+    try {
+      const res = await axios.get(
+        `${BASE_URL2}/channel-request/${user?.id}/${channel?.channel_id}`
+      );
+
+      setChannelmemberStatus(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    checkIsChannelMember();
+  }, [user, channel, createChannel]);
+
+  const createChannelRequest = async () => {
+    const data = {
+      request_user_id: user?.id,
+      channel_id: channel?.channel_id,
+    };
+
+    try {
+      const res = await axios.post(`${BASE_URL2}/channel-request`, data);
+
+      setCreateChannel(res.data);
+
+      Alert.alert("Channel request created successfully");
+    } catch (error) {
+      console.log(first);
+    }
+  };
+
+  // console.log(channel, user?.id);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -219,61 +286,179 @@ const MessagingRoom = ({ route }) => {
               />
               <Feather name="video" size={24} color="black" />
               <Feather name="phone" size={24} color="black" />
+
+              {channel?.owner_id === user?.id && (
+                <Feather
+                  name="more-vertical"
+                  size={24}
+                  color="black"
+                  onPress={() => setDropDown((prev) => !prev)}
+                />
+              )}
             </View>
           </View>
 
-          <ImageBackground
-            source={require("../../../assets/images/bg.png")}
-            style={styles.bgImg}
-            resizeMode="cover"
-          >
-            {messages.length > 0 && (
-              <ScrollView showsVerticalScrollIndicator={false}>
-                {messages.map((message, index) => (
-                  <UserMsg key={index} message={message} user={user} />
-                ))}
-              </ScrollView>
-            )}
-
-            {channels.length > 0 && (
-              <ScrollView showsVerticalScrollIndicator={false}>
-                {channels.map((message, index) => (
-                  <ChannelMsg key={index} message={message} user={user} />
-                ))}
-              </ScrollView>
-            )}
-          </ImageBackground>
-
-          <View style={styles.msgInputCon}>
-            <Entypo name="plus" size={26} color="black" onPress={pickImage} />
-
-            <TextInput
-              placeholder="Type a message"
-              style={[
-                styles.input,
-                {
-                  width: "73%",
-                  height: inputHeight,
-                  maxHeight: itemHeight * 0.13,
-                },
-              ]}
-              multiline
-              cursorColor={"gray"}
-              onContentSizeChange={handleContentSizeChange}
-              onChangeText={(value) => setMessage(value)}
-              value={message}
-            />
-
-            <Entypo name="emoji-happy" size={24} color="black" />
-
-            <Pressable disabled={!message} onPress={handleSendMessage}>
-              <MaterialIcons
-                name={message !== "" ? "send" : "mic-none"}
-                size={24}
-                color="black"
-              />
+          {dropDown && (
+            <Pressable
+              style={{
+                backgroundColor: "white",
+                position: "absolute",
+                right: 0,
+                padding: 20,
+                top: 60,
+                zIndex: 999,
+                elevation: 5,
+              }}
+              onPress={() =>
+                navigation.navigate("channelRequests", {
+                  id: channel?.owner_id,
+                })
+              }
+            >
+              <Text>See channel requests</Text>
             </Pressable>
-          </View>
+          )}
+
+          <Pressable onPress={() => setDropDown(false)}>
+            <ImageBackground
+              source={require("../../../assets/images/bg.png")}
+              style={styles.bgImg}
+              resizeMode="cover"
+            >
+              {messages.length > 0 && (
+                <ScrollView showsVerticalScrollIndicator={false}>
+                  {messages?.map((message, index) => (
+                    <UserMsg key={index} message={message} user={user} />
+                  ))}
+                </ScrollView>
+              )}
+
+              <ScrollView showsVerticalScrollIndicator={false}>
+                {channel?.owner_id !== user?.id &&
+                channelMemberStatus?.status?.trim() === "rejected" ? (
+                  <View
+                    style={{
+                      alignItems: "center",
+                      justifyContent: "center",
+                      height: itemHeight * 0.8,
+                    }}
+                  >
+                    <Pressable
+                      style={[styles.button]}
+                      onPress={createChannelRequest}
+                    >
+                      <Text style={styles.buttonTxt}>
+                        Request to join this channel
+                      </Text>
+                    </Pressable>
+                  </View>
+                ) : channel?.owner_id !== user?.id &&
+                  channelMemberStatus?.status?.trim() === "pending" ? (
+                  <View
+                    style={{
+                      alignItems: "center",
+                      justifyContent: "center",
+                      height: itemHeight * 0.8,
+                    }}
+                  >
+                    <Pressable style={styles.button}>
+                      <Text style={styles.buttonTxt}>
+                        Channel request is pending
+                      </Text>
+                    </Pressable>
+                  </View>
+                ) : channel?.owner_id !== user?.id &&
+                  channelMemberStatus?.status?.trim() === "accepted" ? (
+                  <>
+                    {channels?.map((message, index) => (
+                      <ChannelMsg key={index} message={message} user={user} />
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    {channels?.length > 0 && (
+                      <>
+                        {channels?.map((message, index) => (
+                          <ChannelMsg
+                            key={index}
+                            message={message}
+                            user={user}
+                          />
+                        ))}
+                      </>
+                    )}
+                  </>
+                )}
+              </ScrollView>
+            </ImageBackground>
+          </Pressable>
+
+          {channelMemberStatus?.status?.trim() === "accepted" ||
+          channel?.owner_id === user?.id ? (
+            <View style={styles.msgInputCon}>
+              <Entypo name="plus" size={26} color="black" onPress={pickImage} />
+
+              <TextInput
+                placeholder="Type a message"
+                style={[
+                  styles.input,
+                  {
+                    width: "73%",
+                    height: inputHeight,
+                    maxHeight: itemHeight * 0.13,
+                  },
+                ]}
+                multiline
+                cursorColor={"gray"}
+                onContentSizeChange={handleContentSizeChange}
+                onChangeText={(value) => setMessage(value)}
+                value={message}
+              />
+
+              <Entypo name="emoji-happy" size={24} color="black" />
+
+              <Pressable disabled={!message} onPress={handleSendMessage}>
+                <MaterialIcons
+                  name={message !== "" ? "send" : "mic-none"}
+                  size={24}
+                  color="black"
+                />
+              </Pressable>
+            </View>
+          ) : null}
+
+          {item && (
+            <View style={styles.msgInputCon}>
+              <Entypo name="plus" size={26} color="black" onPress={pickImage} />
+
+              <TextInput
+                placeholder="Type a message"
+                style={[
+                  styles.input,
+                  {
+                    width: "73%",
+                    height: inputHeight,
+                    maxHeight: itemHeight * 0.13,
+                  },
+                ]}
+                multiline
+                cursorColor={"gray"}
+                onContentSizeChange={handleContentSizeChange}
+                onChangeText={(value) => setMessage(value)}
+                value={message}
+              />
+
+              <Entypo name="emoji-happy" size={24} color="black" />
+
+              <Pressable disabled={!message} onPress={handleSendMessage}>
+                <MaterialIcons
+                  name={message !== "" ? "send" : "mic-none"}
+                  size={24}
+                  color="black"
+                />
+              </Pressable>
+            </View>
+          )}
         </View>
       </View>
     </SafeAreaView>

@@ -5,11 +5,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { Zocial } from "@expo/vector-icons";
 import Home from "../screens/Home";
 import Cards from "../screens/Cards";
-import SendMoney from "../screens/SendMoney";
+import SendMoney from "../screens/sendMoney/SendMoney";
 import Profile from "../screens/Profile";
 import Bitcoins from "../screens/Bitcoins";
 import dp from "../../assets/images/dp.jpg";
 import ChatRoom from "../screens/chat/ChatRoom";
+import Wallet from "../screens/wallet/Wallet";
+import Payment from "../screens/payment/Payment";
 
 export default function Tab() {
   const [count, setCount] = useState(1);

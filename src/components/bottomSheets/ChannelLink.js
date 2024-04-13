@@ -6,22 +6,73 @@ import {
   TextInput,
   Share,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { styles } from "../../constants/styles";
 import { colors } from "../../../colors";
+import axios from "axios";
+import { dynamicLinkApiKey } from "../../../env.config";
 
 const itemHeight = Dimensions.get("window").height;
 
 const ChannelDetail = ({ channelLink, refRBSheet }) => {
+  const [channelUrl, setChannelUrl] = useState(null);
+
+  const buildLink = async () => {
+    try {
+      let link = await axios({
+        method: "POST",
+        url: `https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=${dynamicLinkApiKey}`,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: {
+          dynamicLinkInfo: {
+            domainUriPrefix: "https://flexchannel.page.link",
+            link: "https://gotflexapp.com",
+            androidInfo: {
+              androidPackageName: "com.flex.flexapp",
+            },
+            iosInfo: {
+              iosBundleId: "com.flex.flexapp",
+            },
+          },
+        },
+      });
+
+      if (link.status === 200) {
+        return link.data.shortLink;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    let shareUrl;
+
+    const getBuildLink = async () => {
+      try {
+        shareUrl = await buildLink();
+        setChannelUrl(shareUrl);
+      } catch (error) {
+        console.log(error?.response?.data);
+      }
+    };
+
+    getBuildLink();
+  }, [channelLink]);
+
   const onShare = async () => {
     try {
-      await Share.share({
-        title: "Flex App | Join my channel on Flex App" + "\n\n" + channelLink,
-        message:
-          "Flex App | Join my channel on Flex App" + "\n\n" + channelLink,
-        url: channelLink,
-      });
+      if (channelUrl) {
+        await Share.share({
+          title: "Flex App | Join my channel on Flex App" + "\n\n" + channelUrl,
+          message:
+            "Flex App | Join my channel on Flex App" + "\n\n" + channelUrl,
+          url: channelUrl,
+        });
+      }
     } catch (error) {
       Alert.alert(error.message);
     }
@@ -55,11 +106,11 @@ const ChannelDetail = ({ channelLink, refRBSheet }) => {
         ]}
         numberOfLines={1}
       >
-        {channelLink}
+        {channelUrl}
       </Text>
 
       <Pressable style={[styles.button, { width: "100%" }]} onPress={onShare}>
-        <Text style={styles.buttonTxt}>Share Link</Text>
+        <Text style={styles.buttonTxt}>Share your channel link to friends</Text>
       </Pressable>
     </View>
   );

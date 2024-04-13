@@ -15,7 +15,8 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import { colors } from "../../../colors";
 import * as ImagePicker from "expo-image-picker";
-import { BASE_URL } from "../../config";
+import { BASE_URL, BASE_URL2 } from "../../config";
+import axios from "axios";
 
 const itemHeight = Dimensions.get("window").height;
 const itemWidth = Dimensions.get("window").width;
@@ -27,9 +28,16 @@ const ChannelItems = ({
   refRBChannelLinkSheet,
 }) => {
   const [image, setImage] = useState(null);
-  const [channelIcon, setChannelIcon] = useState(null)
+  const [channelIcon, setChannelIcon] = useState(null);
   const [channelName, setChannelName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [inputs, setInputs] = useState({});
+
+  const handleChange = (name, value) => {
+    setInputs((prev) => {
+      return { ...prev, [name]: value };
+    });
+  };
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -44,30 +52,43 @@ const ChannelItems = ({
 
     if (!result?.canceled) {
       setImage(`data:${mimeType};base64,${result?.assets[0]?.base64}`);
-      setChannelIcon(result?.assets[0]?.base64)
+      setChannelIcon(result?.assets[0]?.base64);
     }
   };
+
+  const channelData = {
+    name: channelName,
+    // icon: channelIcon,
+    owner_id: user?.id,
+  };
+
+  // console.log(channelData);
 
   const handleCreateChannel = async () => {
     setLoading(true);
 
-    const channelData = new FormData();
+    // const channelData = new FormData();
 
-    channelData.append("user_id", user?.id);
-    channelData.append("flag", "add_channel");
-    channelData.append("channel_name", channelName);
-    channelData.append("channel_icon", channelIcon);
+    // channelData.append("user_id", user?.id);
+    // channelData.append("flag", "add_channel");
+    // channelData.append("name", channelName);
+    // channelData.append("icon", channelIcon);
 
     try {
-      const res = await fetch(`${BASE_URL}/api/v1/channel/index.php`, {
+      const res = await fetch(`${BASE_URL2}/channel`, {
         method: "POST",
-        body: channelData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(channelData),
       });
 
       const data = await res.json();
 
-      if (data?.status === "success") {
-        setChannelLink(data?.message?.ChannelIcon);
+      // console.log(data)
+
+      if (data?.message === "Channel Created successfully!") {
+        setChannelLink(data?.message);
 
         refRBSheet?.current?.close();
         refRBChannelLinkSheet?.current?.open();
@@ -76,6 +97,8 @@ const ChannelItems = ({
       setLoading(false);
     } catch (error) {
       setLoading(false);
+      console.log(error);
+      console.log(error?.response?.data);
     }
   };
 
@@ -150,7 +173,7 @@ const ChannelItems = ({
           placeholder="Enter channel name"
           style={styles.input}
           cursorColor={"gray"}
-          onChangeText={(value) => setChannelName(value)}
+          onChangeText={(value) => setChannelName(value.trim())}
         />
 
         <Pressable

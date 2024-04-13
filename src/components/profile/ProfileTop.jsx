@@ -1,5 +1,6 @@
 import {
   Image,
+  Pressable,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -16,6 +17,7 @@ import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { BASE_URL } from "../../config";
+import { styles } from "../../constants/styles";
 
 export default function ProfileTop() {
   const navigation = useNavigation();
@@ -73,6 +75,11 @@ export default function ProfileTop() {
     setUserData(userProfile?.data[0]);
   }, [userProfile]);
 
+  const handleLogout = async () => {
+    await AsyncStorage.removeItem("user_data");
+    navigation.navigate("loginScreen");
+  };
+
   // console.log(userData);
 
   return (
@@ -85,7 +92,7 @@ export default function ProfileTop() {
         <View className="flex items-center justify-center w-20 h-20 bg-[#CDEAFC] rounded-full">
           <Image
             className="w-[90%] h-[90%] rounded-full"
-            source={{ uri: userData?.image }}
+            source={userData?.image ?{ uri: userData?.image } : require('../../../assets/images/flexLogo.png')}
             alt="my displey_picture"
             resizeMode="cover"
           />
@@ -131,8 +138,10 @@ export default function ProfileTop() {
           <FontAwesome6 name="x-twitter" size={24} color="#029CFC" />
         </TouchableOpacity>
       </View>
+
+      <Pressable style={styles.button} onPress={handleLogout}>
+        <Text style={[styles.buttonTxt, { color: "white" }]}>Logout</Text>
+      </Pressable>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({});

@@ -64,6 +64,8 @@ export default function Login() {
       const credential = GoogleAuthProvider.credential(id_token);
       signInWithCredential(auth, credential);
       setIdToken(id_token);
+
+      // console.log(response?.params)
     }
   }, [response]);
 
@@ -80,16 +82,23 @@ export default function Login() {
     return () => unsubscribe();
   }, []);
 
-  // console.log(userInfo?.email, userInfo)
+  // console.log(userInfo)
   // console.log(idToken)
 
   const handleGoogleLogin = () => {
     if (userInfo) {
       const loginData = new FormData();
-      loginData.append("email", userInfo?.email);
+      // loginData.append("email", userInfo?.email);
       loginData.append("id_token", idToken);
 
-      dispatch(loginUser(loginData, setLoginError, navigation));
+      dispatch(
+        loginUser(
+          loginData,
+          setLoginError,
+          navigation,
+          "api/v1/google/signin.php"
+        )
+      );
     }
   };
 
@@ -105,7 +114,9 @@ export default function Login() {
     Object.keys(values).forEach((key) => {
       loginData.append(key, values[key]);
     });
-    dispatch(loginUser(loginData, setLoginError, navigation));
+    dispatch(
+      loginUser(loginData, setLoginError, navigation, "simplelogin_v6.php")
+    );
   };
 
   return (

@@ -1,13 +1,10 @@
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-} from "react-native";
-import React, { useEffect, useState } from "react";
+import { SafeAreaView, ScrollView, StatusBar } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import HomeTop from "../components/home/HomeTop";
 import FriendsOnline from "../components/home/FriendsOnline";
 import HomeFeeds from "../components/home/HomeFeeds";
+// import {dynamicLinks} from '@reac'
 
 export default function Home() {
   const [user, setUser] = useState([]);
@@ -29,6 +26,16 @@ export default function Home() {
 
     fetchData();
   }, []);
+
+  const handleDynamicLink = useCallback(async (link) => {
+    if (link?.url) {
+      console.log(link);
+    }
+  }, []);
+
+  useEffect(()=>{
+    // const unsubscribe = dynamicLinks()
+  },[])
 
   return (
     <SafeAreaView

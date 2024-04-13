@@ -1,23 +1,80 @@
 import { View, Text, Image, Pressable } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { styles } from "../../constants/styles";
 import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { BASE_URL2 } from "../../config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 
 const ChannelMsg = ({ message, user }) => {
   const navigation = useNavigation();
+  // console.log(message)
 
-  const [isLiked, setIsLiked] = useState(false);
-  const [likes, setLikes] = useState(0);
+  const [userDet, setUserDet] = useState();
+  const [isLiked, setIsLiked] = useState(
+    message?.likes_users?.includes(message?.id) ? true : false
+  );
+  const [likes, setLikes] = useState(message?.likes);
+  const [postComments, setPostComments] = useState([]);
 
-  const handleLike = () => {
+  useEffect(() => {
+    const fetchUserDet = async () => {
+      try {
+        const storedItems = await AsyncStorage.getItem("user_data");
+
+        if (storedItems !== null) {
+          const parsedItems = JSON.parse(storedItems);
+          setUserDet(parsedItems);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchUserDet();
+  }, []);
+
+  const handleLike = async () => {
     setIsLiked(!isLiked);
+
     if (isLiked) {
       setLikes(likes - 1);
     } else {
       setLikes(likes + 1);
+
+      try {
+        const res = await axios.put(
+          `${BASE_URL2}/post/${message.post_id}/like`,
+          {
+            like_user: userDet?.id,
+          }
+        );
+
+        console.log(res.data);
+      } catch (error) {
+        console.log(error?.response?.data);
+      }
     }
   };
+
+  useEffect(() => {
+    const fetchPostComments = async () => {
+      try {
+        const res = await axios.get(
+          `${BASE_URL2}/comment/post/${message.post_id}`
+        );
+
+        setPostComments(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchPostComments();
+  }, [message]);
+
+  // console.log(postComments);
 
   return (
     <View
@@ -27,19 +84,19 @@ const ChannelMsg = ({ message, user }) => {
       //     : "bg-gray-300"
       // } p-3 mb-1.5 mt-1.5 w-[280px] float-right`}
       style={[
-        message?.message_from == user?.id
+        message?.user == user?.id
           ? styles.chatBubbleRight
           : styles.chatBubbleLeft,
         message?.image && { width: 280, padding: 4 },
       ]}
     >
-      {message.message && (
+      {message.post && (
         <Text
           className={`float-right ${
-            message?.message_from == user?.id ? "text-[#fff]" : ""
+            message?.user == user?.id ? "text-[#fff]" : ""
           }`}
         >
-          {message.message}
+          {message?.post}
         </Text>
       )}
 
@@ -73,9 +130,14 @@ const ChannelMsg = ({ message, user }) => {
             textDecorationLine: "underline",
             fontSize: 12,
           }}
-          onPress={() => navigation.navigate("Comments")}
+          onPress={() =>
+            navigation.navigate("Comments", {
+              post_id: message?.post_id,
+              user_id: user?.id,
+            })
+          }
         >
-          2 comments
+          {postComments?.length} comments
         </Text>
       </View>
     </View>

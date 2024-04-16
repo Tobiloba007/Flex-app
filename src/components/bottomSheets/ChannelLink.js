@@ -29,7 +29,7 @@ const ChannelDetail = ({ channelLink, refRBSheet }) => {
         data: {
           dynamicLinkInfo: {
             domainUriPrefix: "https://flexchannel.page.link",
-            link: "https://gotflexapp.com",
+            link: channelLink,
             androidInfo: {
               androidPackageName: "com.flex.flexapp",
             },

@@ -21,7 +21,7 @@ import axios from "axios";
 const itemHeight = Dimensions.get("window").height;
 const itemWidth = Dimensions.get("window").width;
 
-const ChannelItems = ({
+const CreateChannel = ({
   user,
   setChannelLink,
   refRBSheet,
@@ -88,7 +88,7 @@ const ChannelItems = ({
       // console.log(data)
 
       if (data?.message === "Channel Created successfully!") {
-        setChannelLink(data?.message);
+        setChannelLink(`https://gotflexapp.com/${data?.channel_id}/MessagingRoom`);
 
         refRBSheet?.current?.close();
         refRBChannelLinkSheet?.current?.open();
@@ -212,7 +212,7 @@ const Channel = ({
           },
         }}
       >
-        <ChannelItems
+        <CreateChannel
           user={user}
           setChannelLink={setChannelLink}
           refRBSheet={refRBSheet}

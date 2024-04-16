@@ -126,7 +126,6 @@ const ChatRoom = () => {
 
   // console.log(user)
 
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar backgroundColor={colors.white} barStyle={"dark-content"} />

@@ -1,20 +1,50 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Foundation } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
-import { Zocial } from "@expo/vector-icons";
 import Home from "../screens/Home";
 import Cards from "../screens/Cards";
 import SendMoney from "../screens/sendMoney/SendMoney";
 import Profile from "../screens/Profile";
-import Bitcoins from "../screens/Bitcoins";
 import dp from "../../assets/images/dp.jpg";
 import ChatRoom from "../screens/chat/ChatRoom";
-import Wallet from "../screens/wallet/Wallet";
-import Payment from "../screens/payment/Payment";
+import { useNavigation } from "@react-navigation/native";
+import dynamicLinks from "@react-native-firebase/dynamic-links";
+import axios from "axios";
+import { BASE_URL2 } from "../config";
 
 export default function Tab() {
   const [count, setCount] = useState(1);
+  const [channelId, setChannelId] = useState(undefined);
+  const navigation = useNavigation();
+
+  const handleDynamicLink = useCallback(async (link) => {
+    if (link?.url) {
+      setChannelId(link?.url.match(/[0-9]+/g)[0]);
+    }
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
+
+    return () => unsubscribe();
+  }, [handleDynamicLink]);
+
+  useEffect(() => {
+    if (channelId) {
+      const fetchChannel = async () => {
+        try {
+          const res = await axios.get(`${BASE_URL2}/channel/${channelId}`);
+
+          navigation.navigate("MessagingRoom", { channel: res.data });
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      
+      fetchChannel();
+    }
+  }, [channelId]);
 
   const tabs = [
     {

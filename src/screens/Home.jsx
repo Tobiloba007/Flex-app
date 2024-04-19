@@ -1,10 +1,12 @@
-import { SafeAreaView, ScrollView, StatusBar } from "react-native";
+import { Dimensions, SafeAreaView, ScrollView, StatusBar } from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import HomeTop from "../components/home/HomeTop";
 import FriendsOnline from "../components/home/FriendsOnline";
 import HomeFeeds from "../components/home/HomeFeeds";
-// import {dynamicLinks} from '@reac'
+
+const itemHeight = Dimensions.get("window").height;
+const itemWidth = Dimensions.get("window").width;
 
 export default function Home() {
   const [user, setUser] = useState([]);
@@ -27,20 +29,13 @@ export default function Home() {
     fetchData();
   }, []);
 
-  const handleDynamicLink = useCallback(async (link) => {
-    if (link?.url) {
-      console.log(link);
-    }
-  }, []);
-
-  useEffect(()=>{
-    // const unsubscribe = dynamicLinks()
-  },[])
-
   return (
     <SafeAreaView
-      className="flex-1 items-center justify-start w-full mt-4 px-4 bg-white"
-      style={{ paddingTop: StatusBar.currentHeight }}
+      style={{
+        backgroundColor: "white",
+        paddingVertical: itemHeight * 0.04,
+        paddingHorizontal: itemWidth * 0.035,
+      }}
     >
       <HomeTop />
       <FriendsOnline />

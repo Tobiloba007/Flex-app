@@ -15,8 +15,8 @@ export default function Profile() {
   const screenWidth = Dimensions.get("window").width;
   return (
     <SafeAreaView
-      className="flex flex-col items-center justify-start h-full w-full bg-white"
-      style={{ paddingTop: StatusBar.currentHeight }}
+      // className="flex flex-col items-center justify-start h-full w-full bg-white"
+      style={{ flex: 1, backgroundColor:'white' }}
     >
       <ScrollView>
         <ProfileTop />

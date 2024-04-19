@@ -1,4 +1,5 @@
 import {
+  Dimensions,
   Image,
   Pressable,
   SafeAreaView,
@@ -18,6 +19,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { BASE_URL } from "../../config";
 import { styles } from "../../constants/styles";
+
+const itemHeight = Dimensions.get("window").height;
 
 export default function ProfileTop() {
   const navigation = useNavigation();
@@ -83,7 +86,13 @@ export default function ProfileTop() {
   // console.log(userData);
 
   return (
-    <SafeAreaView className="flex flex-col items-center justify-start w-full pt-12">
+    <View
+      style={{
+        justifyContent: "center",
+        alignItems: "center",
+        paddingTop: itemHeight * 0.1,
+      }}
+    >
       <TouchableOpacity className="absolute top-6 right-5">
         <Ionicons name="settings-sharp" size={27} color="black" />
       </TouchableOpacity>
@@ -92,7 +101,11 @@ export default function ProfileTop() {
         <View className="flex items-center justify-center w-20 h-20 bg-[#CDEAFC] rounded-full">
           <Image
             className="w-[90%] h-[90%] rounded-full"
-            source={userData?.image ?{ uri: userData?.image } : require('../../../assets/images/flexLogo.png')}
+            source={
+              userData?.image
+                ? { uri: userData?.image }
+                : require("../../../assets/images/flexLogo.png")
+            }
             alt="my displey_picture"
             resizeMode="cover"
           />
@@ -101,7 +114,7 @@ export default function ProfileTop() {
           {userData?.fname} {userData?.lname}
         </Text>
         <Text className={`text-sm text-[#000000] font-["sans-semibold"]`}>
-          ${userData?.fname.toLowerCase()}
+          ${userData?.fname?.toLowerCase()}
         </Text>
       </View>
 
@@ -139,9 +152,12 @@ export default function ProfileTop() {
         </TouchableOpacity>
       </View>
 
-      <Pressable style={styles.button} onPress={handleLogout}>
+      <Pressable
+        style={[styles.button, { marginTop: 15 }]}
+        onPress={handleLogout}
+      >
         <Text style={[styles.buttonTxt, { color: "white" }]}>Logout</Text>
       </Pressable>
-    </SafeAreaView>
+    </View>
   );
 }

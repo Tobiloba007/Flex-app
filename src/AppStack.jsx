@@ -28,6 +28,11 @@ import WalletOffer from "./screens/wallet/WalletOfer";
 import Payment from "./screens/payment/Payment";
 import ChannelRequests from "./screens/chat/ChannelRequests";
 import MyOffers from "./screens/sendMoney/MyOffers";
+import FriendProfile from "./components/profile/FriendProfile";
+import Profile from "./screens/Profile";
+import EditProfile from "./screens/profile/EditProfile";
+import SendImage from "./screens/chat/SendImage";
+import PhotoDisplay from "./components/PhotoDisplay";
 
 const Stack = createStackNavigator();
 
@@ -113,7 +118,7 @@ const AppStack = () => {
 
   return (
     <Stack.Navigator
-      initialRouteName={showSplash ? "splash" : "tab"}
+      initialRouteName={showSplash ? "splash" : "pin"}
       screenOptions={{
         transitionSpec: { open: MyTransition, close: MyTransition },
         headerShown: false,
@@ -123,10 +128,13 @@ const AppStack = () => {
 
       {!user && <Stack.Screen name="login" component={Login} />}
 
+      <Stack.Screen name="pin" component={Pin} />
+
       <Stack.Screen name="tab" component={Tab} />
 
       <Stack.Screen name="ChatRoom" component={ChatRoom} />
       <Stack.Screen name="MessagingRoom" component={MessagingRoom} />
+      <Stack.Screen name="sendImage" component={SendImage} />
       <Stack.Screen name="Friend" component={Friend} />
       <Stack.Screen name="home" component={Home} />
       <Stack.Screen name="choose" component={Choose} />
@@ -134,8 +142,11 @@ const AppStack = () => {
       <Stack.Screen name="registration" component={Registration} />
       <Stack.Screen name="verification" component={Verification} />
       <Stack.Screen name="resendCode" component={ResendCode} />
+      <Stack.Screen name="friendProfile" component={FriendProfile} />
+      <Stack.Screen name="profile" component={Profile} />
+      <Stack.Screen name="editProfile" component={EditProfile} />
+      <Stack.Screen name="photoDisplay" component={PhotoDisplay} />
 
-      <Stack.Screen name="pin" component={Pin} />
       <Stack.Screen
         name="Comments"
         component={Comments}

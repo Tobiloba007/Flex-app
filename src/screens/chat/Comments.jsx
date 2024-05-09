@@ -15,6 +15,7 @@ import { Entypo, MaterialIcons } from "@expo/vector-icons";
 import { styles } from "../../constants/styles";
 import axios from "axios";
 import { BASE_URL2 } from "../../config";
+import CommentItem from "./CommentItem";
 
 const itemHeight = Dimensions.get("window").height;
 const itemWidth = Dimensions.get("window").width;
@@ -42,6 +43,8 @@ const Comments = ({ route }) => {
       console.log(error);
     }
   };
+
+  // console.log(postComments)
 
   useEffect(() => {
     fetchPostComments();
@@ -71,12 +74,11 @@ const Comments = ({ route }) => {
         console.log(data);
 
         setMessage("");
-        setImage(null);
         Keyboard.dismiss();
 
         fetchPostComments();
       } catch (error) {
-        console.log(error?.response?.data);
+        console.log(error);
       }
     } else {
       setMessage("");
@@ -84,8 +86,10 @@ const Comments = ({ route }) => {
     }
   };
 
+  const commentReverse = [...postComments].reverse();
+
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <StatusBar backgroundColor={colors.white} barStyle={"dark-content"} />
 
       <View style={[styles.container, { flex: 0 }]}>
@@ -107,33 +111,9 @@ const Comments = ({ route }) => {
 
             {postComments.length > 0 && (
               <ScrollView showsVerticalScrollIndicator={false}>
-                <View
-                  style={[
-                    styles.chatBubbleRight,
-                    { maxWidth: itemWidth, alignSelf: "center" },
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.smallTxt,
-                      {
-                        textAlign: "left",
-                        color: "#eee",
-                        marginBottom: 8,
-                        fontSize: itemWidth * 0.04,
-                        fontWeight: "500",
-                      },
-                    ]}
-                  >
-                    Isaac Isaac
-                  </Text>
-
-                  <Text className={`float-right ${"text-[#fff]"}`}>
-                    This is a coment. Lorem, ipsum dolor sit amet consectetur
-                    adipisicing elit. Accusamus perspiciatis quibusdam dicta
-                    error magnam nisi?
-                  </Text>
-                </View>
+                {commentReverse?.map((item) => (
+                  <CommentItem key={item.id} item={item} />
+                ))}
               </ScrollView>
             )}
           </View>

@@ -7,97 +7,72 @@ import {
   Text,
   View,
 } from "react-native";
-import React, { useEffect, useState } from "react";
-import image1 from "../../../assets/images/dp.jpg";
-import image2 from "../../../assets/images/dp2.jpg";
-import image3 from "../../../assets/images/dp3.jpg";
-import image4 from "../../../assets/images/dp4.jpg";
-import image5 from "../../../assets/images/dp5.jpg";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useEffect, useRef, useState } from "react";
 import { BASE_URL } from "../../config";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
+import NewConversation from "../bottomSheets/NewConversation";
 
 const itemwidth = Dimensions.get("window").width;
+const itemHeight = Dimensions.get("window").height;
 
-export default function FriendsOnline() {
-  //   const friends = [image1, image2, image3, image4, image5, image1];
+export default function FriendsOnline({ user }) {
+  const refRBConversationSheet = useRef();
 
-  const [user, setUser] = useState();
   const [friends, setFriends] = useState([]);
 
   const navigation = useNavigation();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const storedItems = await AsyncStorage.getItem("user_data");
+  const fetchFriends = async () => {
+    try {
+      const res = await axios.get(
+        `${BASE_URL}/api/v1/chat/friends.php?user_id=${user?.id}`
+      );
 
-        if (storedItems !== null) {
-          const parsedItems = JSON.parse(storedItems);
-          setUser(parsedItems);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
+      setFriends(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
-    const fetchFriends = async () => {
-      try {
-        const res = await axios.get(
-          `${BASE_URL}/api/v1/chat/friends.php?user_id=${user?.id}`
-        );
+    let unsubscribed = true;
 
-        setFriends(res.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
+    if (unsubscribed) {
+      fetchFriends();
+    }
 
-    fetchFriends();
+    return () => (unsubscribed = false);
   }, [user]);
 
   return (
-    <View
-      style={styles.wrapper}
-      className={
-        "flex flex-col items-start justify-start w-full overflow-hidden h-[110px] p-3 rounded-2xl bg-[#E6F6FF] mt-3"
-      }
-    >
+    <View style={styles.wrapper}>
       <View className={"flex flex-row items-center justify-between w-full"}>
         <Text className={'text-[13px] font-["sans-semibold"] text-[#565657]'}>
           Friends online
         </Text>
-        <Text className={'text-[10px] font-["sans-semibold"] text-[#000000]'}>
+        <Text
+          onPress={() => refRBConversationSheet?.current?.open()}
+          className={'text-[10px] font-["sans-semibold"] text-[#000000]'}
+        >
           Show all
         </Text>
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <View
-          className={
-            "flex flex-row items-center justify-start overflow-hidden w-full mt-1"
-          }
-        >
+        <View style={styles.imgWrapper}>
           {friends?.length > 0 ? (
             <>
-              {friends.map((item, index) => {
+              {friends?.slice(0, 7)?.map((item, index) => {
                 return (
                   <Pressable
                     key={index}
-                    className={"h-[60px] w-14 mr-2"}
+                    style={styles.imgCon}
                     onPress={() =>
                       navigation.navigate("MessagingRoom", { item })
                     }
                   >
-                    <Image
-                      className={"h-[50px] w-[50px] rounded-full"}
-                      source={{ uri: item?.avatar }}
-                    />
+                    <Image style={styles.img} source={{ uri: item?.avatar }} />
                     <View
                       className={
                         "absolute right-3 top-[2px] h-2 w-2 bg-[#97FC73] rounded-full"
@@ -122,6 +97,8 @@ export default function FriendsOnline() {
           )}
         </View>
       </ScrollView>
+
+      <NewConversation user={user} refRBSheet={refRBConversationSheet} />
     </View>
   );
 }
@@ -133,5 +110,21 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.7,
     shadowRadius: 2,
+    backgroundColor: "#E6F6FF",
+    height: "auto",
+    paddingHorizontal: itemwidth * 0.02,
+    paddingVertical: itemwidth * 0.015,
+    borderRadius: 10,
+    marginTop: itemHeight * 0.025,
+    gap: itemHeight * 0.01,
   },
+
+  imgWrapper: { flexDirection: "row", alignItems: "center", gap: 10 },
+
+  imgCon: {
+    width: itemwidth * 0.12,
+    height: itemwidth * 0.12,
+    borderRadius: 50,
+  },
+  img: { width: "100%", height: "100%", borderRadius: 50 },
 });

@@ -6,9 +6,10 @@ import { useCallback } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import AppStack from "./src/AppStack";
 import { Provider } from "react-redux";
-import store from "./src/store";
+import { persistor, store } from "./src/redux/store";
 import Home from "./src/screens/Home";
 import Tab from "./src/components/Tab";
+import { PersistGate } from "redux-persist/integration/react";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -37,11 +38,13 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      <NavigationContainer>
-        <View onLayout={onLayoutRootView}></View>
-        <StatusBar barStyle={'dark-content'} backgroundColor={'white'} />
-        <AppStack />
-      </NavigationContainer>
+      <PersistGate loading={null} persistor={persistor}>
+        <NavigationContainer>
+          <View onLayout={onLayoutRootView}></View>
+          <StatusBar barStyle={"dark-content"} backgroundColor={"white"} />
+          <AppStack />
+        </NavigationContainer>
+      </PersistGate>
     </Provider>
   );
 }

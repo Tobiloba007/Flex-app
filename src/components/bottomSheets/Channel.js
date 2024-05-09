@@ -8,15 +8,15 @@ import {
   Pressable,
   ActivityIndicator,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { styles } from "../../constants/styles";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import { colors } from "../../../colors";
-import * as ImagePicker from "expo-image-picker";
-import { BASE_URL, BASE_URL2 } from "../../config";
+import { BASE_URL2 } from "../../config";
 import axios from "axios";
+import { launchImageLibrary } from "react-native-image-picker";
 
 const itemHeight = Dimensions.get("window").height;
 const itemWidth = Dimensions.get("window").width;
@@ -28,41 +28,55 @@ const CreateChannel = ({
   refRBChannelLinkSheet,
 }) => {
   const [image, setImage] = useState(null);
+  const [file, setFile] = useState(null);
   const [channelIcon, setChannelIcon] = useState(null);
   const [channelName, setChannelName] = useState("");
   const [loading, setLoading] = useState(false);
-  const [inputs, setInputs] = useState({});
-
-  const handleChange = (name, value) => {
-    setInputs((prev) => {
-      return { ...prev, [name]: value };
-    });
-  };
 
   const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [3, 3],
-      quality: 1,
-      base64: true,
+    const result = await launchImageLibrary({
+      mediaType: "photo",
     });
 
-    const mimeType = result?.assets[0]?.mimeType;
-
-    if (!result?.canceled) {
-      setImage(`data:${mimeType};base64,${result?.assets[0]?.base64}`);
-      setChannelIcon(result?.assets[0]?.base64);
+    if (!result.didCancel) {
+      setImage(result.assets[0].uri);
+      setFile(result);
     }
   };
 
-  const channelData = {
-    name: channelName,
-    // icon: channelIcon,
-    owner_id: user?.id,
+  const handleUploadImage = async () => {
+    try {
+      const formData = new FormData();
+      // Append the selected image to the FormData object
+      formData.append("image", {
+        uri: file.assets[0].uri,
+        name: file.assets[0].fileName,
+        type: file.assets[0].type,
+      });
+
+      const res = await axios.post(`${BASE_URL2}/storage/image`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      setChannelIcon(res.data?.url);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  // console.log(channelData);
+  useEffect(() => {
+    if (file) {
+      handleUploadImage();
+    }
+  }, [file]);
+
+  const channelData = {
+    name: channelName,
+    icon: channelIcon,
+    owner_id: user?.id,
+  };
 
   const handleCreateChannel = async () => {
     setLoading(true);
@@ -88,7 +102,9 @@ const CreateChannel = ({
       // console.log(data)
 
       if (data?.message === "Channel Created successfully!") {
-        setChannelLink(`https://gotflexapp.com/${data?.channel_id}/MessagingRoom`);
+        setChannelLink(
+          `https://gotflexapp.com/${data?.channel_id}/MessagingRoom`
+        );
 
         refRBSheet?.current?.close();
         refRBChannelLinkSheet?.current?.open();
@@ -97,8 +113,6 @@ const CreateChannel = ({
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      console.log(error);
-      console.log(error?.response?.data);
     }
   };
 
@@ -178,8 +192,15 @@ const CreateChannel = ({
 
         <Pressable
           android_ripple={{ color: colors.soft }}
-          style={[styles.button, { width: "100%" }]}
-          disabled={!channelName}
+          style={[
+            styles.button,
+            {
+              width: "100%",
+              backgroundColor:
+                !channelName && !channelIcon ? "#9e9e9e" : colors.primary,
+            },
+          ]}
+          disabled={!channelName && !channelIcon}
           onPress={handleCreateChannel}
         >
           {loading ? (

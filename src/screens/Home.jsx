@@ -32,13 +32,14 @@ export default function Home() {
   return (
     <SafeAreaView
       style={{
+        flex:1,
         backgroundColor: "white",
         paddingVertical: itemHeight * 0.04,
         paddingHorizontal: itemWidth * 0.035,
       }}
     >
-      <HomeTop />
-      <FriendsOnline />
+      <HomeTop user={user} />
+      <FriendsOnline user={user} />
       <ScrollView showsVerticalScrollIndicator={false}>
         <HomeFeeds />
       </ScrollView>

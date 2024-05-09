@@ -116,7 +116,7 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
-    zIndex:999
+    zIndex: 999,
   },
 
   // bottom nav
@@ -178,8 +178,8 @@ export const styles = StyleSheet.create({
   },
 
   pinInput: {
-    height: 15,
-    width: 15,
+    height: itemWidth * 0.035,
+    width: itemWidth * 0.035,
     borderRadius: 50,
     borderWidth: 2,
     borderColor: "#E3E3E3",
@@ -187,18 +187,23 @@ export const styles = StyleSheet.create({
 
   pinCon: {
     flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 26,
-    justifyContent: "flex-end",
+    justifyContent: "center",
     alignItems: "center",
-    width: "70%",
-    marginTop: 70,
-    marginBottom: 40,
+    width: itemWidth * 0.57,
+    marginVertical: itemHeight * 0.06,
+  },
+
+  pinWrap: {
+    width: "100%",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: itemWidth * 0.06,
+    justifyContent: "flex-end",
   },
 
   pinBtn: {
-    width: 60,
-    height: 60,
+    width: itemWidth * 0.14,
+    height: itemWidth * 0.14,
     backgroundColor: "#E3E3E3",
     borderRadius: 50,
     alignItems: "center",
@@ -210,8 +215,7 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 6,
-    paddingTop: 12,
-    paddingBottom: 4,
+    paddingTop: itemHeight * 0.01,
     gap: 20,
   },
 
@@ -312,5 +316,13 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 2,
     borderRadius: 4,
+  },
+
+  profileImg: {
+    width: itemWidth * 0.2,
+    height: itemWidth * 0.2,
+    borderRadius: 50,
+    borderWidth: 5,
+    borderColor: '#CDEAFC'
   },
 });

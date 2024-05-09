@@ -1,8 +1,11 @@
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, Pressable } from "react-native";
 import React from "react";
 import { styles } from "../../constants/styles";
+import { useNavigation } from "@react-navigation/native";
 
-const UserMsg = ({message, user}) => {
+const UserMsg = ({ message, user }) => {
+  const navigation = useNavigation();
+
   return (
     <View
       // className={`rounded-lg ${
@@ -28,17 +31,21 @@ const UserMsg = ({message, user}) => {
       )}
 
       {message?.image && (
-        <View>
+        <Pressable
+          onPress={() =>
+            navigation.navigate("photoDisplay", { image: message?.image })
+          }
+        >
           <Image
             source={{ uri: message?.image }}
             style={{
               borderRadius: 10,
               aspectRatio: 1,
-              width: undefined,
+              width: "100%",
             }}
-            resizeMode="contain"
+            resizeMode="cover"
           />
-        </View>
+        </Pressable>
       )}
     </View>
   );

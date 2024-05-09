@@ -5,32 +5,63 @@ import {
   StatusBar,
   TouchableOpacity,
   Dimensions,
+  ScrollView,
+  TextInput,
+  Button,
+  Modal,
+  Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { colors } from "../../../colors";
 import { styles } from "../../constants/styles";
 import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import ResetPinModal from "./ResetPinModal";
+import PinComponent from "./PinComponent";
+import { BASE_URL } from "../../config";
 
 const itemWidth = Dimensions.get("window").width;
+const itemHeight = Dimensions.get("window").height;
 
 const Pin = () => {
   const navigation = useNavigation();
 
   const [pin, setPin] = useState([]);
+  const [newPin, setNewPin] = useState(null);
+  const [confirmPin, setConfirmPin] = useState([]);
+  const [isNewPin, setIsNewPin] = useState(false);
+  const [isConfirmPin, setIsConfirmPin] = useState(false);
+  const [isPinSet, setIsPinSet] = useState(false);
   const [isMaxPin, setIsMaxPin] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [userPin, setUserPin] = useState();
+  const [existing, setExistingPin] = useState();
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    const getPin = async () => {
+      const storedPin = await AsyncStorage.getItem("@user_pin");
+
+      if (storedPin === null) {
+        setUserPin(storedPin);
+      } else {
+        setUserPin(storedPin);
+      }
+
+      setIsPinSet(false);
+    };
+
+    getPin();
+  }, [isPinSet]);
 
   const handlePin = (num) => {
     if (pin.length < 4) {
       setPin((prev) => [...prev, num]);
     }
-
-    // if (pin.length === 4) {
-    //   //   setIsMaxPin(true);
-    //   //   setTimeout(() => {
-    //   //     setIsMaxPin(false);
-    //   //   }, 2000);
-    // }
   };
 
   const removePin = () => {
@@ -41,185 +72,151 @@ const Pin = () => {
   };
 
   useEffect(() => {
-    if (pin.length === 4) {
-      navigation.navigate("tab");
+    if (!userPin && !isNewPin && pin.length === 4) {
+      setNewPin(pin.toString());
+      setIsNewPin(true);
+      setPin([]);
+    }
+  }, [pin]);
+
+  useEffect(() => {
+    if (!userPin && isNewPin && pin.length === 4) {
+      setConfirmPin(pin.toString());
+      setIsNewPin(false);
+      setIsConfirmPin(true);
+    }
+  }, [pin]);
+
+  const handleSaveNewPin = async () => {
+    if (newPin === confirmPin) {
+      await AsyncStorage.setItem("@user_pin", pin.toString()).then(() => {
+        setMessage(
+          "Pin saved successfully! You can now access this application with your set pin."
+        );
+
+        setTimeout(() => {
+          setMessage("");
+        }, 3000);
+      });
+
+      setIsPinSet(true);
+      setIsConfirmPin(false);
+      setPin([]);
+    } else {
+      setMessage("Comfirm pin must match the pin you set, please try again.");
+
+      setIsConfirmPin(false);
+      setPin([]);
+
+      setTimeout(() => {
+        setMessage("");
+      }, 3000);
+    }
+  };
+
+  useEffect(() => {
+    if (isConfirmPin) {
+      handleSaveNewPin();
+    }
+  }, [isConfirmPin]);
+
+  useEffect(() => {
+    if (pin.length === 4 && userPin) {
+      if (pin.toString() === userPin) {
+        navigation.navigate("tab");
+        setPin([]);
+      } else {
+        setMessage(
+          "The pin you input is incorrect, please try again or use forgot pin"
+        );
+
+        setTimeout(() => {
+          setPin([]);
+          setMessage("");
+        }, 3000);
+      }
     }
   }, [pin.length]);
+
+  // console.log(userPin);
+
+  const handlePrompt = () => {
+    setModalVisible(true);
+  };
+
+  const handleResetPin = async () => {
+    if (!email && !password) {
+      setMessage(
+        "Input cannot be empty! Please input a valid data and try again."
+      );
+      // Close the modal
+      setModalVisible(false);
+    } else {
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("password", password);
+
+      try {
+        const response = await fetch(`${BASE_URL}/simplelogin_v6.php`, {
+          method: "POST",
+          body: formData,
+        });
+        const data = await response.json();
+
+        // console.log(data);
+
+        if (data.status === "true") {
+          await AsyncStorage.setItem("@user_pin", "").then(() => {
+            setMessage(
+              "Pin reset successfully! You can now enter a new pin to continue."
+            );
+          });
+
+          setIsPinSet(true);
+        }
+
+        if (data.status === "false") {
+          setMessage(data?.message);
+        }
+        // Close the modal
+        setModalVisible(false);
+
+        setTimeout(() => {
+          setMessage("");
+        }, 3000);
+      } catch (error) {
+        Alert.alert(error?.response?.data);
+        console.log(error);
+      }
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.white }}>
       <StatusBar backgroundColor={"white"} barStyle={"dark-content"} />
 
-      <View
-        style={{
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 20,
-          marginTop: 30,
-          padding: 40,
-        }}
-      >
-        <Text style={[styles.mediumTxt, { fontWeight: "700" }]}>Enter PIN</Text>
-        <Text
-          style={[
-            styles.smallTxt,
-            {
-              fontSize: itemWidth * 0.04,
-              fontWeight: "500",
-              width: itemWidth * 0.7,
-            },
-          ]}
-        >
-          Please input your four-digit to continue
-        </Text>
+      <View style={styles.container}>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <PinComponent
+            isNewPin={isNewPin}
+            userPin={userPin}
+            message={message}
+            handlePin={handlePin}
+            isMaxPin={isMaxPin}
+            handlePrompt={handlePrompt}
+            pin={pin}
+            removePin={removePin}
+          />
+        </ScrollView>
 
-        <View
-          style={{
-            flexDirection: "row",
-            gap: 10,
-            alignItems: "center",
-            marginTop: 20,
-          }}
-        >
-          <View
-            style={[
-              styles.pinInput,
-              { backgroundColor: pin[0] ? "#333" : "transparent" },
-            ]}
-          ></View>
-          <View
-            style={[
-              styles.pinInput,
-              { backgroundColor: pin[1] ? "#333" : "transparent" },
-            ]}
-          ></View>
-          <View
-            style={[
-              styles.pinInput,
-              { backgroundColor: pin[2] ? "#333" : "transparent" },
-            ]}
-          ></View>
-          <View
-            style={[
-              styles.pinInput,
-              { backgroundColor: pin[3] ? "#333" : "transparent" },
-            ]}
-          ></View>
-        </View>
-
-        <View style={styles.pinCon}>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            style={[
-              styles.pinBtn,
-              isMaxPin && { borderWidth: 1, borderColor: "red" },
-            ]}
-            onPress={() => handlePin(1)}
-          >
-            <Text style={styles.smallTxt}>1</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            style={[
-              styles.pinBtn,
-              isMaxPin && { borderWidth: 1, borderColor: "red" },
-            ]}
-            onPress={() => handlePin(2)}
-          >
-            <Text style={styles.smallTxt}>2</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            style={[
-              styles.pinBtn,
-              isMaxPin && { borderWidth: 1, borderColor: "red" },
-            ]}
-            onPress={() => handlePin(3)}
-          >
-            <Text style={styles.smallTxt}>3</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            style={[
-              styles.pinBtn,
-              isMaxPin && { borderWidth: 1, borderColor: "red" },
-            ]}
-            onPress={() => handlePin(4)}
-          >
-            <Text style={styles.smallTxt}>4</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            style={[
-              styles.pinBtn,
-              isMaxPin && { borderWidth: 1, borderColor: "red" },
-            ]}
-            onPress={() => handlePin(5)}
-          >
-            <Text style={styles.smallTxt}>5</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            style={[
-              styles.pinBtn,
-              isMaxPin && { borderWidth: 1, borderColor: "red" },
-            ]}
-            onPress={() => handlePin(6)}
-          >
-            <Text style={styles.smallTxt}>6</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            style={[
-              styles.pinBtn,
-              isMaxPin && { borderWidth: 1, borderColor: "red" },
-            ]}
-            onPress={() => handlePin(7)}
-          >
-            <Text style={styles.smallTxt}>7</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            style={[
-              styles.pinBtn,
-              isMaxPin && { borderWidth: 1, borderColor: "red" },
-            ]}
-            onPress={() => handlePin(8)}
-          >
-            <Text style={styles.smallTxt}>8</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            style={[
-              styles.pinBtn,
-              isMaxPin && { borderWidth: 1, borderColor: "red" },
-            ]}
-            onPress={() => handlePin(9)}
-          >
-            <Text style={styles.smallTxt}>9</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            style={[
-              styles.pinBtn,
-              isMaxPin && { borderWidth: 1, borderColor: "red" },
-            ]}
-            onPress={() => handlePin(0)}
-          >
-            <Text style={styles.smallTxt}>0</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            style={[styles.pinBtn, { backgroundColor: "transparent" }]}
-            onPress={removePin}
-          >
-            <Feather name="delete" size={28} color="black" />
-          </TouchableOpacity>
-        </View>
-
-        <Text style={[styles.smallTxt, { color: colors.primary }]}>
-          Forgotten your PIN?
-        </Text>
+        <ResetPinModal
+          modalVisible={modalVisible}
+          setModalVisible={setModalVisible}
+          setInputValue={setInputValue}
+          setEmail={setEmail}
+          setPassword={setPassword}
+          handleResetPin={handleResetPin}
+        />
       </View>
     </SafeAreaView>
   );

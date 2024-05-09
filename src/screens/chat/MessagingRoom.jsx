@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ScrollView,
   View,
@@ -15,7 +15,7 @@ import {
 } from "react-native";
 import { styles } from "../../constants/styles";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { colors } from "../../../colors";
 import { Entypo } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
@@ -25,12 +25,22 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
 import ChannelMsg from "./ChannelMsg";
 import UserMsg from "./UserMsg";
+import { launchImageLibrary } from "react-native-image-picker";
+import { useDispatch, useSelector } from "react-redux";
+import { changeMessageState } from "../../redux/directMessageReducer";
 
 const itemHeight = Dimensions.get("window").height;
 
 const MessagingRoom = ({ route }) => {
   const channel = route.params?.channel;
   const item = route.params?.item;
+
+  const devicesMessages = useSelector((state) => state.message.messages);
+  // console.log(devicesMessages);
+
+  const dispatch = useDispatch();
+
+  // console.log('item:', item, 'channel:', channel)
 
   const navigation = useNavigation();
 
@@ -40,6 +50,8 @@ const MessagingRoom = ({ route }) => {
   const [user, setUser] = useState();
   const [message, setMessage] = useState("");
   const [image, setImage] = useState(null);
+  const [file, setFile] = useState(null);
+  const [channelImage, setChannelImage] = useState(null);
   const [dropDown, setDropDown] = useState(false);
   const [channelMemberStatus, setChannelmemberStatus] = useState({});
   const [createChannel, setCreateChannel] = useState("");
@@ -86,34 +98,56 @@ const MessagingRoom = ({ route }) => {
         const res = await axios.get(
           `${BASE_URL}/api/v1/chat/private_message.php?user_id=${user?.id}&message_to=${item?.id}`
         );
+        setMessages(res.data);
 
-        // Define a regular expression to match JSON data within the response
-        const jsonRegex = /\[.*\]/;
+        // // Define a regular expression to match JSON data within the response
+        // const jsonRegex = /\[.*\]/;
 
-        // Use the regular expression to extract the JSON data
-        const jsonDataMatch = res.data?.match(jsonRegex);
+        // // Use the regular expression to extract the JSON data
+        // const jsonDataMatch = res.data?.match(jsonRegex);
 
-        // If a match is found, parse the JSON data
-        let jsonData;
-        if (jsonDataMatch) {
-          jsonData = JSON.parse(jsonDataMatch[0]);
-        } else {
-          console.error("No JSON data found in the response");
-        }
+        // // If a match is found, parse the JSON data
+        // let jsonData;
+        // if (jsonDataMatch) {
+        //   jsonData = JSON.parse(jsonDataMatch[0]);
+        // } else {
+        //   console.error("No JSON data found in the response");
+        // }
 
-        // Now 'jsonData' contains only the data without HTML elements
-        setMessages(jsonData);
+        // // Now 'jsonData' contains only the data without HTML elements
+        // setMessages(jsonData);
       } catch (error) {
         console.log(error);
       }
     }
   };
 
+  // update device message if message isn't present yet
   useEffect(() => {
-    if (channel) {
-      fetchChannelMessages();
+    if (messages?.length > 0) {
+      if (
+        !devicesMessages.some((deviceMessage) => deviceMessage.id === item.id)
+      ) {
+        const lastMessage = messages?.slice(-1)[0];
+        const savedItem = {
+          ...item,
+          lastMessage: lastMessage?.message || lastMessage?.image,
+        };
+        // console.log(savedItem)
+        dispatch(changeMessageState(savedItem));
+      }
     }
-  }, [channel]);
+  }, [messages]);
+
+  // console.log(messages)
+
+  useFocusEffect(
+    useCallback(() => {
+      if (channel) {
+        fetchChannelMessages();
+      }
+    }, [channel])
+  );
 
   useEffect(() => {
     if (item) {
@@ -121,87 +155,100 @@ const MessagingRoom = ({ route }) => {
     }
   }, [item, user]);
 
-  const handleDelete = async () => {
-    const formData = new FormData();
-    formData.append("user_id", user?.id);
-    formData.append("flag", "delete_channel");
-    formData.append("channel_id", channel?.channel?.id);
-
-    try {
-      const res = await axios.delete(
-        `${BASE_URL}/api/v1/channel/index.php?user_id=${
-          user?.id
-        }&flag=${"delete_channel"}&channel_id=${channel?.channel?.id}`
-      );
-
-      const data = res.data;
-
-      console.log(data);
-
-      // navigation.goBack();
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [1, 2],
-      quality: 1,
-      base64: true,
-    });
+    if (channel) {
+      const result = await launchImageLibrary({
+        mediaType: "photo",
+      });
 
-    if (!result?.canceled) {
-      setImage(result?.assets[0]?.base64);
+      if (!result.didCancel) {
+        // setImage(result.assets[0].uri);
+        setFile(result);
+      }
+    } else if (item) {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [1, 2],
+        quality: 1,
+        base64: true,
+      });
+
+      if (!result?.canceled) {
+        setImage(result?.assets[0]?.base64);
+      }
     }
   };
+
+  useEffect(() => {
+    if (file) {
+      navigation.navigate("sendImage", { file, channel });
+    }
+  }, [file]);
 
   const handleSendMessage = async () => {
-    const messageData = new FormData();
+    if (channel) {
+      const channelData = {
+        user: user?.id,
+        channel: channel?.channel_id,
+        post: message.trim(),
+        likes_users: [],
+      };
 
-    messageData.append("user_id", user?.id);
-    item && messageData.append("message_to", item?.id);
-    channel && messageData.append("channel_id", channel?.id);
-    messageData.append("message", message.trim());
-    image && messageData.append("image", image);
-
-    const channelData = {
-      user: user?.id,
-      channel: channel?.channel_id,
-      post: message.trim(),
-      likes_users: [],
-    };
-
-    if (message.trim() !== "" || image) {
-      try {
-        const res = await fetch(
-          item
-            ? `${BASE_URL}/api/v1/chat/private_message.php`
-            : `${BASE_URL2}/post`,
-          {
+      if (message.trim() !== "") {
+        try {
+          const res = await fetch(`${BASE_URL2}/post`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: item ? messageData : JSON.stringify(channelData),
-          }
-        );
+            body: JSON.stringify(channelData),
+          });
 
-        const data = await res.json();
-        console.log(data);
+          setMessage("");
+          setImage(null);
+          Keyboard.dismiss();
 
+          fetchChannelMessages();
+        } catch (error) {
+          console.log(error);
+        }
+      } else {
         setMessage("");
-        setImage(null);
         Keyboard.dismiss();
-
-        fetchMessages();
-        fetchChannelMessages();
-      } catch (error) {}
+      }
     } else {
-      setMessage("");
-      Keyboard.dismiss();
+      const messageData = new FormData();
+
+      messageData.append("user_id", user?.id);
+      messageData.append("message_to", item?.id);
+      messageData.append("message", message.trim());
+      image && messageData.append("image", image);
+
+      if (message.trim() !== "" || image) {
+        try {
+          const res = await fetch(
+            `${BASE_URL}/api/v1/chat/private_message.php`,
+            {
+              method: "POST",
+              body: messageData,
+            }
+          );
+
+          // console.log(messageData);
+
+          setMessage("");
+          setImage(null);
+          Keyboard.dismiss();
+
+          fetchMessages();
+        } catch (error) {
+          console.log(error);
+        }
+      } else {
+        setMessage("");
+        Keyboard.dismiss();
+      }
     }
   };
 
@@ -222,6 +269,8 @@ const MessagingRoom = ({ route }) => {
       console.log(error);
     }
   };
+
+  // console.log(channelMemberStatus)
 
   useEffect(() => {
     checkIsChannelMember();
@@ -244,7 +293,7 @@ const MessagingRoom = ({ route }) => {
     }
   };
 
-  // console.log(channel, user?.id);
+  console.log(channel);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -263,8 +312,8 @@ const MessagingRoom = ({ route }) => {
 
               <Image
                 source={
-                  channel?.ChannelIcon
-                    ? { uri: channel?.ChannelIcon }
+                  channel?.icon
+                    ? { uri: channel?.icon }
                     : item?.avatar
                     ? { uri: item?.avatar }
                     : require("../../../assets/images/flexLogo.png")
@@ -273,20 +322,11 @@ const MessagingRoom = ({ route }) => {
               />
 
               <Text className={"text-xl font-bold text-18px]"}>
-                {channel?.ChannelName ? channel?.ChannelName : item?.fname}
+                {channel?.name ? channel?.name : item?.fname}
               </Text>
             </View>
 
             <View style={styles.row}>
-              <Feather
-                name="camera"
-                size={24}
-                color="black"
-                onPress={handleDelete}
-              />
-              <Feather name="video" size={24} color="black" />
-              <Feather name="phone" size={24} color="black" />
-
               {channel?.owner_id === user?.id && (
                 <Feather
                   name="more-vertical"
@@ -319,20 +359,29 @@ const MessagingRoom = ({ route }) => {
             </Pressable>
           )}
 
-          <Pressable onPress={() => setDropDown(false)}>
+          {messages.length > 0 && (
             <ImageBackground
               source={require("../../../assets/images/bg.png")}
               style={styles.bgImg}
               resizeMode="cover"
             >
-              {messages.length > 0 && (
-                <ScrollView showsVerticalScrollIndicator={false}>
-                  {messages?.map((message, index) => (
-                    <UserMsg key={index} message={message} user={user} />
-                  ))}
-                </ScrollView>
-              )}
+              <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{ paddingVertical: itemHeight * 0.02, paddingBottom: itemHeight * 0.06 }}
+              >
+                {messages.map((message, index) => (
+                  <UserMsg key={index} message={message} user={user} />
+                ))}
+              </ScrollView>
+            </ImageBackground>
+          )}
 
+          {channels.length > 0 && (
+            <ImageBackground
+              source={require("../../../assets/images/bg.png")}
+              style={styles.bgImg}
+              resizeMode="cover"
+            >
               <ScrollView showsVerticalScrollIndicator={false}>
                 {channel?.owner_id !== user?.id &&
                 channelMemberStatus?.status?.trim() === "rejected" ? (
@@ -375,7 +424,10 @@ const MessagingRoom = ({ route }) => {
                     ))}
                   </>
                 ) : (
-                  <>
+                  <Pressable
+                    onPress={() => setDropDown(false)}
+                    style={{ height: "auto" }}
+                  >
                     {channels?.length > 0 && (
                       <>
                         {channels?.map((message, index) => (
@@ -387,11 +439,11 @@ const MessagingRoom = ({ route }) => {
                         ))}
                       </>
                     )}
-                  </>
+                  </Pressable>
                 )}
               </ScrollView>
             </ImageBackground>
-          </Pressable>
+          )}
 
           {channelMemberStatus?.status?.trim() === "accepted" ||
           channel?.owner_id === user?.id ? (

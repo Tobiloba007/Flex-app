@@ -24,6 +24,8 @@ import axios from "axios";
 import { BASE_URL, BASE_URL2 } from "../../config";
 import ChatHistory from "../../components/chat/ChatHistory";
 import ChannelSearch from "../../components/chat/ChannelSearch";
+import ChannelListItem from "./ChannelListItem";
+import { useSelector } from "react-redux";
 
 const itemWidth = Dimensions.get("window").width;
 
@@ -60,6 +62,8 @@ const friends = [
   },
 ];
 const ChatRoom = () => {
+  const devicesMessages = useSelector((state) => state.message.messages);
+
   const refRBChannelSheet = useRef();
   const refRBChannelLinkSheet = useRef();
   const refRBConversationSheet = useRef();
@@ -130,100 +134,97 @@ const ChatRoom = () => {
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar backgroundColor={colors.white} barStyle={"dark-content"} />
 
-      <View className={"flex-1 flex-row pl-2"} style={styles.container}>
-        <>
-          <View className={"w-[68px] items-center"}>
-            <Text className={"text-l font-semibold text-[#000] pt-6"}>
-              Channels
-            </Text>
-
-            <ScrollView>
-              <View style={{ alignItems: "center", gap: 4, marginTop: 5 }}>
-                {channelLists?.map((channel) => (
-                  <View
-                    key={channel?.channel_id}
-                    className="flex-row items-center p-1"
-                  >
-                    <TouchableWithoutFeedback
-                      onPress={() =>
-                        navigation.navigate("MessagingRoom", { channel })
-                      }
-                    >
-                      <Image
-                        source={
-                          channel?.icon
-                            ? { uri: channel?.icon }
-                            : require("../../../assets/images/flexLogo.png")
-                        }
-                        style={[
-                          styles.profileIcon,
-                          { height: itemWidth * 0.11, width: itemWidth * 0.11 },
-                        ]}
-                      />
-                    </TouchableWithoutFeedback>
-                  </View>
-                ))}
-
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  onPress={() => refRBChannelSheet?.current?.open()}
-                  className="flex-row items-center p-1"
-                  style={[styles.circularBtn, { marginTop: 5 }]}
-                >
-                  <Entypo name="plus" size={28} color={colors.primary} />
-                </TouchableOpacity>
-              </View>
-            </ScrollView>
-          </View>
-
-          <View className={"flex-1"}>
-            <View className={"p-4 border-b border-gray-200"}>
-              <Text
-                className={
-                  'text-[25px] font-bold text-center font-["sans-bold"]'
-                }
-              >
-                Chat Room
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View
+          className={"flex-1 flex-row pl-2"}
+          style={[styles.container, { paddingBottom: itemWidth * 0.2 }]}
+        >
+          <>
+            <View className={"w-[68px] items-center"}>
+              <Text className={"text-l font-semibold text-[#000] pt-6"}>
+                Channels
               </Text>
+
+              <ScrollView>
+                <View
+                  style={{
+                    alignItems: "center",
+                    gap: 4,
+                    marginTop: 5,
+                    paddingBottom: itemWidth * 0.2,
+                  }}
+                >
+                  {channelLists?.map((channel) => (
+                    <ChannelListItem
+                      key={channel?.channel_id}
+                      channel={channel}
+                    />
+                  ))}
+
+                  <TouchableOpacity
+                    activeOpacity={0.8}
+                    onPress={() => refRBChannelSheet?.current?.open()}
+                    className="flex-row items-center p-1"
+                    style={[styles.circularBtn, { marginTop: 5 }]}
+                  >
+                    <Entypo name="plus" size={28} color={colors.primary} />
+                  </TouchableOpacity>
+                </View>
+              </ScrollView>
             </View>
 
-            <View className={"p-4"} style={{ zIndex: 9 }}>
-              <TextInput
-                className={"p-1 pl-6 bg-[#ebebeb] rounded-lg"}
-                placeholder="Find a channel"
-                style={{ height: 50 }}
-                onChangeText={(value) => setChannelQuery(value.trim())}
-              />
+            <View className={"flex-1"}>
+              <View className={"p-4 border-b border-gray-200"}>
+                <Text
+                  className={
+                    'text-[25px] font-bold text-center font-["sans-bold"]'
+                  }
+                >
+                  Chat Room
+                </Text>
+              </View>
+
+              <View className={"p-4"} style={{ zIndex: 9 }}>
+                <TextInput
+                  className={"p-1 pl-6 bg-[#ebebeb] rounded-lg"}
+                  placeholder="Find a channel"
+                  style={{ height: 50 }}
+                  onChangeText={(value) => setChannelQuery(value.trim())}
+                />
+              </View>
+
+              {channelSearch.length > 0 && (
+                <ChannelSearch channelSearch={channelSearch} />
+              )}
+
+              {channelSearch.length === 0 && (
+                <ChatHistory
+                  refRBConversationSheet={refRBConversationSheet}
+                  devicesMessages={devicesMessages}
+                />
+              )}
             </View>
 
-            {channelSearch.length > 0 && (
-              <ChannelSearch channelSearch={channelSearch} />
-            )}
+            {/* bottom sheets */}
+            <Channel
+              user={user}
+              setChannelLink={setChannelLink}
+              refRBSheet={refRBChannelSheet}
+              refRBChannelLinkSheet={refRBChannelLinkSheet}
+            />
 
-            {channelSearch.length === 0 && (
-              <ChatHistory refRBConversationSheet={refRBConversationSheet} />
-            )}
-          </View>
+            <ChannelLink
+              channelLink={channelLink}
+              refRBSheet={refRBChannelLinkSheet}
+            />
 
-          {/* bottom sheets */}
-          <Channel
-            user={user}
-            setChannelLink={setChannelLink}
-            refRBSheet={refRBChannelSheet}
-            refRBChannelLinkSheet={refRBChannelLinkSheet}
-          />
+            <NewConversation user={user} refRBSheet={refRBConversationSheet} />
+          </>
 
-          <ChannelLink
-            channelLink={channelLink}
-            refRBSheet={refRBChannelLinkSheet}
-          />
-
-          <NewConversation user={user} refRBSheet={refRBConversationSheet} />
-        </>
-
-        {/* Add navigation and friends list components here */}
-        {/* <BottomNav /> */}
-      </View>
+          {/* Add navigation and friends list components here */}
+          {/* <BottomNav /> */}
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };

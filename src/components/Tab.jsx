@@ -1,9 +1,16 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Animated,
+  Dimensions,
+} from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import { Foundation } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import Home from "../screens/Home";
-import Cards from "../screens/Cards";
 import SendMoney from "../screens/sendMoney/SendMoney";
 import Profile from "../screens/Profile";
 import dp from "../../assets/images/dp.jpg";
@@ -12,10 +19,18 @@ import { useNavigation } from "@react-navigation/native";
 import dynamicLinks from "@react-native-firebase/dynamic-links";
 import axios from "axios";
 import { BASE_URL2 } from "../config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const itemHeight = Dimensions.get("window").height;
+const itemWidth = Dimensions.get("window").width;
 
 export default function Tab() {
   const [count, setCount] = useState(1);
+  const [animation] = useState(new Animated.Value(0));
+
   const [channelId, setChannelId] = useState(undefined);
+  const [user, setUser] = useState([]);
+
   const navigation = useNavigation();
 
   const handleDynamicLink = useCallback(async (link) => {
@@ -41,10 +56,28 @@ export default function Tab() {
           console.log(error);
         }
       };
-      
+
       fetchChannel();
     }
   }, [channelId]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const storedItems = await AsyncStorage.getItem("user_data");
+        // console.log(storedItems);
+
+        if (storedItems !== null) {
+          const parsedItems = JSON.parse(storedItems);
+          setUser(parsedItems);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const tabs = [
     {
@@ -54,25 +87,20 @@ export default function Tab() {
     },
     {
       id: 2,
-      icon: <Ionicons name="card" size={24} color="#029CFC" />,
-      label: "Cards",
+      icon: <Ionicons name="add-circle-sharp" size={33} color="#029CFC" />,
+      label: "P2P crypto",
     },
     {
       id: 3,
-      icon: <Ionicons name="add-circle-sharp" size={33} color="#029CFC" />,
-      label: "Send Money",
-    },
-    {
-      id: 4,
       icon: <Ionicons name="chatbubble" size={24} color="#029CFC" />,
       //   icon: <Zocial name="bitcoin" size={24} color="#029CFC" />,
       label: "Chats",
     },
     {
-      id: 5,
+      id: 4,
       icon: (
         <View className="flex items-center justify-center h-[30px] w-[30px] bg-red-500 rounded-full">
-          <Image className="h-full w-full rounded-full" source={dp} alt="dp" />
+          <Image className="h-full w-full rounded-full" source={{uri: user?.image}} alt="dp" />
         </View>
       ),
       label: "Me",
@@ -80,26 +108,87 @@ export default function Tab() {
   ];
 
   const handleTab = (item) => {
-    setCount(item);
-    // console.log(item);
+    Animated.timing(animation, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      setCount(item);
+      animation.setValue(0);
+    });
   };
 
-  //   items-center justify-start
-
   return (
-    <View className="flex flex-col w-full h-full">
+    <View style={{ flex: 1 }}>
       {count === 1 ? (
-        <Home />
+        <Animated.View
+          style={{
+            opacity: animation.interpolate({
+              inputRange: [0, 1],
+              outputRange: [1, 0], // Map animation value from 0 to 1 to opacity from 1 to 0
+            }),
+            flex: 1,
+          }}
+        >
+          <Home />
+        </Animated.View>
       ) : count === 2 ? (
-        <Cards />
+        <Animated.View
+          style={{
+            opacity: animation.interpolate({
+              inputRange: [0, 1],
+              outputRange: [1, 0],
+            }),
+            flex: 1,
+          }}
+        >
+          <SendMoney />
+        </Animated.View>
       ) : count === 3 ? (
-        <SendMoney />
+        <Animated.View
+          style={{
+            opacity: animation.interpolate({
+              inputRange: [0, 1],
+              outputRange: [1, 0],
+            }),
+            flex: 1,
+          }}
+        >
+          <ChatRoom />
+        </Animated.View>
       ) : count === 4 ? (
-        <ChatRoom />
-      ) : (
-        count === 5 && <Profile />
-      )}
-      <View className="absolute bottom-0 flex flex-row items-end justify-between w-full h-[80px] bg-white shadow-2xl border-[0.8px] border-[#eeeeee] px-5 pb-4">
+        <Animated.View
+          style={{
+            opacity: animation.interpolate({
+              inputRange: [0, 1],
+              outputRange: [1, 0],
+            }),
+            flex: 1,
+          }}
+        >
+          <Profile />
+        </Animated.View>
+      ) : null}
+
+      <View
+        style={{
+          position: "absolute",
+          bottom: 0,
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          width: "100%",
+          height: itemHeight * 0.08,
+          backgroundColor: "white",
+          shadowColor: "#000",
+          elevation: 5,
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.2,
+          shadowRadius: 2,
+          paddingHorizontal: itemWidth * 0.1,
+          paddingVertical: 4,
+        }}
+      >
         {tabs.map((item) => {
           return (
             <TouchableOpacity

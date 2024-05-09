@@ -13,7 +13,7 @@ const ChannelMsg = ({ message, user }) => {
 
   const [userDet, setUserDet] = useState();
   const [isLiked, setIsLiked] = useState(
-    message?.likes_users?.includes(message?.id) ? true : false
+    message?.likes_users?.includes(message?.id)
   );
   const [likes, setLikes] = useState(message?.likes);
   const [postComments, setPostComments] = useState([]);
@@ -42,21 +42,22 @@ const ChannelMsg = ({ message, user }) => {
       setLikes(likes - 1);
     } else {
       setLikes(likes + 1);
+    }
 
-      try {
-        const res = await axios.put(
-          `${BASE_URL2}/post/${message.post_id}/like`,
-          {
-            like_user: userDet?.id,
-          }
-        );
+    try {
+      const res = await axios.put(`${BASE_URL2}/post/${message.post_id}/like`, {
+        like_user: userDet?.id,
+      });
 
-        console.log(res.data);
-      } catch (error) {
-        console.log(error?.response?.data);
-      }
+      console.log(res.data);
+    } catch (error) {
+      console.log(error?.response?.data);
     }
   };
+
+  useEffect(() => {
+    setIsLiked(message?.likes_users?.includes(userDet?.id));
+  }, [message, userDet]);
 
   useEffect(() => {
     const fetchPostComments = async () => {
@@ -74,23 +75,18 @@ const ChannelMsg = ({ message, user }) => {
     fetchPostComments();
   }, [message]);
 
-  // console.log(postComments);
+  // console.log(message);
 
   return (
     <View
-      // className={`rounded-lg ${
-      //   message?.message_from == user?.id
-      //     ? "bg-blue-500 ml-[100px]"
-      //     : "bg-gray-300"
-      // } p-3 mb-1.5 mt-1.5 w-[280px] float-right`}
       style={[
         message?.user == user?.id
           ? styles.chatBubbleRight
           : styles.chatBubbleLeft,
-        message?.image && { width: 280, padding: 4 },
+        message?.post?.startsWith("https") && { width: 280, padding: 4 },
       ]}
     >
-      {message.post && (
+      {!message.post?.startsWith("https") && (
         <Text
           className={`float-right ${
             message?.user == user?.id ? "text-[#fff]" : ""
@@ -100,18 +96,22 @@ const ChannelMsg = ({ message, user }) => {
         </Text>
       )}
 
-      {message?.image && (
-        <View>
+      {message?.post?.startsWith("https") && (
+        <Pressable
+          onPress={() =>
+            navigation.navigate("photoDisplay", { image: message?.post })
+          }
+        >
           <Image
-            source={{ uri: message?.image }}
+            source={{ uri: message?.post }}
             style={{
               borderRadius: 10,
               aspectRatio: 1,
-              width: undefined,
+              width: "100%",
             }}
-            resizeMode="contain"
+            resizeMode="cover"
           />
-        </View>
+        </Pressable>
       )}
 
       <View style={styles.LikeComCon}>

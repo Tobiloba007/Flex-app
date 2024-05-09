@@ -27,7 +27,6 @@ export default function ProfileTop() {
 
   const [user, setUser] = useState();
   const [userProfile, setUserProfile] = useState(null);
-  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -64,26 +63,10 @@ export default function ProfileTop() {
     }
   };
 
-  useEffect(() => {
-    let subscribe = true;
-
-    if (subscribe) {
-      fetchProfile();
-    }
-
-    return () => (subscribe = false);
-  }, [user]);
-
-  useEffect(() => {
-    setUserData(userProfile?.data[0]);
-  }, [userProfile]);
-
   const handleLogout = async () => {
     await AsyncStorage.removeItem("user_data");
     navigation.navigate("loginScreen");
   };
-
-  // console.log(userData);
 
   return (
     <View
@@ -102,8 +85,8 @@ export default function ProfileTop() {
           <Image
             className="w-[90%] h-[90%] rounded-full"
             source={
-              userData?.image
-                ? { uri: userData?.image }
+              user?.image
+                ? { uri: user?.image }
                 : require("../../../assets/images/flexLogo.png")
             }
             alt="my displey_picture"
@@ -111,10 +94,10 @@ export default function ProfileTop() {
           />
         </View>
         <Text className={`text-xl text-[#029CFC] font-["sans-semibold"] mt-2`}>
-          {userData?.fname} {userData?.lname}
+          {user?.fname} {user?.lname}
         </Text>
         <Text className={`text-sm text-[#000000] font-["sans-semibold"]`}>
-          ${userData?.fname?.toLowerCase()}
+          ${user?.fname?.toLowerCase()}
         </Text>
       </View>
 
@@ -127,7 +110,10 @@ export default function ProfileTop() {
             SEE REQUESTS
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity className="flex items-center justify-center bg-[#ffffff] w-[35%] h-11 rounded-xl">
+        <TouchableOpacity
+          onPress={() => navigation.navigate("editProfile")}
+          className="flex items-center justify-center bg-[#ffffff] w-[35%] h-11 rounded-xl"
+        >
           <Text className={`text-sm text-[#000000] font-["sans-medium"]`}>
             Edit Profile
           </Text>

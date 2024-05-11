@@ -139,6 +139,8 @@ export const loginUser =
       });
       const data = await response.json();
 
+      // console.log(data)
+
       if (
         data?.message ===
         "It appears this is your first time here. To continue, please take a moment to create a new account."

@@ -13,7 +13,7 @@ const ChannelMsg = ({ message, user }) => {
 
   const [userDet, setUserDet] = useState();
   const [isLiked, setIsLiked] = useState(
-    message?.likes_users?.includes(message?.id)
+    message?.likes_users?.includes(userDet?.id)
   );
   const [likes, setLikes] = useState(message?.likes);
   const [postComments, setPostComments] = useState([]);

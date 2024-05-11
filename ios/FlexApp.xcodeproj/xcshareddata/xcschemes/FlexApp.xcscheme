@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "flexapp.app"
-               BlueprintName = "flexapp"
-               ReferencedContainer = "container:flexapp.xcodeproj">
+               BuildableName = "FlexApp.app"
+               BlueprintName = "FlexApp"
+               ReferencedContainer = "container:FlexApp.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "flexappTests.xctest"
-               BlueprintName = "flexappTests"
-               ReferencedContainer = "container:flexapp.xcodeproj">
+               BuildableName = "FlexAppTests.xctest"
+               BlueprintName = "FlexAppTests"
+               ReferencedContainer = "container:FlexApp.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "flexapp.app"
-            BlueprintName = "flexapp"
-            ReferencedContainer = "container:flexapp.xcodeproj">
+            BuildableName = "FlexApp.app"
+            BlueprintName = "FlexApp"
+            ReferencedContainer = "container:FlexApp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "flexapp.app"
-            BlueprintName = "flexapp"
-            ReferencedContainer = "container:flexapp.xcodeproj">
+            BuildableName = "FlexApp.app"
+            BlueprintName = "FlexApp"
+            ReferencedContainer = "container:FlexApp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

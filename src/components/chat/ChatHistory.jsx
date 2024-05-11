@@ -10,17 +10,21 @@ import React from "react";
 import { styles } from "../../constants/styles";
 import { colors } from "../../../colors";
 import { useNavigation } from "@react-navigation/native";
+import { MaterialIcons } from "@expo/vector-icons";
+import moment from "moment";
 
 const itemWidth = Dimensions.get("window").width;
+const itemHeight = Dimensions.get("window").height;
 
 const ChatHistory = ({ refRBConversationSheet, devicesMessages }) => {
   const navigation = useNavigation();
 
+  // console.log(devicesMessages)
+
   return (
     <View
       style={{
-        width: "100%",
-        height: "80%",
+        flex: 1,
         justifyContent: devicesMessages?.length === 0 ? "center" : "flex-start",
         alignItems: devicesMessages?.length === 0 ? "center" : "flex-start",
         paddingVertical:
@@ -75,15 +79,42 @@ const ChatHistory = ({ refRBConversationSheet, devicesMessages }) => {
                 >
                   {item?.fname} {item?.lname}
                 </Text>
-                <Text
+
+                <View
                   style={{
-                    fontWeight: "300",
-                    color: "gray",
-                    fontSize: itemWidth * 0.03,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    width: "88%",
                   }}
                 >
-                  ${item?.fname}
-                </Text>
+                  <Text
+                    style={{
+                      fontWeight: "300",
+                      color: "gray",
+                      fontSize: itemWidth * 0.03,
+                      width:'50%'
+                    }}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
+                    {item?.lastMessage?.startsWith("https") ? (
+                      <MaterialIcons name="image" size={18} color="8e8e8e" />
+                    ) : (
+                      `${item?.lastMessage}`
+                    )}
+                  </Text>
+
+                  <Text
+                    style={{
+                      fontWeight: "300",
+                      color: "gray",
+                      fontSize: itemWidth * 0.03,
+                    }}
+                  >
+                    {moment(item?.time).calendar()}
+                  </Text>
+                </View>
               </View>
             </Pressable>
           ))}
@@ -91,7 +122,7 @@ const ChatHistory = ({ refRBConversationSheet, devicesMessages }) => {
       )}
 
       <TouchableOpacity
-        style={[styles.button, { position: "absolute", bottom: 0 }]}
+        style={[styles.button, {}]}
         activeOpacity={0.8}
         onPress={() => refRBConversationSheet?.current?.open()}
       >

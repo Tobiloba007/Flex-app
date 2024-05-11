@@ -330,7 +330,9 @@ export default function Login() {
           </Formik>
 
           <View className="flex-row items-center justify-between w-full">
-            <Pressable>
+            <Pressable
+              onPress={() => navigation.navigate("forgotPasswordEmail")}
+            >
               <Text
                 className={`text-[12px] font-["sans-regular"] text-[#029CFC]`}
               >

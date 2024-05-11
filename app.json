@@ -14,14 +14,14 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.flex.flexapp"
+      "bundleIdentifier": "undefined"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.flex.flexapp"
+      "package": "undefined"
     },
     "web": {
       "favicon": "./assets/favicon.png"

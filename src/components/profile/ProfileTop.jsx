@@ -19,11 +19,15 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { BASE_URL } from "../../config";
 import { styles } from "../../constants/styles";
+import { useDispatch, useSelector } from "react-redux";
+import { resetMessageState } from "../../redux/directMessageReducer";
 
 const itemHeight = Dimensions.get("window").height;
 
 export default function ProfileTop() {
   const navigation = useNavigation();
+
+  const dispatch = useDispatch();
 
   const [user, setUser] = useState();
   const [userProfile, setUserProfile] = useState(null);
@@ -65,6 +69,7 @@ export default function ProfileTop() {
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem("user_data");
+    dispatch(resetMessageState());
     navigation.navigate("loginScreen");
   };
 

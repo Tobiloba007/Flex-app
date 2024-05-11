@@ -1,4 +1,4 @@
-rootProject.name = 'flex-app'
+rootProject.name = 'FlexApp'
 
 dependencyResolutionManagement {
   versionCatalogs {

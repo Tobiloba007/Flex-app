@@ -4,12 +4,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import HomeTop from "../components/home/HomeTop";
 import FriendsOnline from "../components/home/FriendsOnline";
 import HomeFeeds from "../components/home/HomeFeeds";
+import { ref, set, get, update } from "firebase/database";
+import { db } from "../../firebaseConfig";
 
 const itemHeight = Dimensions.get("window").height;
 const itemWidth = Dimensions.get("window").width;
 
 export default function Home() {
-  const [user, setUser] = useState([]);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,10 +31,43 @@ export default function Home() {
     fetchData();
   }, []);
 
+  const createFbUser = async () => {
+    if (user) {
+      const lastSeen = Date.now();
+
+      try {
+        const userRef = ref(db, "users/" + user?.id);
+        const userSnapshot = await get(userRef);
+
+        if (userSnapshot.exists()) {
+          update(ref(db, "users/" + user?.id), {
+            username: user?.fname,
+            email: user?.email,
+            lastSeen,
+          });
+        } else {
+          set(ref(db, "users/" + user?.id), {
+            username: user?.fname,
+            email: user?.email,
+            lastSeen,
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      createFbUser();
+    }
+  }, [user]);
+
   return (
     <SafeAreaView
       style={{
-        flex:1,
+        flex: 1,
         backgroundColor: "white",
         paddingVertical: itemHeight * 0.04,
         paddingHorizontal: itemWidth * 0.035,

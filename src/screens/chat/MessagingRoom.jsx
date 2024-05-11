@@ -22,12 +22,17 @@ import { Feather } from "@expo/vector-icons";
 import axios from "axios";
 import { BASE_URL, BASE_URL2 } from "../../config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as ImagePicker from "expo-image-picker";
 import ChannelMsg from "./ChannelMsg";
 import UserMsg from "./UserMsg";
 import { launchImageLibrary } from "react-native-image-picker";
 import { useDispatch, useSelector } from "react-redux";
-import { changeMessageState } from "../../redux/directMessageReducer";
+import {
+  changeMessageState,
+  updateMessageState,
+} from "../../redux/directMessageReducer";
+import { ref, get, onValue } from "firebase/database";
+import { db } from "../../../firebaseConfig";
+import moment from "moment";
 
 const itemHeight = Dimensions.get("window").height;
 
@@ -40,8 +45,6 @@ const MessagingRoom = ({ route }) => {
 
   const dispatch = useDispatch();
 
-  // console.log('item:', item, 'channel:', channel)
-
   const navigation = useNavigation();
 
   const [inputHeight, setInputHeight] = useState(itemHeight * 0.06);
@@ -51,7 +54,7 @@ const MessagingRoom = ({ route }) => {
   const [message, setMessage] = useState("");
   const [image, setImage] = useState(null);
   const [file, setFile] = useState(null);
-  const [channelImage, setChannelImage] = useState(null);
+  const [lastSeen, setLastSeen] = useState("Loading...");
   const [dropDown, setDropDown] = useState(false);
   const [channelMemberStatus, setChannelmemberStatus] = useState({});
   const [createChannel, setCreateChannel] = useState("");
@@ -122,23 +125,6 @@ const MessagingRoom = ({ route }) => {
     }
   };
 
-  // update device message if message isn't present yet
-  useEffect(() => {
-    if (messages?.length > 0) {
-      if (
-        !devicesMessages.some((deviceMessage) => deviceMessage.id === item.id)
-      ) {
-        const lastMessage = messages?.slice(-1)[0];
-        const savedItem = {
-          ...item,
-          lastMessage: lastMessage?.message || lastMessage?.image,
-        };
-        // console.log(savedItem)
-        dispatch(changeMessageState(savedItem));
-      }
-    }
-  }, [messages]);
-
   // console.log(messages)
 
   useFocusEffect(
@@ -149,11 +135,40 @@ const MessagingRoom = ({ route }) => {
     }, [channel])
   );
 
+  useFocusEffect(
+    useCallback(() => {
+      if (item) {
+        fetchMessages();
+      }
+    }, [item, user])
+  );
+
+  // update device message if message isn't present yet
+  // console.log(messages)
   useEffect(() => {
-    if (item) {
-      fetchMessages();
+    if (messages?.length > 0) {
+      if (
+        !devicesMessages.some((deviceMessage) => deviceMessage.id === item.id)
+      ) {
+        const lastMessage = messages?.slice(-1)[0];
+        const savedItem = {
+          ...item,
+          lastMessage: lastMessage?.message || lastMessage?.image,
+          time: lastMessage?.timestamp,
+        };
+        // console.log(savedItem)
+        dispatch(changeMessageState(savedItem));
+      } else {
+        // const lastMessage = messages?.slice(-1)[0];
+        // const savedItem = {
+        //   ...item,
+        //   lastMessage: lastMessage?.message || lastMessage?.image,
+        //   time: Date.now(),
+        // };
+        // dispatch(updateMessageState(savedItem));
+      }
     }
-  }, [item, user]);
+  }, [messages]);
 
   const pickImage = async () => {
     if (channel) {
@@ -162,29 +177,31 @@ const MessagingRoom = ({ route }) => {
       });
 
       if (!result.didCancel) {
-        // setImage(result.assets[0].uri);
         setFile(result);
       }
     } else if (item) {
-      let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
-        allowsEditing: true,
-        aspect: [1, 2],
-        quality: 1,
-        base64: true,
+      const result = await launchImageLibrary({
+        mediaType: "photo",
+        includeBase64: true,
       });
 
       if (!result?.canceled) {
-        setImage(result?.assets[0]?.base64);
+        setImage(result?.assets[0]);
       }
     }
   };
 
   useEffect(() => {
-    if (file) {
-      navigation.navigate("sendImage", { file, channel });
+    if (file || image) {
+      navigation.navigate("sendImage", {
+        file,
+        channel,
+        image,
+        user_id: user?.id,
+        message_to: item?.id,
+      });
     }
-  }, [file]);
+  }, [file, image]);
 
   const handleSendMessage = async () => {
     if (channel) {
@@ -241,6 +258,15 @@ const MessagingRoom = ({ route }) => {
           setImage(null);
           Keyboard.dismiss();
 
+          // update device last message
+          const savedItem = {
+            ...item,
+            lastMessage: message || image,
+            time: Date.now(),
+          };
+
+          dispatch(updateMessageState(savedItem));
+
           fetchMessages();
         } catch (error) {
           console.log(error);
@@ -251,12 +277,6 @@ const MessagingRoom = ({ route }) => {
       }
     }
   };
-
-  useEffect(() => {
-    if (image) {
-      handleSendMessage();
-    }
-  }, [image]);
 
   const checkIsChannelMember = async () => {
     try {
@@ -269,8 +289,6 @@ const MessagingRoom = ({ route }) => {
       console.log(error);
     }
   };
-
-  // console.log(channelMemberStatus)
 
   useEffect(() => {
     checkIsChannelMember();
@@ -293,7 +311,46 @@ const MessagingRoom = ({ route }) => {
     }
   };
 
-  console.log(channel);
+  const getFbUser = async () => {
+    if (item) {
+      try {
+        const userRef = ref(db, "users/" + item.id);
+
+        // const userSnapshot = await get(userRef);
+
+        // Listen for real-time changes to the user's data
+        onValue(userRef, (snapshot) => {
+          if (snapshot.exists()) {
+            const lastSeenTime = snapshot.val().lastSeen;
+            const currentTime = Date.now();
+            const diffMs = currentTime - lastSeenTime;
+            const diffSeconds = Math.floor(diffMs / 1000);
+            const diffMinutes = Math.floor(diffSeconds / 60);
+
+            if (diffMinutes < 1) {
+              setLastSeen("Online");
+            } else {
+              setLastSeen(
+                `Last seen ${moment(snapshot.val().lastSeen).calendar()}`
+              );
+            }
+          } else {
+            setLastSeen("Last seen unknown");
+          }
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (item) {
+      getFbUser();
+    }
+  }, [item]);
+
+  // console.log(lastSeen)
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -321,9 +378,19 @@ const MessagingRoom = ({ route }) => {
                 style={[styles.profileIcon, { marginLeft: -10 }]}
               />
 
-              <Text className={"text-xl font-bold text-18px]"}>
-                {channel?.name ? channel?.name : item?.fname}
-              </Text>
+              <View style={{alignItems:'flex-start'}}>
+                <Text className={"text-xl font-bold text-18px]"}>
+                  {channel?.name ? channel?.name : item?.fname}
+                </Text>
+                <Text
+                  style={[
+                    styles.smallTxt,
+                    { color: "#7e7e7e", fontWeight: "400", textAlign:'left' },
+                  ]}
+                >
+                  {lastSeen}
+                </Text>
+              </View>
             </View>
 
             <View style={styles.row}>
@@ -367,7 +434,10 @@ const MessagingRoom = ({ route }) => {
             >
               <ScrollView
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingVertical: itemHeight * 0.02, paddingBottom: itemHeight * 0.06 }}
+                contentContainerStyle={{
+                  paddingVertical: itemHeight * 0.02,
+                  paddingBottom: itemHeight * 0.06,
+                }}
               >
                 {messages.map((message, index) => (
                   <UserMsg key={index} message={message} user={user} />

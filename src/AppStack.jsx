@@ -33,6 +33,9 @@ import Profile from "./screens/Profile";
 import EditProfile from "./screens/profile/EditProfile";
 import SendImage from "./screens/chat/SendImage";
 import PhotoDisplay from "./components/PhotoDisplay";
+import ForgotPasswordEmail from "./screens/authentication/ForgotPasswordEmail";
+import ForgotPasswordVerify from "./screens/authentication/ForgotPasswordVerify";
+import ForgotPasswordNew from "./screens/authentication/ForgotPasswordNew";
 
 const Stack = createStackNavigator();
 
@@ -146,6 +149,9 @@ const AppStack = () => {
       <Stack.Screen name="profile" component={Profile} />
       <Stack.Screen name="editProfile" component={EditProfile} />
       <Stack.Screen name="photoDisplay" component={PhotoDisplay} />
+      <Stack.Screen name="forgotPasswordEmail" component={ForgotPasswordEmail} />
+      <Stack.Screen name="forgotPasswordVerify" component={ForgotPasswordVerify} />
+      <Stack.Screen name="forgotPasswordNew" component={ForgotPasswordNew} />
 
       <Stack.Screen
         name="Comments"

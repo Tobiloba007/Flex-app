@@ -173,7 +173,7 @@ const ChatRoom = () => {
               </ScrollView>
             </View>
 
-            <View className={"flex-1"}>
+            <View style={{ flex: 1 }}>
               <View className={"p-4 border-b border-gray-200"}>
                 <Text
                   className={

@@ -7,7 +7,7 @@ import {
   Pressable,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { BASE_URL2 } from "../../config";
+import { BASE_URL, BASE_URL2 } from "../../config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { colors } from "../../../colors";
 import { styles } from "../../constants/styles";
@@ -15,7 +15,9 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 
 const SendImage = ({ route }) => {
-  const { file, channel } = route.params;
+  const { file, channel, image, user_id, message_to } = route.params;
+
+  // console.log(image);
 
   const navigation = useNavigation();
 
@@ -59,6 +61,7 @@ const SendImage = ({ route }) => {
 
       setChannelImage(res.data?.url);
     } catch (error) {
+      console.log(error);
       setError(error);
     }
   };
@@ -70,28 +73,47 @@ const SendImage = ({ route }) => {
   }, [file]);
 
   const handleSendMessage = async () => {
-    const channelData = {
-      user: user?.id,
-      channel: channel?.channel_id,
-      post: channelImage,
-      likes_users: [],
-    };
+    if (image) {
+      const messageData = new FormData();
 
-    try {
-      const res = await fetch(`${BASE_URL2}/post`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(channelData),
-      });
+      messageData.append("user_id", user_id);
+      messageData.append("message_to", message_to);
+      messageData.append("image", image?.base64);
 
-      const data = await res.json();
-      console.log(data);
+      try {
+        const res = await fetch(`${BASE_URL}/api/v1/chat/private_message.php`, {
+          method: "POST",
+          body: messageData,
+        });
 
-      navigation.goBack();
-    } catch (error) {
-      console.log(error);
+        navigation.goBack();
+      } catch (error) {
+        console.log(error);
+      }
+    } else if (channel) {
+      const channelData = {
+        user: user?.id,
+        channel: channel?.channel_id,
+        post: channelImage,
+        likes_users: [],
+      };
+
+      try {
+        const res = await fetch(`${BASE_URL2}/post`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(channelData),
+        });
+
+        const data = await res.json();
+        // console.log(data);
+
+        navigation.goBack();
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
@@ -106,7 +128,7 @@ const SendImage = ({ route }) => {
             justifyContent: "center",
           }}
         >
-          <Text style={[styles.smallTxt, { color: "black" }]}>
+          <Text style={[styles.smallTxt, { color: "black", padding: 8 }]}>
             Unable to upload your image due to an error that occured, please try
             again.
           </Text>
@@ -116,7 +138,7 @@ const SendImage = ({ route }) => {
       {!error && (
         <>
           <Image
-            source={{ uri: file?.assets[0]?.uri }}
+            source={{ uri: file?.assets[0]?.uri || image?.uri }}
             style={{ height: "100%", width: "100%" }}
             resizeMode="contain"
           />
@@ -127,7 +149,7 @@ const SendImage = ({ route }) => {
               width: "100%",
               top: 0,
               backgroundColor: "black",
-              opacity: !channelImage ? 0.5 : 0,
+              opacity: !channelImage && !image ? 0.5 : 0,
             }}
           ></View>
 
@@ -139,15 +161,17 @@ const SendImage = ({ route }) => {
                 position: "absolute",
                 bottom: 10,
                 alignSelf: "center",
-                backgroundColor: !channelImage ? "#9e9e9e" : colors.primary,
+                backgroundColor:
+                  !channelImage && !image ? "#9e9e9e" : colors.primary,
+                elevation: 7,
               },
             ]}
-            disabled={!channelImage}
+            disabled={!channelImage && !image}
           >
             <Text style={styles.buttonTxt}>Send</Text>
           </Pressable>
 
-          {!channelImage && (
+          {!channelImage && !image && (
             <ActivityIndicator
               style={{ position: "absolute", alignSelf: "center", top: "50%" }}
               color={colors.primary}

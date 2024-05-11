@@ -65,13 +65,13 @@ export const styles = StyleSheet.create({
 
   mediumTxt: {
     fontWeight: "900",
-    fontSize: itemWidth * 0.055,
+    fontSize: itemWidth * 0.05,
     textAlign: "center",
   },
 
   smallTxt: {
     textAlign: "center",
-    fontSize: itemWidth * 0.036,
+    fontSize: itemWidth * 0.034,
     fontWeight: "600",
   },
 

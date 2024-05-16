@@ -1,6 +1,5 @@
 import {
   View,
-  Text,
   TouchableWithoutFeedback,
   Image,
   Dimensions,
@@ -52,7 +51,15 @@ const ChannelListItem = ({ channel }) => {
   // console.log(channel);
 
   useEffect(() => {
-    checkIsChannelMember();
+    let unsubscribe = true;
+
+    if (unsubscribe) {
+      checkIsChannelMember();
+    }
+
+    return () => {
+      unsubscribe = false;
+    };
   }, [user, channel]);
 
   return (
@@ -61,7 +68,12 @@ const ChannelListItem = ({ channel }) => {
       channel?.owner_id === user?.id ? (
         <View className="flex-row items-center p-1">
           <TouchableWithoutFeedback
-            onPress={() => navigation.navigate("MessagingRoom", { channel })}
+            onPress={() =>
+              navigation.navigate("MessagingRoom", {
+                channel,
+                channelMemberStatus,
+              })
+            }
           >
             <Image
               source={

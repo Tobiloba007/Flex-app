@@ -61,7 +61,7 @@ const SendImage = ({ route }) => {
 
       setChannelImage(res.data?.url);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       setError(error);
     }
   };

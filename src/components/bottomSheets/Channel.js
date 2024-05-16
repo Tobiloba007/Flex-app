@@ -32,6 +32,8 @@ const CreateChannel = ({
   const [channelIcon, setChannelIcon] = useState(null);
   const [channelName, setChannelName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [imageLoading, setImageLoading] = useState(false);
 
   const pickImage = async () => {
     const result = await launchImageLibrary({
@@ -39,12 +41,14 @@ const CreateChannel = ({
     });
 
     if (!result.didCancel) {
-      setImage(result.assets[0].uri);
       setFile(result);
+      setImage(result.assets[0].uri);
     }
   };
 
   const handleUploadImage = async () => {
+    setImageLoading(true);
+
     try {
       const formData = new FormData();
       // Append the selected image to the FormData object
@@ -60,33 +64,47 @@ const CreateChannel = ({
         },
       });
 
+      setImageLoading(false);
+
       setChannelIcon(res.data?.url);
     } catch (error) {
-      console.log(error);
+      setImageLoading(false);
+
+      setError("An error occured while uploading image, please try again");
+
+      const timeout = setTimeout(() => {
+        setError(null);
+      }, 4000);
+
+      return () => {
+        clearTimeout(timeout);
+      };
     }
   };
 
   useEffect(() => {
-    if (file) {
-      handleUploadImage();
-    }
-  }, [file]);
+    let unsubscribe = true;
 
-  const channelData = {
-    name: channelName,
-    icon: channelIcon,
-    owner_id: user?.id,
-  };
+    if (unsubscribe) {
+      if (file) {
+        handleUploadImage();
+        setFile(null);
+      }
+    }
+
+    return () => {
+      unsubscribe = false;
+    };
+  }, [file]);
 
   const handleCreateChannel = async () => {
     setLoading(true);
 
-    // const channelData = new FormData();
-
-    // channelData.append("user_id", user?.id);
-    // channelData.append("flag", "add_channel");
-    // channelData.append("name", channelName);
-    // channelData.append("icon", channelIcon);
+    const channelData = {
+      name: channelName,
+      icon: channelIcon,
+      owner_id: user?.id,
+    };
 
     try {
       const res = await fetch(`${BASE_URL2}/channel`, {
@@ -131,7 +149,7 @@ const CreateChannel = ({
         style={styles.channelUpload}
         onPress={pickImage}
       >
-        {image && (
+        {image && !imageLoading && !error && (
           <Image
             source={{ uri: image }}
             style={{
@@ -156,6 +174,12 @@ const CreateChannel = ({
               UPLOAD
             </Text>
           </>
+        )}
+
+        {imageLoading && <ActivityIndicator color={colors.primary} />}
+
+        {error && (
+          <Text style={[styles.smallTxt, { color: "#000" }]}>{error}</Text>
         )}
 
         <View
@@ -197,10 +221,12 @@ const CreateChannel = ({
             {
               width: "100%",
               backgroundColor:
-                !channelName && !channelIcon ? "#9e9e9e" : colors.primary,
+                !channelName || !channelIcon || error
+                  ? "#9e9e9e"
+                  : colors.primary,
             },
           ]}
-          disabled={!channelName && !channelIcon}
+          disabled={!channelName || !channelIcon || error}
           onPress={handleCreateChannel}
         >
           {loading ? (

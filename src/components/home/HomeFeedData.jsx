@@ -139,10 +139,13 @@ const HomeFeedData = ({ item }) => {
     checkIsChannelMember();
   }, [user, item]);
 
+  // console.log(item)
+
   return (
     <>
       {channelMemberStatus?.status?.trim() === "accepted" ||
-      item?.user === user?.id ? (
+      item?.user === user?.id ||
+      item?.channel === 31 ? (
         <View className="flex flex-col items-start justify-start w-full mt-5">
           <View className={"flex flex-row items-start justify-start w-full"}>
             {/* LEFT*/}
@@ -176,14 +179,19 @@ const HomeFeedData = ({ item }) => {
                   "flex flex-row items-center justify-center mt-1 w-6 ml-2"
                 }
               >
-                <Image
-                  className="w-5 h-5 rounded-full"
-                  source={item?.replyImg1}
-                />
-                <Image
-                  className="w-5 h-5 rounded-full absolute left-3"
-                  source={item?.replyImg2}
-                />
+                {item?.replyImg1 && (
+                  <Image
+                    className="w-5 h-5 rounded-full"
+                    source={item?.replyImg1}
+                  />
+                )}
+
+                {item?.replyImg2 && (
+                  <Image
+                    className="w-5 h-5 rounded-full absolute left-3"
+                    source={item?.replyImg2}
+                  />
+                )}
               </View>
 
               {/* FEATURED BORDER */}

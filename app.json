@@ -7,7 +7,7 @@
     "icon": "./assets/images/flexLogo.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/images/flexLogo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

@@ -1,11 +1,11 @@
 import {
   Image,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
   Animated,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import { Foundation } from "@expo/vector-icons";
@@ -13,13 +13,14 @@ import { Ionicons } from "@expo/vector-icons";
 import Home from "../screens/Home";
 import SendMoney from "../screens/sendMoney/SendMoney";
 import Profile from "../screens/Profile";
-import dp from "../../assets/images/dp.jpg";
 import ChatRoom from "../screens/chat/ChatRoom";
 import { useNavigation } from "@react-navigation/native";
 import dynamicLinks from "@react-native-firebase/dynamic-links";
 import axios from "axios";
 import { BASE_URL2 } from "../config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { colors } from "../../colors";
+import { styles } from "../constants/styles";
 
 const itemHeight = Dimensions.get("window").height;
 const itemWidth = Dimensions.get("window").width;
@@ -29,37 +30,11 @@ export default function Tab() {
   const [animation] = useState(new Animated.Value(0));
 
   const [channelId, setChannelId] = useState(undefined);
-  const [user, setUser] = useState([]);
+  const [user, setUser] = useState();
+  const [channelMemberStatus, setChannelmemberStatus] = useState(null);
+  const [error, setError] = useState("");
 
   const navigation = useNavigation();
-
-  const handleDynamicLink = useCallback(async (link) => {
-    if (link?.url) {
-      setChannelId(link?.url.match(/[0-9]+/g)[0]);
-    }
-  }, []);
-
-  useEffect(() => {
-    const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
-
-    return () => unsubscribe();
-  }, [handleDynamicLink]);
-
-  useEffect(() => {
-    if (channelId) {
-      const fetchChannel = async () => {
-        try {
-          const res = await axios.get(`${BASE_URL2}/channel/${channelId}`);
-
-          navigation.navigate("MessagingRoom", { channel: res.data });
-        } catch (error) {
-          console.log(error);
-        }
-      };
-
-      fetchChannel();
-    }
-  }, [channelId]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -78,6 +53,89 @@ export default function Tab() {
 
     fetchData();
   }, []);
+
+  const handleDynamicLink = useCallback(async (link) => {
+    if (link?.url) {
+      setChannelId(link?.url.match(/[0-9]+/g)[0]);
+    }
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
+
+    return () => unsubscribe();
+  }, [handleDynamicLink]);
+
+  const checkIsChannelMember = async () => {
+    try {
+      const res = await axios.get(
+        `${BASE_URL2}/channel-request/${user?.id}/${channelId}`
+      );
+
+      setChannelmemberStatus(res.data);
+    } catch (error) {
+      console.log(error);
+
+      setError("An error occured, please try again.");
+
+      setTimeout(() => {
+        setError("");
+        setChannelId(undefined);
+      }, 3000);
+    }
+  };
+
+  useEffect(() => {
+    let unsubscribe = true;
+
+    if (unsubscribe) {
+      if (channelId) {
+        checkIsChannelMember();
+      }
+    }
+
+    return () => {
+      unsubscribe = false;
+    };
+  }, [user, channelId]);
+
+  const fetchChannel = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL2}/channel/${channelId}`);
+
+      navigation.navigate("MessagingRoom", {
+        channel: res.data,
+        channelMemberStatus,
+      });
+
+      setChannelId(undefined);
+    } catch (error) {
+      console.log(error);
+
+      setError("An error occured, please try again.");
+
+      setTimeout(() => {
+        setError("");
+        setChannelId(undefined);
+      }, 3000);
+    }
+  };
+
+  useEffect(() => {
+    let unsubscribe = true;
+
+    if (unsubscribe) {
+      if (channelMemberStatus) {
+        if (channelId) {
+          fetchChannel();
+        }
+      }
+    }
+
+    return () => {
+      unsubscribe = false;
+    };
+  }, [channelId, channelMemberStatus]);
 
   const tabs = [
     {
@@ -100,7 +158,11 @@ export default function Tab() {
       id: 4,
       icon: (
         <View className="flex items-center justify-center h-[30px] w-[30px] bg-red-500 rounded-full">
-          <Image className="h-full w-full rounded-full" source={{uri: user?.image}} alt="dp" />
+          <Image
+            className="h-full w-full rounded-full"
+            source={{ uri: user?.image }}
+            alt="dp"
+          />
         </View>
       ),
       label: "Me",
@@ -108,67 +170,96 @@ export default function Tab() {
   ];
 
   const handleTab = (item) => {
-    Animated.timing(animation, {
-      toValue: 1,
-      duration: 300,
-      useNativeDriver: true,
-    }).start(() => {
-      setCount(item);
-      animation.setValue(0);
-    });
+    // Animated.timing(animation, {
+    //   toValue: 1,
+    //   duration: 300,
+    //   useNativeDriver: true,
+    // }).start(() => {
+    //   animation.setValue(0);
+    // });
+
+    setCount(item);
   };
 
   return (
     <View style={{ flex: 1 }}>
-      {count === 1 ? (
-        <Animated.View
+      {!channelId && (
+        <>
+          {count === 1 ? (
+            <Animated.View
+              style={{
+                opacity: animation.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [1, 0], // Map animation value from 0 to 1 to opacity from 1 to 0
+                }),
+                flex: 1,
+              }}
+            >
+              <Home />
+            </Animated.View>
+          ) : count === 2 ? (
+            <Animated.View
+              style={{
+                opacity: animation.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [1, 0],
+                }),
+                flex: 1,
+              }}
+            >
+              <SendMoney />
+            </Animated.View>
+          ) : count === 3 ? (
+            <Animated.View
+              style={{
+                opacity: animation.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [1, 0],
+                }),
+                flex: 1,
+              }}
+            >
+              <ChatRoom />
+            </Animated.View>
+          ) : count === 4 ? (
+            <Animated.View
+              style={{
+                opacity: animation.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [1, 0],
+                }),
+                flex: 1,
+              }}
+            >
+              <Profile />
+            </Animated.View>
+          ) : null}
+        </>
+      )}
+
+      {channelId && (
+        <View
           style={{
-            opacity: animation.interpolate({
-              inputRange: [0, 1],
-              outputRange: [1, 0], // Map animation value from 0 to 1 to opacity from 1 to 0
-            }),
-            flex: 1,
+            height: "100%",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          <Home />
-        </Animated.View>
-      ) : count === 2 ? (
-        <Animated.View
+          <ActivityIndicator color={colors.primary} size={"large"} />
+        </View>
+      )}
+
+      {error && (
+        <View
           style={{
-            opacity: animation.interpolate({
-              inputRange: [0, 1],
-              outputRange: [1, 0],
-            }),
-            flex: 1,
+            height: "100%",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          <SendMoney />
-        </Animated.View>
-      ) : count === 3 ? (
-        <Animated.View
-          style={{
-            opacity: animation.interpolate({
-              inputRange: [0, 1],
-              outputRange: [1, 0],
-            }),
-            flex: 1,
-          }}
-        >
-          <ChatRoom />
-        </Animated.View>
-      ) : count === 4 ? (
-        <Animated.View
-          style={{
-            opacity: animation.interpolate({
-              inputRange: [0, 1],
-              outputRange: [1, 0],
-            }),
-            flex: 1,
-          }}
-        >
-          <Profile />
-        </Animated.View>
-      ) : null}
+          <Text style={[styles.smallTxt, { color: "#000" }]}>{error}</Text>
+        </View>
+      )}
 
       <View
         style={{
@@ -215,5 +306,3 @@ export default function Tab() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({});

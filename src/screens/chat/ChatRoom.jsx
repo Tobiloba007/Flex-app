@@ -6,22 +6,18 @@ import {
   TouchableOpacity,
   StatusBar,
   ScrollView,
-  Image,
-  TouchableWithoutFeedback,
   Dimensions,
   SafeAreaView,
 } from "react-native";
 import { Entypo } from "@expo/vector-icons";
 import { styles } from "../../constants/styles";
 import { colors } from "../../../colors";
-import { useNavigation } from "@react-navigation/native";
 import Channel from "../../components/bottomSheets/Channel";
 import NewConversation from "../../components/bottomSheets/NewConversation";
-import BottomNav from "../../components/bottomNav/BottomNav";
 import ChannelLink from "../../components/bottomSheets/ChannelLink";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import { BASE_URL, BASE_URL2 } from "../../config";
+import { BASE_URL2 } from "../../config";
 import ChatHistory from "../../components/chat/ChatHistory";
 import ChannelSearch from "../../components/chat/ChannelSearch";
 import ChannelListItem from "./ChannelListItem";
@@ -29,45 +25,12 @@ import { useSelector } from "react-redux";
 
 const itemWidth = Dimensions.get("window").width;
 
-const friends = [
-  {
-    id: 1,
-    name: "Alice",
-    image: require("../../../assets/icons/ellipse-28.png"),
-  },
-  {
-    id: 2,
-    name: "Bob",
-    image: require("../../../assets/icons/ellipse-29.png"),
-  },
-  {
-    id: 3,
-    name: "Charlie",
-    image: require("../../../assets/icons/ellipse-31.png"),
-  },
-  {
-    id: 4,
-    name: "Alice",
-    image: require("../../../assets/icons/ellipse-32.png"),
-  },
-  {
-    id: 5,
-    name: "Bob",
-    image: require("../../../assets/icons/ellipse-28.png"),
-  },
-  {
-    id: 6,
-    name: "Charlie",
-    image: require("../../../assets/icons/ellipse-28.png"),
-  },
-];
 const ChatRoom = () => {
   const devicesMessages = useSelector((state) => state.message.messages);
 
   const refRBChannelSheet = useRef();
   const refRBChannelLinkSheet = useRef();
   const refRBConversationSheet = useRef();
-  const navigation = useNavigation();
 
   const [user, setUser] = useState();
   const [channelLink, setChannelLink] = useState("");
@@ -103,32 +66,44 @@ const ChatRoom = () => {
   };
 
   useEffect(() => {
-    if (user) {
-      fetchChannelList();
+    let unsubscribe = true;
+
+    if (unsubscribe) {
+      if (user) {
+        fetchChannelList();
+      }
     }
+
+    return () => {
+      unsubscribe = false;
+    };
   }, [user, channelLink]);
 
-  useEffect(() => {
-    if (channelQuery.length > 2) {
-      const handleChannelQuery = async () => {
-        try {
-          const res = await axios.get(
-            `${BASE_URL2}/channel?name=${channelQuery}`
-          );
+  const handleChannelQuery = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL2}/channel?name=${channelQuery}`);
 
-          setChannelSearch(res.data);
-        } catch (error) {
-          console.log(error);
-        }
-      };
-
-      handleChannelQuery();
-    } else if (channelQuery.length > 0 && channelQuery.length <= 2) {
-      setChannelSearch([]);
+      setChannelSearch(res.data);
+    } catch (error) {
+      console.log(error);
     }
-  }, [channelQuery]);
+  };
 
-  // console.log(user)
+  useEffect(() => {
+    let unsubscribe = true;
+
+    if (unsubscribe) {
+      if (channelQuery.length > 2) {
+        handleChannelQuery();
+      } else if (channelQuery.length > 0 && channelQuery.length <= 2) {
+        setChannelSearch([]);
+      }
+    }
+
+    return () => {
+      unsubscribe = false;
+    };
+  }, [channelQuery]);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -194,7 +169,7 @@ const ChatRoom = () => {
               </View>
 
               {channelSearch.length > 0 && (
-                <ChannelSearch channelSearch={channelSearch} />
+                <ChannelSearch channelSearch={channelSearch} user={user} />
               )}
 
               {channelSearch.length === 0 && (
@@ -220,9 +195,6 @@ const ChatRoom = () => {
 
             <NewConversation user={user} refRBSheet={refRBConversationSheet} />
           </>
-
-          {/* Add navigation and friends list components here */}
-          {/* <BottomNav /> */}
         </View>
       </ScrollView>
     </SafeAreaView>

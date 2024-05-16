@@ -39,9 +39,9 @@ const itemHeight = Dimensions.get("window").height;
 const MessagingRoom = ({ route }) => {
   const channel = route.params?.channel;
   const item = route.params?.item;
+  const channelMemberStatus = route.params?.channelMemberStatus;
 
   const devicesMessages = useSelector((state) => state.message.messages);
-  // console.log(devicesMessages);
 
   const dispatch = useDispatch();
 
@@ -56,7 +56,7 @@ const MessagingRoom = ({ route }) => {
   const [file, setFile] = useState(null);
   const [lastSeen, setLastSeen] = useState("Loading...");
   const [dropDown, setDropDown] = useState(false);
-  const [channelMemberStatus, setChannelmemberStatus] = useState({});
+  // const [channelMemberStatus, setChannelmemberStatus] = useState({});
   const [createChannel, setCreateChannel] = useState("");
 
   useEffect(() => {
@@ -125,8 +125,6 @@ const MessagingRoom = ({ route }) => {
     }
   };
 
-  // console.log(messages)
-
   useFocusEffect(
     useCallback(() => {
       if (channel) {
@@ -156,16 +154,7 @@ const MessagingRoom = ({ route }) => {
           lastMessage: lastMessage?.message || lastMessage?.image,
           time: lastMessage?.timestamp,
         };
-        // console.log(savedItem)
         dispatch(changeMessageState(savedItem));
-      } else {
-        // const lastMessage = messages?.slice(-1)[0];
-        // const savedItem = {
-        //   ...item,
-        //   lastMessage: lastMessage?.message || lastMessage?.image,
-        //   time: Date.now(),
-        // };
-        // dispatch(updateMessageState(savedItem));
       }
     }
   }, [messages]);
@@ -278,22 +267,6 @@ const MessagingRoom = ({ route }) => {
     }
   };
 
-  const checkIsChannelMember = async () => {
-    try {
-      const res = await axios.get(
-        `${BASE_URL2}/channel-request/${user?.id}/${channel?.channel_id}`
-      );
-
-      setChannelmemberStatus(res.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    checkIsChannelMember();
-  }, [user, channel, createChannel]);
-
   const createChannelRequest = async () => {
     const data = {
       request_user_id: user?.id,
@@ -306,8 +279,10 @@ const MessagingRoom = ({ route }) => {
       setCreateChannel(res.data);
 
       Alert.alert("Channel request created successfully");
+
+      navigation.goBack();
     } catch (error) {
-      console.log(first);
+      console.log(error);
     }
   };
 
@@ -350,8 +325,6 @@ const MessagingRoom = ({ route }) => {
     }
   }, [item]);
 
-  // console.log(lastSeen)
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar backgroundColor={colors.white} barStyle={"dark-content"} />
@@ -378,14 +351,14 @@ const MessagingRoom = ({ route }) => {
                 style={[styles.profileIcon, { marginLeft: -10 }]}
               />
 
-              <View style={{alignItems:'flex-start'}}>
+              <View style={{ alignItems: "flex-start" }}>
                 <Text className={"text-xl font-bold text-18px]"}>
                   {channel?.name ? channel?.name : item?.fname}
                 </Text>
                 <Text
                   style={[
                     styles.smallTxt,
-                    { color: "#7e7e7e", fontWeight: "400", textAlign:'left' },
+                    { color: "#7e7e7e", fontWeight: "400", textAlign: "left" },
                   ]}
                 >
                   {lastSeen}
@@ -446,15 +419,14 @@ const MessagingRoom = ({ route }) => {
             </ImageBackground>
           )}
 
-          {channels.length > 0 && (
-            <ImageBackground
-              source={require("../../../assets/images/bg.png")}
-              style={styles.bgImg}
-              resizeMode="cover"
-            >
-              <ScrollView showsVerticalScrollIndicator={false}>
-                {channel?.owner_id !== user?.id &&
-                channelMemberStatus?.status?.trim() === "rejected" ? (
+          <ImageBackground
+            source={require("../../../assets/images/bg.png")}
+            style={styles.bgImg}
+            resizeMode="cover"
+          >
+            <ScrollView showsVerticalScrollIndicator={false}>
+              {channel?.owner_id !== user?.id &&
+                channelMemberStatus?.status?.trim() === "rejected" && (
                   <View
                     style={{
                       alignItems: "center",
@@ -471,8 +443,10 @@ const MessagingRoom = ({ route }) => {
                       </Text>
                     </Pressable>
                   </View>
-                ) : channel?.owner_id !== user?.id &&
-                  channelMemberStatus?.status?.trim() === "pending" ? (
+                )}
+
+              {channel?.owner_id !== user?.id &&
+                channelMemberStatus?.status?.trim() === "pending" && (
                   <View
                     style={{
                       alignItems: "center",
@@ -486,34 +460,33 @@ const MessagingRoom = ({ route }) => {
                       </Text>
                     </Pressable>
                   </View>
-                ) : channel?.owner_id !== user?.id &&
-                  channelMemberStatus?.status?.trim() === "accepted" ? (
+                )}
+
+              {channel?.owner_id !== user?.id &&
+                channelMemberStatus?.status?.trim() === "accepted" && (
                   <>
                     {channels?.map((message, index) => (
                       <ChannelMsg key={index} message={message} user={user} />
                     ))}
                   </>
-                ) : (
-                  <Pressable
-                    onPress={() => setDropDown(false)}
-                    style={{ height: "auto" }}
-                  >
-                    {channels?.length > 0 && (
-                      <>
-                        {channels?.map((message, index) => (
-                          <ChannelMsg
-                            key={index}
-                            message={message}
-                            user={user}
-                          />
-                        ))}
-                      </>
-                    )}
-                  </Pressable>
                 )}
-              </ScrollView>
-            </ImageBackground>
-          )}
+
+              {channel?.owner_id === user?.id && (
+                <Pressable
+                  onPress={() => setDropDown(false)}
+                  style={{ height: "auto" }}
+                >
+                  {channels?.length > 0 && (
+                    <>
+                      {channels?.map((message, index) => (
+                        <ChannelMsg key={index} message={message} user={user} />
+                      ))}
+                    </>
+                  )}
+                </Pressable>
+              )}
+            </ScrollView>
+          </ImageBackground>
 
           {channelMemberStatus?.status?.trim() === "accepted" ||
           channel?.owner_id === user?.id ? (

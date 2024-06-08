@@ -1,22 +1,13 @@
 import {
   View,
   Text,
-  SafeAreaView,
-  StatusBar,
   TouchableOpacity,
   Dimensions,
-  ScrollView,
-  TextInput,
-  Button,
-  Modal,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, {  } from "react";
 import { colors } from "../../../colors";
 import { styles } from "../../constants/styles";
 import { Feather } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import ResetPinModal from "./ResetPinModal";
 
 const itemWidth = Dimensions.get("window").width;
 const itemHeight = Dimensions.get("window").height;

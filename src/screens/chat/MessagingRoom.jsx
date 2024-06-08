@@ -1,80 +1,88 @@
 import React, { useCallback, useEffect, useState } from "react";
 import {
-  ScrollView,
-  View,
-  Text,
-  TextInput,
   StatusBar,
-  Image,
-  ImageBackground,
   SafeAreaView,
   Dimensions,
-  Pressable,
   Keyboard,
   Alert,
 } from "react-native";
-import { styles } from "../../constants/styles";
-import { MaterialIcons } from "@expo/vector-icons";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { colors } from "../../../colors";
-import { Entypo } from "@expo/vector-icons";
-import { Feather } from "@expo/vector-icons";
 import axios from "axios";
 import { BASE_URL, BASE_URL2 } from "../../config";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import ChannelMsg from "./ChannelMsg";
-import UserMsg from "./UserMsg";
 import { launchImageLibrary } from "react-native-image-picker";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  changeMessageState,
-  updateMessageState,
-} from "../../redux/directMessageReducer";
-import { ref, get, onValue } from "firebase/database";
+import { ref, onValue, set, get, update } from "firebase/database";
 import { db } from "../../../firebaseConfig";
 import moment from "moment";
+import { sendNotification } from "../../constants/utils/SendNotification";
+import MessagingRoomComp from "../../components/chat/MessagingRoomComp";
 
 const itemHeight = Dimensions.get("window").height;
 
 const MessagingRoom = ({ route }) => {
   const channel = route.params?.channel;
   const item = route.params?.item;
+  const user = route.params?.user;
   const channelMemberStatus = route.params?.channelMemberStatus;
-
-  const devicesMessages = useSelector((state) => state.message.messages);
-
-  const dispatch = useDispatch();
 
   const navigation = useNavigation();
 
   const [inputHeight, setInputHeight] = useState(itemHeight * 0.06);
   const [messages, setMessages] = useState([]);
   const [channels, setChannels] = useState([]);
-  const [user, setUser] = useState();
   const [message, setMessage] = useState("");
   const [image, setImage] = useState(null);
   const [file, setFile] = useState(null);
   const [lastSeen, setLastSeen] = useState("Loading...");
   const [dropDown, setDropDown] = useState(false);
-  // const [channelMemberStatus, setChannelmemberStatus] = useState({});
-  const [createChannel, setCreateChannel] = useState("");
+  const [fcmToken, setFcmToken] = useState("");
+  const [channelMembers, setChannelMembers] = useState([]);
+  const [unreadMessages, setUnReadMessages] = useState();
 
-  useEffect(() => {
-    const fetchData = async () => {
+  const createFbChannelUser = async () => {
+    if (user) {
+      const lastSeen = Date.now();
+
       try {
-        const storedItems = await AsyncStorage.getItem("user_data");
+        const channelRef = ref(db, "channel/" + channel?.channel_id);
+        const channelSnapshot = await get(channelRef);
 
-        if (storedItems !== null) {
-          const parsedItems = JSON.parse(storedItems);
-          setUser(parsedItems);
+        if (channelSnapshot.exists()) {
+          setChannelMembers(channelSnapshot.val()?.members);
+
+          update(ref(db, "channel/" + channel?.channel_id), {
+            members: channelSnapshot
+              .val()
+              ?.members.map((item) =>
+                item?.email === user?.email
+                  ? { email: user?.email, lastSeen, fcmToken }
+                  : [
+                      ...channelSnapshot.val()?.members,
+                      { email: user?.email, lastSeen, fcmToken },
+                    ]
+              ),
+          });
+        } else {
+          set(ref(db, "channel/" + channel?.channel_id), {
+            members: [{ email: user?.email, lastSeen, fcmToken }],
+          });
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.log(error);
       }
-    };
+    }
+  };
 
-    fetchData();
-  }, []);
+  useEffect(() => {
+    if (user && channel && fcmToken) {
+      if (
+        channelMemberStatus?.status?.trim() === "accepted" ||
+        channel?.owner_id === user?.id
+      ) {
+        createFbChannelUser();
+      }
+    }
+  }, [channel, channelMemberStatus, user, fcmToken]);
 
   const handleContentSizeChange = (event) => {
     // Set a maximum height for the input container
@@ -141,20 +149,24 @@ const MessagingRoom = ({ route }) => {
     }, [item, user])
   );
 
-  // update device message if message isn't present yet
-  // console.log(messages)
+  // update sender message
   useEffect(() => {
     if (messages?.length > 0) {
-      if (
-        !devicesMessages.some((deviceMessage) => deviceMessage.id === item.id)
-      ) {
-        const lastMessage = messages?.slice(-1)[0];
-        const savedItem = {
-          ...item,
-          lastMessage: lastMessage?.message || lastMessage?.image,
-          time: lastMessage?.timestamp,
-        };
-        dispatch(changeMessageState(savedItem));
+      const lastMessage = messages?.slice(-1)[0];
+      const savedItem = {
+        lastMessage: lastMessage?.message || lastMessage?.image,
+        time: lastMessage?.timestamp,
+        messageCount: 0,
+        id: item.id,
+        name: `${item?.name} `,
+        avatar: item?.avatar,
+      };
+
+      try {
+        // update user messages
+        update(ref(db, `users/${user?.id}/messages/${item?.id}`), savedItem);
+      } catch (error) {
+        console.log(error);
       }
     }
   }, [messages]);
@@ -201,9 +213,17 @@ const MessagingRoom = ({ route }) => {
         likes_users: [],
       };
 
+      const title = channel?.name;
+      const body = message.trim();
+      const data = {
+        screen: "MessagingRoom",
+        channel,
+        user,
+      };
+
       if (message.trim() !== "") {
         try {
-          const res = await fetch(`${BASE_URL2}/post`, {
+          await fetch(`${BASE_URL2}/post`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -215,6 +235,11 @@ const MessagingRoom = ({ route }) => {
           setImage(null);
           Keyboard.dismiss();
 
+          channelMembers.map(async (item) => {
+            // send push notification
+            await sendNotification(item?.fcmToken, title, body, data);
+          });
+
           fetchChannelMessages();
         } catch (error) {
           console.log(error);
@@ -223,7 +248,7 @@ const MessagingRoom = ({ route }) => {
         setMessage("");
         Keyboard.dismiss();
       }
-    } else {
+    } else if (item) {
       const messageData = new FormData();
 
       messageData.append("user_id", user?.id);
@@ -231,31 +256,48 @@ const MessagingRoom = ({ route }) => {
       messageData.append("message", message.trim());
       image && messageData.append("image", image);
 
+      const title = `${item?.name}`;
+      const body = message.trim();
+      const data = {
+        screen: "MessagingRoom",
+        item,
+        user,
+      };
+
       if (message.trim() !== "" || image) {
         try {
-          const res = await fetch(
-            `${BASE_URL}/api/v1/chat/private_message.php`,
-            {
-              method: "POST",
-              body: messageData,
-            }
-          );
-
-          // console.log(messageData);
+          await fetch(`${BASE_URL}/api/v1/chat/private_message.php`, {
+            method: "POST",
+            body: messageData,
+          });
 
           setMessage("");
           setImage(null);
           Keyboard.dismiss();
 
-          // update device last message
+          // update partner last message
           const savedItem = {
-            ...item,
             lastMessage: message || image,
             time: Date.now(),
+            id: user.id,
+            messageCount: 1,
+            name: `${user?.lname} ${user?.fname}`,
+            avatar: user?.image,
           };
 
-          dispatch(updateMessageState(savedItem));
+          update(ref(db, `users/${item?.id}/messages/${user?.id}`), savedItem);
 
+          // send push notification
+          if (fcmToken) {
+            await sendNotification(fcmToken, title, body, data);
+
+            // update receiver unread messages
+            update(ref(db, "users/" + item?.id), {
+              unreadMessages: unreadMessages + 1,
+            });
+          }
+
+          // retrieve messages
           fetchMessages();
         } catch (error) {
           console.log(error);
@@ -268,17 +310,38 @@ const MessagingRoom = ({ route }) => {
   };
 
   const createChannelRequest = async () => {
-    const data = {
+    const formData = {
       request_user_id: user?.id,
       channel_id: channel?.channel_id,
     };
 
-    try {
-      const res = await axios.post(`${BASE_URL2}/channel-request`, data);
+    const title = channel?.name;
+    const body = `${user?.fname} ${user?.lname} requested to join your channel`;
+    const data = {
+      screen: "MessagingRoom",
+      channel,
+      user,
+    };
+    let fcmTken = "";
 
-      setCreateChannel(res.data);
+    try {
+      const userRef = ref(db, "users/" + channel.owner_id);
+
+      await axios.post(`${BASE_URL2}/channel-request`, formData);
 
       Alert.alert("Channel request created successfully");
+
+      createFbChannelUser();
+
+      // Listen for real-time changes to the user's data
+      onValue(userRef, (snapshot) => {
+        if (snapshot.exists()) {
+          fcmTken = snapshot.val().fcmToken;
+        }
+      });
+
+      // send notification
+      await sendNotification(fcmTken, title, body, data);
 
       navigation.goBack();
     } catch (error) {
@@ -286,7 +349,7 @@ const MessagingRoom = ({ route }) => {
     }
   };
 
-  const getFbUser = async () => {
+  const getFcmUser = async () => {
     if (item) {
       try {
         const userRef = ref(db, "users/" + item.id);
@@ -296,6 +359,9 @@ const MessagingRoom = ({ route }) => {
         // Listen for real-time changes to the user's data
         onValue(userRef, (snapshot) => {
           if (snapshot.exists()) {
+            setFcmToken(snapshot.val().fcmToken);
+            setUnReadMessages(snapshot.val()?.unreadMessages);
+
             const lastSeenTime = snapshot.val().lastSeen;
             const currentTime = Date.now();
             const diffMs = currentTime - lastSeenTime;
@@ -313,6 +379,26 @@ const MessagingRoom = ({ route }) => {
             setLastSeen("Last seen unknown");
           }
         });
+
+        // updated user's unread messages
+        update(ref(db, "users/" + user?.id), {
+          unreadMessages: 0,
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    } else if (channel) {
+      try {
+        const userRef = ref(db, "users/" + user.id);
+
+        // const userSnapshot = await get(userRef);
+
+        // Listen for real-time changes to the user's data
+        onValue(userRef, (snapshot) => {
+          if (snapshot.exists()) {
+            setFcmToken(snapshot.val().fcmToken);
+          }
+        });
       } catch (error) {
         console.log(error);
       }
@@ -320,242 +406,34 @@ const MessagingRoom = ({ route }) => {
   };
 
   useEffect(() => {
-    if (item) {
-      getFbUser();
+    if (item || channel) {
+      getFcmUser();
     }
-  }, [item]);
+  }, [item, channel, user]);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar backgroundColor={colors.white} barStyle={"dark-content"} />
 
-      <View style={[styles.container, { flex: 0 }]}>
-        <View style={{ height: "100%" }}>
-          <View style={styles.chatBar}>
-            <View style={styles.row}>
-              <MaterialIcons
-                name="arrow-back-ios"
-                size={24}
-                color="black"
-                onPress={() => navigation.goBack()}
-              />
-
-              <Image
-                source={
-                  channel?.icon
-                    ? { uri: channel?.icon }
-                    : item?.avatar
-                    ? { uri: item?.avatar }
-                    : require("../../../assets/images/flexLogo.png")
-                }
-                style={[styles.profileIcon, { marginLeft: -10 }]}
-              />
-
-              <View style={{ alignItems: "flex-start" }}>
-                <Text className={"text-xl font-bold text-18px]"}>
-                  {channel?.name ? channel?.name : item?.fname}
-                </Text>
-                <Text
-                  style={[
-                    styles.smallTxt,
-                    { color: "#7e7e7e", fontWeight: "400", textAlign: "left" },
-                  ]}
-                >
-                  {lastSeen}
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.row}>
-              {channel?.owner_id === user?.id && (
-                <Feather
-                  name="more-vertical"
-                  size={24}
-                  color="black"
-                  onPress={() => setDropDown((prev) => !prev)}
-                />
-              )}
-            </View>
-          </View>
-
-          {dropDown && (
-            <Pressable
-              style={{
-                backgroundColor: "white",
-                position: "absolute",
-                right: 0,
-                padding: 20,
-                top: 60,
-                zIndex: 999,
-                elevation: 5,
-              }}
-              onPress={() =>
-                navigation.navigate("channelRequests", {
-                  id: channel?.owner_id,
-                })
-              }
-            >
-              <Text>See channel requests</Text>
-            </Pressable>
-          )}
-
-          {messages.length > 0 && (
-            <ImageBackground
-              source={require("../../../assets/images/bg.png")}
-              style={styles.bgImg}
-              resizeMode="cover"
-            >
-              <ScrollView
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{
-                  paddingVertical: itemHeight * 0.02,
-                  paddingBottom: itemHeight * 0.06,
-                }}
-              >
-                {messages.map((message, index) => (
-                  <UserMsg key={index} message={message} user={user} />
-                ))}
-              </ScrollView>
-            </ImageBackground>
-          )}
-
-          <ImageBackground
-            source={require("../../../assets/images/bg.png")}
-            style={styles.bgImg}
-            resizeMode="cover"
-          >
-            <ScrollView showsVerticalScrollIndicator={false}>
-              {channel?.owner_id !== user?.id &&
-                channelMemberStatus?.status?.trim() === "rejected" && (
-                  <View
-                    style={{
-                      alignItems: "center",
-                      justifyContent: "center",
-                      height: itemHeight * 0.8,
-                    }}
-                  >
-                    <Pressable
-                      style={[styles.button]}
-                      onPress={createChannelRequest}
-                    >
-                      <Text style={styles.buttonTxt}>
-                        Request to join this channel
-                      </Text>
-                    </Pressable>
-                  </View>
-                )}
-
-              {channel?.owner_id !== user?.id &&
-                channelMemberStatus?.status?.trim() === "pending" && (
-                  <View
-                    style={{
-                      alignItems: "center",
-                      justifyContent: "center",
-                      height: itemHeight * 0.8,
-                    }}
-                  >
-                    <Pressable style={styles.button}>
-                      <Text style={styles.buttonTxt}>
-                        Channel request is pending
-                      </Text>
-                    </Pressable>
-                  </View>
-                )}
-
-              {channel?.owner_id !== user?.id &&
-                channelMemberStatus?.status?.trim() === "accepted" && (
-                  <>
-                    {channels?.map((message, index) => (
-                      <ChannelMsg key={index} message={message} user={user} />
-                    ))}
-                  </>
-                )}
-
-              {channel?.owner_id === user?.id && (
-                <Pressable
-                  onPress={() => setDropDown(false)}
-                  style={{ height: "auto" }}
-                >
-                  {channels?.length > 0 && (
-                    <>
-                      {channels?.map((message, index) => (
-                        <ChannelMsg key={index} message={message} user={user} />
-                      ))}
-                    </>
-                  )}
-                </Pressable>
-              )}
-            </ScrollView>
-          </ImageBackground>
-
-          {channelMemberStatus?.status?.trim() === "accepted" ||
-          channel?.owner_id === user?.id ? (
-            <View style={styles.msgInputCon}>
-              <Entypo name="plus" size={26} color="black" onPress={pickImage} />
-
-              <TextInput
-                placeholder="Type a message"
-                style={[
-                  styles.input,
-                  {
-                    width: "73%",
-                    height: inputHeight,
-                    maxHeight: itemHeight * 0.13,
-                  },
-                ]}
-                multiline
-                cursorColor={"gray"}
-                onContentSizeChange={handleContentSizeChange}
-                onChangeText={(value) => setMessage(value)}
-                value={message}
-              />
-
-              <Entypo name="emoji-happy" size={24} color="black" />
-
-              <Pressable disabled={!message} onPress={handleSendMessage}>
-                <MaterialIcons
-                  name={message !== "" ? "send" : "mic-none"}
-                  size={24}
-                  color="black"
-                />
-              </Pressable>
-            </View>
-          ) : null}
-
-          {item && (
-            <View style={styles.msgInputCon}>
-              <Entypo name="plus" size={26} color="black" onPress={pickImage} />
-
-              <TextInput
-                placeholder="Type a message"
-                style={[
-                  styles.input,
-                  {
-                    width: "73%",
-                    height: inputHeight,
-                    maxHeight: itemHeight * 0.13,
-                  },
-                ]}
-                multiline
-                cursorColor={"gray"}
-                onContentSizeChange={handleContentSizeChange}
-                onChangeText={(value) => setMessage(value)}
-                value={message}
-              />
-
-              <Entypo name="emoji-happy" size={24} color="black" />
-
-              <Pressable disabled={!message} onPress={handleSendMessage}>
-                <MaterialIcons
-                  name={message !== "" ? "send" : "mic-none"}
-                  size={24}
-                  color="black"
-                />
-              </Pressable>
-            </View>
-          )}
-        </View>
-      </View>
+      <MessagingRoomComp
+        channel={channel}
+        item={item}
+        lastSeen={lastSeen}
+        user={user}
+        setDropDown={setDropDown}
+        dropDown={dropDown}
+        messages={messages}
+        channelMemberStatus={channelMemberStatus}
+        createChannelRequest={createChannelRequest}
+        channels={channels}
+        pickImage={pickImage}
+        handleContentSizeChange={handleContentSizeChange}
+        message={message}
+        setMessage={setMessage}
+        inputHeight={inputHeight}
+        handleSendMessage={handleSendMessage}
+        channelMembers={channelMembers}
+      />
     </SafeAreaView>
   );
 };

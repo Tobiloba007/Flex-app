@@ -1,28 +1,12 @@
-import {
-  View,
-  Text,
-  SafeAreaView,
-  StatusBar,
-  TouchableOpacity,
-  Dimensions,
-  ScrollView,
-  TextInput,
-  Button,
-  Modal,
-  Alert,
-} from "react-native";
+import { View, SafeAreaView, StatusBar, ScrollView, Alert } from "react-native";
 import React, { useEffect, useState } from "react";
 import { colors } from "../../../colors";
 import { styles } from "../../constants/styles";
-import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ResetPinModal from "./ResetPinModal";
 import PinComponent from "./PinComponent";
 import { BASE_URL } from "../../config";
-
-const itemWidth = Dimensions.get("window").width;
-const itemHeight = Dimensions.get("window").height;
 
 const Pin = () => {
   const navigation = useNavigation();
@@ -39,7 +23,6 @@ const Pin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [userPin, setUserPin] = useState();
-  const [existing, setExistingPin] = useState();
   const [message, setMessage] = useState("");
 
   useEffect(() => {

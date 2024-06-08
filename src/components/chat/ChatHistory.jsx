@@ -16,22 +16,25 @@ import moment from "moment";
 const itemWidth = Dimensions.get("window").width;
 const itemHeight = Dimensions.get("window").height;
 
-const ChatHistory = ({ refRBConversationSheet, devicesMessages }) => {
+const ChatHistory = ({
+  refRBConversationSheet,
+  devicesMessages,
+  messages,
+  user,
+}) => {
   const navigation = useNavigation();
-
-  // console.log(devicesMessages)
 
   return (
     <View
       style={{
         flex: 1,
-        justifyContent: devicesMessages?.length === 0 ? "center" : "flex-start",
-        alignItems: devicesMessages?.length === 0 ? "center" : "flex-start",
+        justifyContent: messages?.length === 0 ? "center" : "flex-start",
+        alignItems: messages?.length === 0 ? "center" : "flex-start",
         paddingVertical:
-          devicesMessages?.length === 0 ? itemWidth * 0.1 : itemWidth * 0.02,
+          messages?.length === 0 ? itemWidth * 0.1 : itemWidth * 0.02,
       }}
     >
-      {devicesMessages?.length === 0 && (
+      {messages?.length === 0 && (
         <>
           <Image
             source={require("../../../assets/icons/chat-svg.png")}
@@ -57,15 +60,15 @@ const ChatHistory = ({ refRBConversationSheet, devicesMessages }) => {
         </>
       )}
 
-      {devicesMessages?.length > 0 && (
+      {messages?.length > 0 && (
         <View style={{ marginBottom: itemWidth * 0.06, width: "100%" }}>
-          {devicesMessages?.map((item) => (
+          {messages?.map((item) => (
             <Pressable
               key={item.id}
               android_ripple={{ color: colors.soft }}
               style={[styles.row, { padding: 6, width: "100%" }]}
               onPress={() => {
-                navigation.navigate("MessagingRoom", { item });
+                navigation.navigate("MessagingRoom", { item, user });
               }}
             >
               <Image
@@ -74,11 +77,26 @@ const ChatHistory = ({ refRBConversationSheet, devicesMessages }) => {
               />
 
               <View style={{ alignItems: "flex-start" }}>
-                <Text
-                  style={{ fontWeight: "400", fontSize: itemWidth * 0.038 }}
+                <View
+                  style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
                 >
-                  {item?.fname} {item?.lname}
-                </Text>
+                  <Text
+                    style={{ fontWeight: "400", fontSize: itemWidth * 0.038 }}
+                  >
+                    {item?.name}
+                  </Text>
+
+                  {item?.messageCount === 1 && (
+                    <View
+                      style={{
+                        backgroundColor: colors.primary,
+                        height: 8,
+                        width: 8,
+                        borderRadius: 50,
+                      }}
+                    ></View>
+                  )}
+                </View>
 
                 <View
                   style={{
@@ -93,13 +111,13 @@ const ChatHistory = ({ refRBConversationSheet, devicesMessages }) => {
                       fontWeight: "300",
                       color: "gray",
                       fontSize: itemWidth * 0.03,
-                      width:'50%'
+                      width: "50%",
                     }}
                     numberOfLines={1}
                     ellipsizeMode="tail"
                   >
                     {item?.lastMessage?.startsWith("https") ? (
-                      <MaterialIcons name="image" size={18} color="8e8e8e" />
+                      <MaterialIcons name="image" size={18} color="#8e8e8e" />
                     ) : (
                       `${item?.lastMessage}`
                     )}
@@ -122,7 +140,7 @@ const ChatHistory = ({ refRBConversationSheet, devicesMessages }) => {
       )}
 
       <TouchableOpacity
-        style={[styles.button, {}]}
+        style={[styles.button, { alignSelf: "center" }]}
         activeOpacity={0.8}
         onPress={() => refRBConversationSheet?.current?.open()}
       >

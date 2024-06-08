@@ -22,6 +22,8 @@ import ChatHistory from "../../components/chat/ChatHistory";
 import ChannelSearch from "../../components/chat/ChannelSearch";
 import ChannelListItem from "./ChannelListItem";
 import { useSelector } from "react-redux";
+import { ref, onValue } from "firebase/database";
+import { db } from "../../../firebaseConfig";
 
 const itemWidth = Dimensions.get("window").width;
 
@@ -37,6 +39,8 @@ const ChatRoom = () => {
   const [channelLists, setChannelLists] = useState([]);
   const [channelSearch, setChannelSearch] = useState([]);
   const [channelQuery, setChannelQuery] = useState("");
+  const [messages, setMessages] = useState();
+  const [snapshotMessage, setSnapshotMessage] = useState(undefined);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -104,6 +108,30 @@ const ChatRoom = () => {
       unsubscribe = false;
     };
   }, [channelQuery]);
+
+  const getFcmUserMessages = async () => {
+    try {
+      const messageRef = ref(db, `users/${user?.id}/messages`);
+
+      onValue(messageRef, (snapshot) => {
+        if (snapshot.exists()) {
+          const resultArray = Object.values(snapshot.val());
+
+          const sortedData = resultArray.sort((a, b) => b.time - a.time);
+
+          setMessages(sortedData);
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      getFcmUserMessages();
+    }
+  }, [user]);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -176,6 +204,8 @@ const ChatRoom = () => {
                 <ChatHistory
                   refRBConversationSheet={refRBConversationSheet}
                   devicesMessages={devicesMessages}
+                  messages={messages}
+                  user={user}
                 />
               )}
             </View>

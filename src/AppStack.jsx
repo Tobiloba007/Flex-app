@@ -121,7 +121,7 @@ const AppStack = () => {
 
   return (
     <Stack.Navigator
-      initialRouteName={showSplash ? "splash" : "pin"}
+      initialRouteName={showSplash ? "splash" : "tab"}
       screenOptions={{
         transitionSpec: { open: MyTransition, close: MyTransition },
         headerShown: false,
@@ -129,11 +129,11 @@ const AppStack = () => {
     >
       {showSplash && <Stack.Screen name="splash" component={Splash} />}
 
-      {!user && <Stack.Screen name="login" component={Login} />}
-
-      <Stack.Screen name="pin" component={Pin} />
+      {<Stack.Screen name="login" component={Login} />}
 
       <Stack.Screen name="tab" component={Tab} />
+
+      <Stack.Screen name="pin" component={Pin} />
 
       <Stack.Screen name="ChatRoom" component={ChatRoom} />
       <Stack.Screen name="MessagingRoom" component={MessagingRoom} />
@@ -149,8 +149,14 @@ const AppStack = () => {
       <Stack.Screen name="profile" component={Profile} />
       <Stack.Screen name="editProfile" component={EditProfile} />
       <Stack.Screen name="photoDisplay" component={PhotoDisplay} />
-      <Stack.Screen name="forgotPasswordEmail" component={ForgotPasswordEmail} />
-      <Stack.Screen name="forgotPasswordVerify" component={ForgotPasswordVerify} />
+      <Stack.Screen
+        name="forgotPasswordEmail"
+        component={ForgotPasswordEmail}
+      />
+      <Stack.Screen
+        name="forgotPasswordVerify"
+        component={ForgotPasswordVerify}
+      />
       <Stack.Screen name="forgotPasswordNew" component={ForgotPasswordNew} />
 
       <Stack.Screen

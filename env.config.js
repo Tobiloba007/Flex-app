@@ -10,3 +10,5 @@ export const webClientId =
 export const clientId = "AIzaSyAM6HQIqngHYanK4MLO-UUYojy-YJ-JPoI";
 
 export const dynamicLinkApiKey = "AIzaSyDXRpPTcT2RohGV9fvzsZMxYyhFRog6MTQ";
+
+export const projectId = "flex-push-notification";

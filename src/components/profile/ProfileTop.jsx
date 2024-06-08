@@ -70,7 +70,7 @@ export default function ProfileTop() {
   const handleLogout = async () => {
     await AsyncStorage.removeItem("user_data");
     dispatch(resetMessageState());
-    navigation.navigate("loginScreen");
+    navigation.navigate("login");
   };
 
   return (

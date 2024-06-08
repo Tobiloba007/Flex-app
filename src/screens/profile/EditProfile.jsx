@@ -21,6 +21,7 @@ import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import { BASE_URL } from "../../config";
 import axios from "axios";
+import { launchImageLibrary } from "react-native-image-picker";
 
 const itemWidth = Dimensions.get("window").width;
 const itemHeight = Dimensions.get("window").height;
@@ -66,17 +67,27 @@ const EditProfile = () => {
   }, [userUpdated]);
 
   const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [1, 2],
-      quality: 1,
-      base64: true,
+    // let result = await ImagePicker.launchImageLibraryAsync({
+    //   mediaTypes: ImagePicker.MediaTypeOptions.All,
+    //   allowsEditing: true,
+    //   aspect: [1, 2],
+    //   quality: 1,
+    //   base64: true,
+    // });
+
+    // if (!result?.canceled) {
+    //   setImage_url(result?.assets[0]?.base64);
+    //   setImage(result?.assets[0]?.uri);
+    // }
+
+    const result = await launchImageLibrary({
+      mediaType: "photo",
+      includeBase64: true,
     });
 
     if (!result?.canceled) {
       setImage_url(result?.assets[0]?.base64);
-      setImage(result?.assets[0]?.uri);
+      setImage(result?.assets[0].uri);
     }
   };
 
@@ -150,7 +161,7 @@ const EditProfile = () => {
 
       const res = await axios.post(`${BASE_URL}/account_edit.php`, userData);
 
-      console.log(res.data);
+      // console.log(res.data);
 
       getUserProfile();
       Alert.alert("Profile updated successfully");

@@ -72,6 +72,7 @@ const ChannelListItem = ({ channel }) => {
               navigation.navigate("MessagingRoom", {
                 channel,
                 channelMemberStatus,
+                user,
               })
             }
           >

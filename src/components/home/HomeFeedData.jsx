@@ -18,6 +18,9 @@ import moment from "moment";
 import FeaturedContent from "./FeaturedContent";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { onValue, ref } from "firebase/database";
+import { db } from "../../../firebaseConfig";
+import { sendNotification } from "../../constants/utils/SendNotification";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -30,8 +33,11 @@ const HomeFeedData = ({ item }) => {
   const [likes, setLikes] = useState(item?.likes);
   const [postComments, setPostComments] = useState([]);
   const [channelMemberStatus, setChannelmemberStatus] = useState({});
+  const [fcmToken, setFcmToken] = useState("");
 
   const navigation = useNavigation();
+
+  // console.log(item)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,6 +79,29 @@ const HomeFeedData = ({ item }) => {
     fetchUserDet();
   }, []);
 
+  const getFbUser = async () => {
+    try {
+      const userRef = ref(db, "users/" + item?.user);
+
+      // const userSnapshot = await get(userRef);
+
+      // Listen for real-time changes to the user's data
+      onValue(userRef, (snapshot) => {
+        if (snapshot.exists()) {
+          setFcmToken(snapshot.val().fcmToken);
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (item) {
+      getFbUser();
+    }
+  }, [item]);
+
   const handleLike = async () => {
     setIsLiked(!isLiked);
 
@@ -81,6 +110,12 @@ const HomeFeedData = ({ item }) => {
     } else {
       setLikes(likes + 1);
     }
+
+    const data = {
+      screen: "tab",
+      item,
+      user,
+    };
 
     try {
       const res = await axios.put(
@@ -95,7 +130,15 @@ const HomeFeedData = ({ item }) => {
         }
       );
 
-      console.log(res.data);
+      // console.log(res.data);
+
+      if (!isLiked) {
+        // send push notification
+        const body = "Liked your post";
+        const title = `${user?.fname} ${user?.lname}`;
+
+        await sendNotification(fcmToken, title, body, data);
+      }
     } catch (error) {
       console.log(error?.response?.data);
     }

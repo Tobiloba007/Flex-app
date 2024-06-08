@@ -1,5 +1,5 @@
-import { Dimensions, SafeAreaView, ScrollView, StatusBar } from "react-native";
-import React, { useCallback, useEffect, useState } from "react";
+import { Dimensions, SafeAreaView, ScrollView } from "react-native";
+import React, { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import HomeTop from "../components/home/HomeTop";
 import FriendsOnline from "../components/home/FriendsOnline";
@@ -12,6 +12,7 @@ const itemWidth = Dimensions.get("window").width;
 
 export default function Home() {
   const [user, setUser] = useState(null);
+  const [fcmToken, setFcmToken] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,7 +32,17 @@ export default function Home() {
     fetchData();
   }, []);
 
-  const createFbUser = async () => {
+  useState(() => {
+    const getToken = async () => {
+      const token = await AsyncStorage.getItem("fcmToken");
+
+      setFcmToken(token);
+    };
+
+    getToken();
+  }, []);
+
+  const createFcmUser = async () => {
     if (user) {
       const lastSeen = Date.now();
 
@@ -44,12 +55,16 @@ export default function Home() {
             username: user?.fname,
             email: user?.email,
             lastSeen,
+            fcmToken,
           });
         } else {
           set(ref(db, "users/" + user?.id), {
             username: user?.fname,
             email: user?.email,
             lastSeen,
+            fcmToken,
+            unreadMessages: 0,
+            messages: [],
           });
         }
       } catch (error) {
@@ -60,7 +75,7 @@ export default function Home() {
 
   useEffect(() => {
     if (user) {
-      createFbUser();
+      createFcmUser();
     }
   }, [user]);
 

@@ -10,7 +10,7 @@ import { BASE_URL } from "../../config";
 const itemHeight = Dimensions.get("window").height;
 const itemWidth = Dimensions.get("window").width;
 
-const NewConversationItem = ({ refRBSheet, item }) => {
+const NewConversationItem = ({ refRBSheet, item, user }) => {
   const navigation = useNavigation();
 
   // console.log(item)
@@ -21,7 +21,7 @@ const NewConversationItem = ({ refRBSheet, item }) => {
       style={[styles.row, { padding: 6 }]}
       onPress={() => {
         refRBSheet?.current?.close();
-        navigation.navigate("MessagingRoom", {item});
+        navigation.navigate("MessagingRoom", {item, user});
       }}
     >
       <Image source={{ uri: item?.avatar }} style={styles.profileIcon} />
@@ -75,6 +75,7 @@ const NewConversationItems = ({ user, refRBSheet }) => {
             refRBSheet={refRBSheet}
             key={index}
             item={item}
+            user={user}
           />
         ))}
       </View>

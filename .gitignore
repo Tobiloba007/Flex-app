@@ -31,6 +31,7 @@ yarn-error.*
 # local env files
 .env*.local
 env.config.js
+flex-push-notification-firebase-adminsdk-lykbi-72863a9068.json
 
 # typescript
 *.tsbuildinfo

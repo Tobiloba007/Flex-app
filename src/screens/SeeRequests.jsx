@@ -69,32 +69,34 @@ export default function SeeRequests() {
   //   fetchFriends()
   // },[])
 
-  useEffect(() => {
-    let subscribe = true;
+  const fetchRequests = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get(
+        `${BASE_URL}/api/v1/notification/notifications.php?id=${user?.id}`
+      );
 
-    const fetchRequests = async () => {
-      setLoading(true);
-      try {
-        const res = await axios.get(
-          `${BASE_URL}/api/v1/notification/notifications.php?id=${user?.id}`
-        );
+      setRequests(res.data);
 
-        setRequests(res.data);
-
-        setLoading(false);
-      } catch (error) {
-        setLoading(false);
-        console.log(error);
-      }
-    };
-
-    if (subscribe) {
-      fetchRequests();
-
-      // fetchFriends();
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
     }
+  };
 
-    return () => (subscribe = false);
+  useEffect(() => {
+    if (user) {
+      let subscribe = true;
+
+      if (subscribe) {
+        fetchRequests();
+
+        // fetchFriends();
+      }
+
+      return () => (subscribe = false);
+    }
   }, [user]);
 
   return (

@@ -16,18 +16,19 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesome5, MaterialIcons, FontAwesome6 } from "@expo/vector-icons";
 import { colors } from "../../../colors";
 import { styles } from "../../constants/styles";
+import { db } from "../../../firebaseConfig";
+import { ref, onValue } from "firebase/database";
+import { sendNotification } from "../../constants/utils/SendNotification";
 
 const itemWidth = Dimensions.get("window").width;
 
 const FriendProfile = ({ route }) => {
   const { item } = route.params;
 
-  // console.log(item)
-
   const [dropId, setDropId] = useState("");
   const [dropDown, setDropDown] = useState(false);
   const [user, setUser] = useState();
-  //   console.log(user)
+  const [fcmToken, setFcmToken] = useState("");
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -47,8 +48,6 @@ const FriendProfile = ({ route }) => {
     fetchUser();
   }, []);
 
-  //   console.log(item);
-
   const handleReport = (id) => {
     setDropDown(false);
     setReport(true);
@@ -64,6 +63,29 @@ const FriendProfile = ({ route }) => {
     setDropDown(true);
   };
 
+  const getFbUser = async () => {
+    try {
+      const userRef = ref(db, "users/" + item?.id);
+
+      // const userSnapshot = await get(userRef);
+
+      // Listen for real-time changes to the user's data
+      onValue(userRef, (snapshot) => {
+        if (snapshot.exists()) {
+          setFcmToken(snapshot.val().fcmToken);
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (item) {
+      getFbUser();
+    }
+  }, [item]);
+
   const sendRequest = async () => {
     const formData = new FormData();
     formData.append("request_from", user?.id);
@@ -71,15 +93,27 @@ const FriendProfile = ({ route }) => {
     formData.append("flag", "friend_request");
     formData.append("receiver_name", `${item?.fname} ${item?.lname}`);
 
+    const data = {
+      screen: "tab",
+      item,
+      user,
+    };
+
     try {
       const res = await fetch(
         `${BASE_URL}/api/v1/friend/send_cancel_friend_request.php`,
         { method: "POST", body: formData }
       );
 
-      const data = await res.json();
+      const resData = await res.json();
 
-      Alert.alert(data?.message);
+      Alert.alert(resData?.message);
+
+      // send push notification
+      const body = 'Sent you a friend request'
+      const title = `${user?.fname} ${user?.lname}`
+
+      await sendNotification(fcmToken, title, body, data);
     } catch (error) {}
   };
 

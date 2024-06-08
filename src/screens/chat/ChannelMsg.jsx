@@ -6,6 +6,9 @@ import { useNavigation } from "@react-navigation/native";
 import { BASE_URL2 } from "../../config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import { onValue, ref } from "firebase/database";
+import { db } from "../../../firebaseConfig";
+import { sendNotification } from "../../constants/utils/SendNotification";
 
 const ChannelMsg = ({ message, user }) => {
   const navigation = useNavigation();
@@ -17,6 +20,7 @@ const ChannelMsg = ({ message, user }) => {
   );
   const [likes, setLikes] = useState(message?.likes);
   const [postComments, setPostComments] = useState([]);
+  const [fcmToken, setFcmToken] = useState("");
 
   useEffect(() => {
     const fetchUserDet = async () => {
@@ -35,6 +39,29 @@ const ChannelMsg = ({ message, user }) => {
     fetchUserDet();
   }, []);
 
+  const getFbUser = async () => {
+    try {
+      const userRef = ref(db, "users/" + message?.user);
+
+      // const userSnapshot = await get(userRef);
+
+      // Listen for real-time changes to the user's data
+      onValue(userRef, (snapshot) => {
+        if (snapshot.exists()) {
+          setFcmToken(snapshot.val().fcmToken);
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (message) {
+      getFbUser();
+    }
+  }, [message]);
+
   const handleLike = async () => {
     setIsLiked(!isLiked);
 
@@ -44,12 +71,26 @@ const ChannelMsg = ({ message, user }) => {
       setLikes(likes + 1);
     }
 
+    const data = {
+      screen: "tab",
+      message,
+      user,
+    };
+
     try {
       const res = await axios.put(`${BASE_URL2}/post/${message.post_id}/like`, {
         like_user: userDet?.id,
       });
 
-      console.log(res.data);
+      // console.log(res.data);
+
+      if (!isLiked) {
+        // send push notification
+        const body = "Liked your post";
+        const title = `${user?.fname} ${user?.lname}`;
+
+        await sendNotification(fcmToken, title, body, data);
+      }
     } catch (error) {
       console.log(error?.response?.data);
     }

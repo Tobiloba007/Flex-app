@@ -6,9 +6,12 @@ import {
   Pressable,
   Alert,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Entypo } from "@expo/vector-icons";
 import { BASE_URL } from "../../config";
+import { onValue, ref } from "firebase/database";
+import { db } from "../../../firebaseConfig";
+import { sendNotification } from "../../constants/utils/SendNotification";
 
 const SeeRequest = ({
   user,
@@ -20,6 +23,7 @@ const SeeRequest = ({
   setReport,
 }) => {
   const [dropId, setDropId] = useState("");
+  const [fcmToken, setFcmToken] = useState("");
 
   const handleReport = (id) => {
     setDropdown(false);
@@ -37,6 +41,29 @@ const SeeRequest = ({
     setDropId(id);
     setDropdown(true);
   };
+
+  const getFbUser = async () => {
+    try {
+      const userRef = ref(db, "users/" + item?.request_from);
+
+      // const userSnapshot = await get(userRef);
+
+      // Listen for real-time changes to the user's data
+      onValue(userRef, (snapshot) => {
+        if (snapshot.exists()) {
+          setFcmToken(snapshot.val().fcmToken);
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (item) {
+      getFbUser();
+    }
+  }, [item]);
 
   const cancelRequest = async () => {
     const formData = new FormData();
@@ -63,15 +90,27 @@ const SeeRequest = ({
     formData.append("request_to", item?.request_to);
     formData.append("sender_name", item?.username);
 
+    const data = {
+      screen: "tab",
+      item,
+      user,
+    };
+
     try {
       const res = await fetch(
         `${BASE_URL}/api/v1/friend/accept_friend_request.php`,
         { method: "POST", body: formData }
       );
 
-      const data = await res.json();
+      const resData = await res.json();
 
-      Alert.alert(data?.message);
+      Alert.alert(resData?.message);
+
+      // send push notification
+      const body = "Accepted your friend request";
+      const title = `${user?.fname} ${user?.lname}`;
+
+      await sendNotification(fcmToken, title, body, data);
     } catch (error) {}
   };
 

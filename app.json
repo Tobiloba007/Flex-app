@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "FlexApp",
-    "slug": "FlexApp",
+    "slug": "flex-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/flexLogo.png",

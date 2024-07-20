@@ -77,7 +77,11 @@ const MessagingRoomComp = ({
 
             <View style={{ alignItems: "flex-start" }}>
               <Text className={"text-xl font-bold text-18px]"}>
-                {channel?.name ? channel?.name : item?.name}
+                {channel?.name
+                  ? channel?.name
+                  : item?.name
+                  ? item?.name
+                  : `${item?.fname} ${item?.lname}`}
               </Text>
               <Text
                 style={[

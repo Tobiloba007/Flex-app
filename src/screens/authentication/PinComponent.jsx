@@ -1,10 +1,5 @@
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Dimensions,
-} from "react-native";
-import React, {  } from "react";
+import { View, Text, TouchableOpacity, Dimensions } from "react-native";
+import React from "react";
 import { colors } from "../../../colors";
 import { styles } from "../../constants/styles";
 import { Feather } from "@expo/vector-icons";
@@ -12,7 +7,16 @@ import { Feather } from "@expo/vector-icons";
 const itemWidth = Dimensions.get("window").width;
 const itemHeight = Dimensions.get("window").height;
 
-const PinComponent = ({isNewPin, userPin, message, handlePin, isMaxPin, handlePrompt, pin, removePin}) => {
+const PinComponent = ({
+  isNewPin,
+  userPin,
+  message,
+  handlePin,
+  isMaxPin,
+  handlePrompt,
+  pin,
+  removePin,
+}) => {
   return (
     <View
       style={{
@@ -83,7 +87,11 @@ const PinComponent = ({isNewPin, userPin, message, handlePin, isMaxPin, handlePr
               fontSize: itemWidth * 0.04,
               fontWeight: "400",
               width: itemWidth * 0.7,
-              color: colors.primary,
+              color:
+                message ===
+                "The pin you input is incorrect, please try again or use forgot pin"
+                  ? "red"
+                  : colors.primary,
             },
           ]}
         >

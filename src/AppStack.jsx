@@ -60,77 +60,15 @@ const MyTransition = {
   },
 };
 
-const AppStack = () => {
-  const [showSplash, setShowSplash] = useState(true);
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const checkSplashScreen = async () => {
-      try {
-        const hasShownSplash = await AsyncStorage.getItem("seen_token");
-        if (hasShownSplash !== null) {
-          setShowSplash(false);
-        }
-      } catch (error) {
-        console.error("Error checking splash screen:", error);
-      }
-    };
-
-    checkSplashScreen();
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const storedItems = await AsyncStorage.getItem("user_data");
-        // console.log(storedItems);
-
-        if (storedItems !== null) {
-          const parsedItems = JSON.parse(storedItems);
-          setUser(parsedItems);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  // <Stack.Navigator
-  //     initialRouteName={showSplash ? "splash" : "ChatRoom"}
-  //     screenOptions={{
-  //       transitionSpec: { open: MyTransition, close: MyTransition },
-  //     }}
-  //   >
-  //     {showSplash ? (
-  //       <Stack.Screen
-  //         name="splash"
-  //         component={Splash}
-  //         options={{ headerShown: false }}
-  //       />
-  //     ) : (
-  //       <Stack.Screen
-  //         name="login"
-  //         component={Login}
-  //         options={{ headerShown: false }}
-  //       />
-  //     )}
-
-  // console.log(user)
-
+const StackNavigator = () => {
   return (
     <Stack.Navigator
-      initialRouteName={showSplash ? "splash" : "tab"}
+      initialRouteName={"tab"}
       screenOptions={{
         transitionSpec: { open: MyTransition, close: MyTransition },
         headerShown: false,
       }}
     >
-      {showSplash && <Stack.Screen name="splash" component={Splash} />}
-
-      {<Stack.Screen name="login" component={Login} />}
-
       <Stack.Screen name="tab" component={Tab} />
 
       <Stack.Screen name="pin" component={Pin} />
@@ -140,24 +78,11 @@ const AppStack = () => {
       <Stack.Screen name="sendImage" component={SendImage} />
       <Stack.Screen name="Friend" component={Friend} />
       <Stack.Screen name="home" component={Home} />
-      <Stack.Screen name="choose" component={Choose} />
-      <Stack.Screen name="loginScreen" component={Login} />
-      <Stack.Screen name="registration" component={Registration} />
-      <Stack.Screen name="verification" component={Verification} />
-      <Stack.Screen name="resendCode" component={ResendCode} />
+
       <Stack.Screen name="friendProfile" component={FriendProfile} />
       <Stack.Screen name="profile" component={Profile} />
       <Stack.Screen name="editProfile" component={EditProfile} />
       <Stack.Screen name="photoDisplay" component={PhotoDisplay} />
-      <Stack.Screen
-        name="forgotPasswordEmail"
-        component={ForgotPasswordEmail}
-      />
-      <Stack.Screen
-        name="forgotPasswordVerify"
-        component={ForgotPasswordVerify}
-      />
-      <Stack.Screen name="forgotPasswordNew" component={ForgotPasswordNew} />
 
       <Stack.Screen
         name="Comments"
@@ -177,6 +102,80 @@ const AppStack = () => {
       <Stack.Screen name="trade" component={Trade} />
     </Stack.Navigator>
   );
+};
+
+const AuthNavigator = ({ showSplash }) => {
+  return (
+    <Stack.Navigator
+      initialRouteName={showSplash ? "splash" : "login"}
+      screenOptions={{
+        transitionSpec: { open: MyTransition, close: MyTransition },
+        headerShown: false,
+      }}
+    >
+      {showSplash && <Stack.Screen name="splash" component={Splash} />}
+
+      <Stack.Screen name="login" component={Login} />
+      <Stack.Screen name="pin" component={Pin} />
+      <Stack.Screen name="choose" component={Choose} />
+      <Stack.Screen name="registration" component={Registration} />
+      <Stack.Screen name="verification" component={Verification} />
+      <Stack.Screen name="resendCode" component={ResendCode} />
+      <Stack.Screen
+        name="forgotPasswordEmail"
+        component={ForgotPasswordEmail}
+      />
+      <Stack.Screen
+        name="forgotPasswordVerify"
+        component={ForgotPasswordVerify}
+      />
+      <Stack.Screen name="forgotPasswordNew" component={ForgotPasswordNew} />
+    </Stack.Navigator>
+  );
+};
+
+const AppStack = () => {
+  const [showSplash, setShowSplash] = useState(true);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const checkSplashScreen = async () => {
+      try {
+        const hasShownSplash = await AsyncStorage.getItem("seen_token");
+        if (hasShownSplash !== null) {
+          setShowSplash(false);
+        }
+      } catch (error) {
+        console.error("Error checking splash screen:", error);
+      }
+    };
+
+    checkSplashScreen();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const storedItems = await AsyncStorage.getItem("user_data");
+      // console.log(storedItems);
+
+      const parsedItems = JSON.parse(storedItems);
+      setUser(parsedItems);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchData();
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  return !user ? <AuthNavigator showSplash={showSplash} /> : <StackNavigator />;
 };
 
 export default AppStack;

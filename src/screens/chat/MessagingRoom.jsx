@@ -158,7 +158,7 @@ const MessagingRoom = ({ route }) => {
         time: lastMessage?.timestamp,
         messageCount: 0,
         id: item.id,
-        name: `${item?.name} `,
+        name: item?.name ? `${item?.name}` : `${item?.lname} ${item?.fname}`,
         avatar: item?.avatar,
       };
 

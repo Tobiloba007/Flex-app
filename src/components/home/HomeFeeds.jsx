@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Dimensions,
-  SafeAreaView,
-  Text,
-  View,
-} from "react-native";
+import { Dimensions, Text, View } from "react-native";
 import axios from "axios";
 import { BASE_URL2 } from "../../config";
 import HomeFeedData from "./HomeFeedData";
@@ -32,12 +27,12 @@ const HomeFeeds = () => {
     return () => (unsubscribed = false);
   }, []);
 
-  const reverseFeeds = [...feeds].reverse()
+  const reverseFeeds = [...feeds].reverse();
 
   // console.log(feeds)
 
   return (
-    <SafeAreaView className="flex flex-col items-start justify-start w-full pb-20">
+    <View className="flex flex-col items-start justify-start w-full pb-20">
       <Text className={'text-xs text-black font-["sans-semibold"] mt-5'}>
         {feeds.length > 0 ? "Feeds" : "Feeds appears here."}
       </Text>
@@ -47,7 +42,7 @@ const HomeFeeds = () => {
           return <HomeFeedData key={item.post_id} item={item} />;
         })}
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

@@ -160,7 +160,7 @@ export const loginUser =
         );
 
         dispatch(setIsLoggedIn(true));
-        navigation.navigate("pin");
+        // navigation.navigate("pin");
       } else if (data.status === "false") {
         console.log("Registration failed with status code:", data.status);
         setLoginError(data.message);

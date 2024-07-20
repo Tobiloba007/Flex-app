@@ -13,15 +13,13 @@ const itemWidth = Dimensions.get("window").width;
 const NewConversationItem = ({ refRBSheet, item, user }) => {
   const navigation = useNavigation();
 
-  // console.log(item)
-
   return (
     <Pressable
       android_ripple={{ color: colors.soft }}
       style={[styles.row, { padding: 6 }]}
       onPress={() => {
         refRBSheet?.current?.close();
-        navigation.navigate("MessagingRoom", {item, user});
+        navigation.navigate("MessagingRoom", { item, user });
       }}
     >
       <Image source={{ uri: item?.avatar }} style={styles.profileIcon} />

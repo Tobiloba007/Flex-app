@@ -72,7 +72,8 @@ export const styles = StyleSheet.create({
   smallTxt: {
     textAlign: "center",
     fontSize: itemWidth * 0.034,
-    fontWeight: "600",
+    fontWeight: "400",
+    color: "#010101",
   },
 
   channelUpload: {
@@ -323,6 +324,6 @@ export const styles = StyleSheet.create({
     height: itemWidth * 0.2,
     borderRadius: 50,
     borderWidth: 5,
-    borderColor: '#CDEAFC'
+    borderColor: "#CDEAFC",
   },
 });

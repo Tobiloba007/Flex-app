@@ -11,8 +11,12 @@ import image from "../../../assets/images/dp.jpg";
 import { Ionicons } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
+import { colors } from "../../../colors";
 
 export default function HomeTop({ user }) {
+  const { isDark } = useSelector((state) => state.theme);
+
   const navigation = useNavigation();
 
   return (
@@ -42,7 +46,7 @@ export default function HomeTop({ user }) {
           className={"relative"}
           name="notifications"
           size={22}
-          color="black"
+          color={isDark ? colors.white : colors.black}
         />
         <View
           className={

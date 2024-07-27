@@ -10,7 +10,7 @@ import { BASE_URL } from "../../config";
 
 const itemWidth = Dimensions.get("window").width;
 
-const MyOffer = ({ item }) => {
+const MyOffer = ({ item, isDark }) => {
   const [userDet, setUserDet] = useState();
 
   const navigation = useNavigation();
@@ -118,6 +118,7 @@ const MyOffer = ({ item }) => {
                 textAlign: "left",
                 fontWeight: "400",
                 fontSize: itemWidth * 0.03,
+                color: isDark ? colors.white : colors.black,
               },
             ]}
           >
@@ -190,9 +191,7 @@ const MyOffer = ({ item }) => {
               <Image source={require("../../../assets/images/btc.png")} />
             </View> */}
 
-            <Text style={{ color: "white" }}>
-              {item?.status}
-            </Text>
+            <Text style={{ color: "white" }}>{item?.status}</Text>
           </Pressable>
         </View>
       </View>

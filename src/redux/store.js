@@ -1,6 +1,7 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import directMessageReducer from "./directMessageReducer";
 import authReducer from "../features/authentication/AuthSlice";
+import themeReducer from "./themeReducer";
 import {
   persistStore,
   persistReducer,
@@ -11,7 +12,6 @@ import {
   PURGE,
   REGISTER,
 } from "redux-persist";
-// import storage from "redux-persist/lib/storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const persistConfig = {
@@ -23,6 +23,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   message: directMessageReducer,
   auth: authReducer,
+  theme: themeReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

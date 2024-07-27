@@ -6,6 +6,7 @@ import {
   Pressable,
   SafeAreaView,
   ScrollView,
+  StatusBar,
   Text,
   TextInput,
   TouchableOpacity,
@@ -29,6 +30,7 @@ import {
   signInWithCredential,
 } from "firebase/auth";
 import { auth } from "../../../firebaseConfig";
+import { colors } from "../../../colors";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -44,6 +46,8 @@ const validationSchema = yup.object().shape({
 });
 
 export default function Login() {
+  const { isDark } = useSelector((state) => state.theme);
+
   const [close, setClose] = useState(false);
   const [loginError, setLoginError] = useState("");
   const [userInfo, setUserInfo] = useState(null);
@@ -127,11 +131,15 @@ export default function Login() {
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: "white",
-
+        backgroundColor: isDark ? colors.black : colors.white,
         paddingHorizontal: itemWidth * 0.035,
       }}
     >
+      <StatusBar
+        backgroundColor={isDark ? colors.black : colors.white}
+        barStyle={isDark ? "light-content" : "dark-content"}
+      />
+
       <ScrollView>
         <View
           style={{
@@ -152,12 +160,16 @@ export default function Login() {
               onPress={() => navigation.goBack()}
               style={{ flex: 1 }}
             >
-              <SimpleLineIcons name="arrow-left" size={16} color="black" />
+              <SimpleLineIcons
+                name="arrow-left"
+                size={16}
+                color={isDark ? colors.white : colors.black}
+              />
             </TouchableOpacity>
 
             <Text
               className={`text-[15px] font-["sans-semibold"]`}
-              style={{ flex: 1 }}
+              style={{ flex: 1, color: isDark ? colors.white : colors.black }}
             >
               Login
             </Text>
@@ -190,7 +202,10 @@ export default function Login() {
                 className="w-[18px] h-[19px] mr-5"
                 source={require("../../../assets/icons/google.png")}
               />
-              <Text className={`text-[14px] font-["sans-regular"]`}>
+              <Text
+                className={`text-[14px] font-["sans-regular"]`}
+                style={{ color: isDark ? colors.white : colors.primary }}
+              >
                 Continue with Google
               </Text>
             </TouchableOpacity>
@@ -213,16 +228,30 @@ export default function Login() {
                 className="w-[16px] h-[25px] mr-5"
                 source={require("../../../assets/icons/apple.png")}
               />
-              <Text className={`text-[14px] font-["sans-regular"]`}>
+              <Text
+                className={`text-[14px] font-["sans-regular"]`}
+                style={{ color: isDark ? colors.white : colors.primary }}
+              >
                 Continue with Google
               </Text>
             </TouchableOpacity>
           </View>
 
           <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-            <View className="border-[0.5px] opacity-25 w-[45%]"></View>
-            <Text className={`text-[12px] font-["sans-regular"]`}>or</Text>
-            <View className="border-[0.5px] opacity-25 w-[45%]"></View>
+            <View
+              className="border-[0.5px] opacity-25 w-[45%]"
+              style={{ borderColor: isDark ? colors.white : colors.black }}
+            ></View>
+            <Text
+              className={`text-[12px] font-["sans-regular"]`}
+              style={{ color: isDark ? colors.white : colors.black }}
+            >
+              or
+            </Text>
+            <View
+              className="border-[0.5px] opacity-25 w-[45%]"
+              style={{ borderColor: isDark ? colors.white : colors.black }}
+            ></View>
           </View>
 
           <Formik
@@ -240,7 +269,10 @@ export default function Login() {
             }) => (
               <View>
                 <View>
-                  <Text className={`text-[12px] font-["sans-regular"]`}>
+                  <Text
+                    className={`text-[12px] font-["sans-regular"]`}
+                    style={{ color: isDark ? colors.white : colors.black }}
+                  >
                     Email address
                   </Text>
 
@@ -252,13 +284,18 @@ export default function Login() {
                     onBlur={handleBlur("email")}
                     value={values.email}
                     placeholder="example@gmail.com"
+                    placeholderTextColor={isDark ? colors.soft : colors.black}
                     autoCapitalize="none"
+                    style={{ color: isDark ? colors.white : colors.black }}
                   />
                   <Text className="text-red-600 text-xs">{errors.email}</Text>
                 </View>
 
                 <View className="items-start w-full mb-7">
-                  <Text className={`text-[12px] font-["sans-regular"]`}>
+                  <Text
+                    className={`text-[12px] font-["sans-regular"]`}
+                    style={{ color: isDark ? colors.white : colors.black }}
+                  >
                     Password
                   </Text>
 
@@ -272,8 +309,10 @@ export default function Login() {
                     onBlur={handleBlur("password")}
                     value={values.password}
                     placeholder="Password"
+                    placeholderTextColor={isDark ? colors.soft : colors.black}
                     autoCapitalize="none"
                     secureTextEntry={close ? true : false}
+                    style={{ color: isDark ? colors.white : colors.black }}
                   />
                   <Pressable
                     onPress={() => setClose(!close)}
@@ -285,7 +324,7 @@ export default function Login() {
                       <Ionicons
                         name="eye-off-sharp"
                         size={24}
-                        color="#029CFC"
+                        color={isDark ? colors.white : colors.primary}
                       />
                     )}
                   </Pressable>
@@ -339,7 +378,7 @@ export default function Login() {
                 Forgot Password?
               </Text>
             </Pressable>
-            <Pressable onPress={() => navigation.navigate("choose")}>
+            <Pressable onPress={() => navigation.navigate("registration")}>
               <Text
                 className={`text-[12px] font-["sans-regular"] text-[#029CFC]`}
               >

@@ -5,13 +5,13 @@ import { colors } from "../../../colors";
 
 const itemWidth = Dimensions.get("window").width;
 
-const PaymentMethod = ({ onlineUsers }) => {
+const PaymentMethod = ({ onlineUsers, isDark }) => {
   return (
     <View style={[styles.column, { gap: 15, alignItems: "flex-start" }]}>
       <View
         style={{
           gap: 6,
-          backgroundColor: "white",
+          backgroundColor: isDark ? colors.primary : colors.white,
           elevation: 5,
           width: "100%",
           padding: 10,
@@ -19,34 +19,82 @@ const PaymentMethod = ({ onlineUsers }) => {
           alignItems: "flex-start",
         }}
       >
-        <Text style={[styles.mediumTxt, { color: colors.primary }]}>
+        <Text
+          style={[
+            styles.mediumTxt,
+            { color: isDark ? colors.white : colors.primary },
+          ]}
+        >
           Explore P2P Marketplace
         </Text>
-        <Text style={[styles.smallTxt, { textAlign: "left" }]}>
+        <Text
+          style={[
+            styles.smallTxt,
+            { textAlign: "left", color: isDark ? colors.white : colors.black },
+          ]}
+        >
           Online users:{" "}
-          <Text style={{ color: colors.primary }}>
+          <Text style={{ color: isDark ? colors.white : colors.primary }}>
             {onlineUsers?.length > 0 ? onlineUsers?.length : 0}
           </Text>
         </Text>
-        <Text style={[styles.smallTxt, { textAlign: "left" }]}>
-          Active offers: <Text style={{ color: colors.primary }}>56481</Text>
+
+        <Text
+          style={[
+            styles.smallTxt,
+            { textAlign: "left", color: isDark ? colors.white : colors.black },
+          ]}
+        >
+          Active offers:{" "}
+          <Text style={{ color: isDark ? colors.white : colors.primary }}>
+            56481
+          </Text>
         </Text>
-        <Text style={[styles.smallTxt, { textAlign: "left" }]}>
+
+        <Text
+          style={[
+            styles.smallTxt,
+            { textAlign: "left", color: isDark ? colors.white : colors.black },
+          ]}
+        >
           Trade 24h vol:{" "}
-          <Text style={{ color: colors.primary }}>3,422,229 USD</Text>
+          <Text style={{ color: isDark ? colors.white : colors.primary }}>
+            3,422,229 USD
+          </Text>
         </Text>
-        <Text style={[styles.smallTxt, { textAlign: "left" }]}>
+
+        <Text
+          style={[
+            styles.smallTxt,
+            { textAlign: "left", color: isDark ? colors.white : colors.black },
+          ]}
+        >
           Total liquidity:{" "}
-          <Text style={{ color: colors.primary }}>673,744,827 USD</Text>
+          <Text style={{ color: isDark ? colors.white : colors.primary }}>
+            673,744,827 USD
+          </Text>
         </Text>
-        <Text style={[styles.smallTxt, { textAlign: "left" }]}>
+
+        <Text
+          style={[
+            styles.smallTxt,
+            { textAlign: "left", color: isDark ? colors.white : colors.black },
+          ]}
+        >
           BTC price:{" "}
-          <Text style={{ color: colors.primary }}>69,963.03 USD</Text>
+          <Text style={{ color: isDark ? colors.white : colors.primary }}>
+            69,963.03 USD
+          </Text>
         </Text>
       </View>
 
       <View style={[styles.row]}>
-        <Text style={styles.btcOfferTxt}>
+        <Text
+          style={[
+            styles.btcOfferTxt,
+            { color: isDark ? colors.white : colors.black },
+          ]}
+        >
           Edit Offer to Sell{" "}
           <Text style={{ color: colors.primary, fontSize: itemWidth * 0.09 }}>
             Bitcoin
@@ -59,7 +107,15 @@ const PaymentMethod = ({ onlineUsers }) => {
         />
       </View>
 
-      <Text style={[styles.smallTxt, { alignSelf: "flex-start" }]}>
+      <Text
+        style={[
+          styles.smallTxt,
+          {
+            alignSelf: "flex-start",
+            color: isDark ? colors.white : colors.black,
+          },
+        ]}
+      >
         Choose your cryptocurrency
       </Text>
 
@@ -73,7 +129,14 @@ const PaymentMethod = ({ onlineUsers }) => {
             />
           </View>
 
-          <Text style={styles.smallTxt}>Bitcoin</Text>
+          <Text
+            style={[
+              styles.smallTxt,
+              { color: isDark ? colors.white : colors.black },
+            ]}
+          >
+            Bitcoin
+          </Text>
         </Pressable>
 
         <Pressable style={styles.btcButton}>
@@ -85,7 +148,14 @@ const PaymentMethod = ({ onlineUsers }) => {
             />
           </View>
 
-          <Text style={styles.smallTxt}>Eth</Text>
+          <Text
+            style={[
+              styles.smallTxt,
+              { color: isDark ? colors.white : colors.black },
+            ]}
+          >
+            Eth
+          </Text>
         </Pressable>
 
         <Pressable style={styles.btcButton}>
@@ -97,7 +167,14 @@ const PaymentMethod = ({ onlineUsers }) => {
             />
           </View>
 
-          <Text style={styles.smallTxt}>USDC</Text>
+          <Text
+            style={[
+              styles.smallTxt,
+              { color: isDark ? colors.white : colors.black },
+            ]}
+          >
+            USDC
+          </Text>
         </Pressable>
 
         <Pressable style={styles.btcButton}>
@@ -109,11 +186,26 @@ const PaymentMethod = ({ onlineUsers }) => {
             />
           </View>
 
-          <Text style={styles.smallTxt}>Tether</Text>
+          <Text
+            style={[
+              styles.smallTxt,
+              { color: isDark ? colors.white : colors.black },
+            ]}
+          >
+            Tether
+          </Text>
         </Pressable>
       </View>
 
-      <Text style={[styles.smallTxt, { alignSelf: "flex-start" }]}>
+      <Text
+        style={[
+          styles.smallTxt,
+          {
+            alignSelf: "flex-start",
+            color: isDark ? colors.white : colors.black,
+          },
+        ]}
+      >
         Payment method
       </Text>
     </View>

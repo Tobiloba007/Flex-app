@@ -7,13 +7,14 @@ import {
   Dimensions,
   ActivityIndicator,
   ScrollView,
+  StatusBar,
 } from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import { Foundation } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import Home from "../screens/Home";
 import SendMoney from "../screens/sendMoney/SendMoney";
-import Profile from "../screens/Profile";
+import Profile from "../screens/profile/Profile";
 import ChatRoom from "../screens/chat/ChatRoom";
 import { useNavigation } from "@react-navigation/native";
 import dynamicLinks from "@react-native-firebase/dynamic-links";
@@ -27,11 +28,14 @@ import PinComponent from "../screens/authentication/PinComponent";
 import { onValue, ref } from "firebase/database";
 import { db } from "../../firebaseConfig";
 import { useFocusEffect } from "expo-router";
+import { useSelector } from "react-redux";
 
 const itemHeight = Dimensions.get("window").height;
 const itemWidth = Dimensions.get("window").width;
 
 export default function Tab() {
+  const { isDark } = useSelector((state) => state.theme);
+
   const [count, setCount] = useState(1);
   const [animation] = useState(new Animated.Value(0));
 
@@ -216,16 +220,6 @@ export default function Tab() {
     }
   };
 
-  // console.log(unreadMessages)
-
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     if (user) {
-  //       getFcmUser();
-  //     }
-  //   }, [user])
-  // );
-
   useEffect(() => {
     if (user) {
       getFcmUser();
@@ -274,11 +268,15 @@ export default function Tab() {
           style={{
             position: "absolute",
             zIndex: 999,
-            backgroundColor: "white",
+            backgroundColor: isDark ? colors.black : colors.white,
             width: "100%",
             height: "100%",
           }}
         >
+          <StatusBar
+            backgroundColor={isDark ? colors.black : "white"}
+            barStyle={isDark ? "light-content" : "dark-content"}
+          />
           <ScrollView showsVerticalScrollIndicator={false}>
             <PinComponent
               isNewPin={undefined}
@@ -383,8 +381,8 @@ export default function Tab() {
               justifyContent: "space-between",
               width: "100%",
               height: itemHeight * 0.08,
-              backgroundColor: "white",
-              shadowColor: "#000",
+              backgroundColor: isDark ? colors.black : colors.white,
+              shadowColor: isDark ? colors.white : colors.black,
               elevation: 5,
               shadowOffset: { width: 0, height: -2 },
               shadowOpacity: 0.2,
@@ -420,10 +418,14 @@ export default function Tab() {
                         top: 0,
                         right: 0,
                         borderWidth: 2,
-                        borderColor: colors.primary,
+                        borderColor: isDark ? colors.white : colors.primary,
                       }}
                     >
-                      <Text style={{ color: colors.primary }}>
+                      <Text
+                        style={{
+                          color: isDark ? colors.white : colors.primary,
+                        }}
+                      >
                         {unreadMessages}
                       </Text>
                     </View>
@@ -431,6 +433,7 @@ export default function Tab() {
 
                   <Text
                     className={`text-[9px] text-[#029CFC] font-["sans-medium"]`}
+                    style={{ color: isDark ? colors.white : colors.primary }}
                   >
                     {item.label}
                   </Text>

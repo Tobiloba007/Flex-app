@@ -21,10 +21,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { onValue, ref } from "firebase/database";
 import { db } from "../../../firebaseConfig";
 import { sendNotification } from "../../constants/utils/SendNotification";
+import { useSelector } from "react-redux";
+import { colors } from "../../../colors";
 
 const screenWidth = Dimensions.get("window").width;
 
 const HomeFeedData = ({ item }) => {
+  const { isDark } = useSelector((state) => state.theme);
+
   const [user, setUser] = useState([]);
   const [userDet, setUserDet] = useState();
   const [isLiked, setIsLiked] = useState(
@@ -262,6 +266,7 @@ const HomeFeedData = ({ item }) => {
                     className={
                       'text-[14px] text-black font-["sans-semibold"] mr-3'
                     }
+                    style={{ color: isDark ? colors.white : colors.black }}
                     onPress={() => {
                       if (userDet?.id === user?.id) {
                         navigation.navigate("profile");
@@ -306,6 +311,7 @@ const HomeFeedData = ({ item }) => {
                     className={
                       'text-xs text-[#585859] font-["sans-semibold"] mr-3 leading-5'
                     }
+                    style={{ color: isDark ? colors.soft : colors.black }}
                   >
                     {item?.post}
                   </Text>
@@ -335,7 +341,11 @@ const HomeFeedData = ({ item }) => {
               <View className="flex flex-row items-start justify-start mt-2">
                 <TouchableOpacity className={"mr-8"} onPress={handleLike}>
                   {!isLiked ? (
-                    <AntDesign name="hearto" size={15} color="black" />
+                    <AntDesign
+                      name="hearto"
+                      size={15}
+                      color={isDark ? colors.soft : colors.black}
+                    />
                   ) : (
                     <AntDesign name="heart" size={15} color="hotpink" />
                   )}
@@ -350,11 +360,19 @@ const HomeFeedData = ({ item }) => {
                     })
                   }
                 >
-                  <FontAwesome5 name="comment" size={15} color="black" />
+                  <FontAwesome5
+                    name="comment"
+                    size={15}
+                    color={isDark ? colors.soft : colors.black}
+                  />
                 </TouchableOpacity>
 
                 <TouchableOpacity>
-                  <Fontisto name="share-a" size={13} color="black" />
+                  <Fontisto
+                    name="share-a"
+                    size={13}
+                    color={isDark ? colors.soft : colors.black}
+                  />
                 </TouchableOpacity>
               </View>
 

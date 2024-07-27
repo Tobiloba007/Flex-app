@@ -9,6 +9,7 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  StatusBar,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { styles } from "../../constants/styles";
@@ -22,11 +23,14 @@ import * as ImagePicker from "expo-image-picker";
 import { BASE_URL } from "../../config";
 import axios from "axios";
 import { launchImageLibrary } from "react-native-image-picker";
+import { useSelector } from "react-redux";
 
 const itemWidth = Dimensions.get("window").width;
 const itemHeight = Dimensions.get("window").height;
 
 const EditProfile = () => {
+  const { isDark } = useSelector((state) => state.theme);
+
   const [user, setUser] = useState();
   const [fname, setFname] = useState(user?.fname);
   const [lname, setLname] = useState(user?.lname);
@@ -182,7 +186,17 @@ const EditProfile = () => {
   }, [image_url]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: isDark ? colors.black : colors.white,
+      }}
+    >
+      <StatusBar
+        backgroundColor={isDark ? colors.black : colors.white}
+        barStyle={isDark ? "light-content" : "dark-content"}
+      />
+
       <ScrollView>
         <View style={[styles.container, { padding: itemWidth * 0.06 }]}>
           <View
@@ -196,14 +210,14 @@ const EditProfile = () => {
                 <Ionicons
                   name="arrow-back-sharp"
                   size={24}
-                  color="black"
+                  color={isDark ? colors.white : colors.black}
                   onPress={() => navigation.goBack()}
                 />
 
                 <MaterialCommunityIcons
                   name="home-outline"
                   size={24}
-                  color="black"
+                  color={isDark ? colors.white : colors.black}
                   onPress={() => navigation.goBack()}
                 />
               </View>
@@ -231,7 +245,14 @@ const EditProfile = () => {
               <View style={{ width: "25%" }}></View>
             </View>
 
-            <Text style={styles.mediumTxt}>Edit Profile</Text>
+            <Text
+              style={[
+                styles.mediumTxt,
+                { color: isDark ? colors.white : colors.black },
+              ]}
+            >
+              Edit Profile
+            </Text>
 
             <View style={{ gap: itemHeight * 0.02 }}>
               <TextInput

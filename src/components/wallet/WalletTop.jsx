@@ -6,7 +6,7 @@ import { colors } from "../../../colors";
 import SideMenu from "../SideMenu";
 import { useNavigation } from "@react-navigation/native";
 
-const WalletTop = ({ text }) => {
+const WalletTop = ({ text, isDark }) => {
   const [sideMenu, setSideMenu] = useState(false);
 
   const navigation = useNavigation();
@@ -21,16 +21,27 @@ const WalletTop = ({ text }) => {
         style={[
           styles.rowSpace,
           {
-            backgroundColor: "white",
+            backgroundColor: isDark ? colors.black : colors.white,
             paddingVertical: 10,
             elevation: 5,
             paddingHorizontal: 15,
           },
         ]}
       >
-        <Entypo name="home" size={24} color="black" />
+        <Entypo
+          name="home"
+          size={24}
+          color={isDark ? colors.white : colors.black}
+        />
 
-        <Text style={[styles.mediumTxt, { fontWeight: "600" }]}>{text}</Text>
+        <Text
+          style={[
+            styles.mediumTxt,
+            { fontWeight: "600", color: isDark ? colors.white : colors.black },
+          ]}
+        >
+          {text}
+        </Text>
 
         <Pressable
           style={{ backgroundColor: colors.primary, borderRadius: 6 }}

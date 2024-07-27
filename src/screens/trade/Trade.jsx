@@ -1,4 +1,11 @@
-import { View, Text, SafeAreaView, Dimensions, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  SafeAreaView,
+  Dimensions,
+  Pressable,
+  StatusBar,
+} from "react-native";
 import React from "react";
 import WalletTop from "../../components/wallet/WalletTop";
 import { styles } from "../../constants/styles";
@@ -6,19 +13,34 @@ import { colors } from "../../../colors";
 import { Ionicons } from "@expo/vector-icons";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import CountdownTimer from "../../components/CountdownTimer";
+import { useSelector } from "react-redux";
 
 const itemWidth = Dimensions.get("window").width;
 
 const Trade = () => {
+  const { isDark } = useSelector((state) => state.theme);
+
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <WalletTop text={"Trade"} />
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: isDark ? colors.black : colors.white }}
+    >
+      <StatusBar
+        backgroundColor={isDark ? colors.black : colors.white}
+        barStyle={isDark ? "light-content" : "dark-content"}
+      />
+
+      <WalletTop text={"Trade"} isDark={isDark} />
 
       <View
         style={[styles.container, { padding: 15, gap: 15, width: itemWidth }]}
       >
         <View style={[styles.column, { alignItems: "flex-start", gap: 10 }]}>
-          <Text style={[styles.smallTxt, { color: colors.primary }]}>
+          <Text
+            style={[
+              styles.smallTxt,
+              { color: isDark ? colors.white : colors.primary },
+            ]}
+          >
             Trade Started
           </Text>
 
@@ -92,7 +114,9 @@ const Trade = () => {
               <Text style={[styles.buttonTxt, { color: "white" }]}>Paid</Text>
             </Pressable>
 
-            <Text style={{ fontSize: 12 }}>Time left <CountdownTimer duration={30 * 60} /> </Text>
+            <Text style={{ fontSize: 12 }}>
+              Time left <CountdownTimer duration={30 * 60} />{" "}
+            </Text>
           </View>
 
           <View

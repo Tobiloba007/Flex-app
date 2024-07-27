@@ -5,6 +5,7 @@ import {
   Dimensions,
   Pressable,
   ScrollView,
+  StatusBar,
 } from "react-native";
 import React, { useState } from "react";
 import { styles } from "../../constants/styles";
@@ -14,10 +15,13 @@ import { colors } from "../../../colors";
 import WalletTop from "../../components/wallet/WalletTop";
 import Transactions from "../../components/wallet/Transactions";
 import { useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
 
 const itemWidth = Dimensions.get("window").width;
 
 const Wallet = () => {
+  const { isDark } = useSelector((state) => state.theme);
+
   const [isSend, setIsSend] = useState(true);
 
   const navigation = useNavigation();
@@ -27,8 +31,18 @@ const Wallet = () => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 0.92 }}>
-      <WalletTop text={"Wallet"} />
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: isDark ? colors.black : colors.white,
+      }}
+    >
+      <StatusBar
+        backgroundColor={isDark ? colors.black : colors.white}
+        barStyle={isDark ? "light-content" : "dark-content"}
+      />
+
+      <WalletTop text={"Wallet"} isDark={isDark} />
 
       <ScrollView>
         <View
@@ -39,11 +53,11 @@ const Wallet = () => {
               <MaterialCommunityIcons
                 name="wallet"
                 size={24}
-                color={colors.primary}
+                color={isDark ? colors.white : colors.primary}
               />
 
               <Text
-                style={[styles.smallTxt, { color: colors.primary }]}
+                style={[styles.smallTxt, { color: isDark ? colors.white : colors.primary }]}
                 onPress={() => navigation.navigate("walletOffer")}
               >
                 Your wallet
@@ -149,21 +163,21 @@ const Wallet = () => {
               <MaterialIcons
                 name="access-time-filled"
                 size={20}
-                color={colors.primary}
+                color={isDark ? colors.white : colors.primary}
               />
 
-              <Text style={[styles.smallTxt, { color: colors.primary }]}>
+              <Text style={[styles.smallTxt, { color: isDark ? colors.white : colors.primary }]}>
                 Last Transactions
               </Text>
             </View>
 
             <View>
-              <Transactions isSend={isSend} />
-              <Transactions isSend={isSend} />
-              <Transactions isSend={isSend} />
-              <Transactions isSend={isSend} />
-              <Transactions isSend={isSend} />
-              <Transactions isSend={isSend} />
+              <Transactions isSend={isSend} isDark={isDark} />
+              <Transactions isSend={isSend} isDark={isDark} />
+              <Transactions isSend={isSend} isDark={isDark} />
+              <Transactions isSend={isSend} isDark={isDark} />
+              <Transactions isSend={isSend} isDark={isDark} />
+              <Transactions isSend={isSend} isDark={isDark} />
             </View>
           </View>
         </View>

@@ -3,7 +3,6 @@ import {
   Text,
   ImageBackground,
   Pressable,
-  ScrollView,
   TextInput,
   Image,
   Dimensions,
@@ -17,6 +16,7 @@ import { Entypo } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { colors } from "../../../colors";
 
 const itemHeight = Dimensions.get("window").height;
 
@@ -38,6 +38,7 @@ const MessagingRoomComp = ({
   inputHeight,
   handleSendMessage,
   channelMembers,
+  isDark,
 }) => {
   const navigation = useNavigation();
 
@@ -55,12 +56,17 @@ const MessagingRoomComp = ({
   return (
     <View style={[styles.container, { flex: 0 }]}>
       <View style={{ height: "100%" }}>
-        <View style={styles.chatBar}>
+        <View
+          style={[
+            styles.chatBar,
+            { backgroundColor: isDark ? colors.black : colors.white },
+          ]}
+        >
           <View style={styles.row}>
             <MaterialIcons
               name="arrow-back-ios"
               size={24}
-              color="black"
+              color={isDark ? colors.white : colors.black}
               onPress={() => navigation.goBack()}
             />
 
@@ -76,17 +82,25 @@ const MessagingRoomComp = ({
             />
 
             <View style={{ alignItems: "flex-start" }}>
-              <Text className={"text-xl font-bold text-18px]"}>
+              <Text
+                className={"text-xl font-bold text-18px]"}
+                style={{ color: isDark ? colors.white : colors.black }}
+              >
                 {channel?.name
                   ? channel?.name
                   : item?.name
                   ? item?.name
                   : `${item?.fname} ${item?.lname}`}
               </Text>
+
               <Text
                 style={[
                   styles.smallTxt,
-                  { color: "#7e7e7e", fontWeight: "400", textAlign: "left" },
+                  {
+                    color: isDark ? colors.soft : "#7e7e7e",
+                    fontWeight: "400",
+                    textAlign: "left",
+                  },
                 ]}
               >
                 {item ? lastSeen : `${channelMembers?.length} members`}
@@ -99,7 +113,7 @@ const MessagingRoomComp = ({
               <Feather
                 name="more-vertical"
                 size={24}
-                color="black"
+                color={isDark ? colors.white : colors.black}
                 onPress={() => setDropDown((prev) => !prev)}
               />
             )}
@@ -228,8 +242,18 @@ const MessagingRoomComp = ({
 
         {channelMemberStatus?.status?.trim() === "accepted" ||
         channel?.owner_id === user?.id ? (
-          <View style={styles.msgInputCon}>
-            <Entypo name="plus" size={26} color="black" onPress={pickImage} />
+          <View
+            style={[
+              styles.msgInputCon,
+              { backgroundColor: isDark ? colors.black : colors.white },
+            ]}
+          >
+            <Entypo
+              name="plus"
+              size={26}
+              color={isDark ? colors.soft : colors.black}
+              onPress={pickImage}
+            />
 
             <TextInput
               placeholder="Type a message"
@@ -239,6 +263,7 @@ const MessagingRoomComp = ({
                   width: "73%",
                   height: inputHeight,
                   maxHeight: itemHeight * 0.13,
+                  backgroundColor: isDark ? colors.soft : "#9D9D9D21",
                 },
               ]}
               multiline
@@ -248,21 +273,35 @@ const MessagingRoomComp = ({
               value={message}
             />
 
-            <Entypo name="emoji-happy" size={24} color="black" />
+            <Entypo
+              name="emoji-happy"
+              size={24}
+              color={isDark ? colors.soft : colors.black}
+            />
 
             <Pressable disabled={!message} onPress={handleSendMessage}>
               <MaterialIcons
                 name={message !== "" ? "send" : "mic-none"}
                 size={24}
-                color="black"
+                color={isDark ? colors.soft : colors.black}
               />
             </Pressable>
           </View>
         ) : null}
 
         {item && (
-          <View style={styles.msgInputCon}>
-            <Entypo name="plus" size={26} color="black" onPress={pickImage} />
+          <View
+            style={[
+              styles.msgInputCon,
+              { backgroundColor: isDark ? colors.black : colors.white },
+            ]}
+          >
+            <Entypo
+              name="plus"
+              size={26}
+              color={isDark ? colors.soft : colors.black}
+              onPress={pickImage}
+            />
 
             <TextInput
               placeholder="Type a message"
@@ -272,6 +311,7 @@ const MessagingRoomComp = ({
                   width: "73%",
                   height: inputHeight,
                   maxHeight: itemHeight * 0.13,
+                  backgroundColor: isDark ? colors.soft : "#9D9D9D21",
                 },
               ]}
               multiline
@@ -281,13 +321,17 @@ const MessagingRoomComp = ({
               value={message}
             />
 
-            <Entypo name="emoji-happy" size={24} color="black" />
+            <Entypo
+              name="emoji-happy"
+              size={24}
+              color={isDark ? colors.soft : colors.black}
+            />
 
             <Pressable disabled={!message} onPress={handleSendMessage}>
               <MaterialIcons
                 name={message !== "" ? "send" : "mic-none"}
                 size={24}
-                color="black"
+                color={isDark ? colors.soft : colors.black}
               />
             </Pressable>
           </View>

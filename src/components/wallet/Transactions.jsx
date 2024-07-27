@@ -9,7 +9,7 @@ import { styles } from "../../constants/styles";
 import { colors } from "../../../colors";
 
 const itemWidth = Dimensions.get("window").width;
-const Transactions = ({isSend}) => {
+const Transactions = ({isSend, isDark}) => {
   return (
     <View
       style={[
@@ -20,6 +20,7 @@ const Transactions = ({isSend}) => {
           alignItems: "center",
           borderBottomWidth: 1,
           borderColor: "lightgray",
+          backgroundColor: isDark ? colors.black : colors.white
         },
       ]}
     >
@@ -35,11 +36,11 @@ const Transactions = ({isSend}) => {
         />
 
         <View style={{ alignItems: "flex-start" }}>
-          <Text style={[styles.smallTxt, { color: "gray" }]}>Jone</Text>
+          <Text style={[styles.smallTxt, { color: isDark ? colors.white : "gray" }]}>Jone</Text>
           <Text
             style={[
               styles.smallTxt,
-              { color: "gray", fontSize: itemWidth * 0.024 },
+              { color: isDark ? colors.white : "gray", fontSize: itemWidth * 0.024 },
             ]}
           >
             03-01-2024

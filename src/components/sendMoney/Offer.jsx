@@ -10,7 +10,7 @@ import { BASE_URL } from "../../config";
 
 const itemWidth = Dimensions.get("window").width;
 
-const Offer = ({ item, type }) => {
+const Offer = ({ item, type, isDark }) => {
   const [userDet, setUserDet] = useState();
 
   const navigation = useNavigation();
@@ -118,6 +118,7 @@ const Offer = ({ item, type }) => {
                 textAlign: "left",
                 fontWeight: "400",
                 fontSize: itemWidth * 0.03,
+                color: isDark ? colors.white : colors.black,
               },
             ]}
           >

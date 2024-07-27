@@ -3,6 +3,7 @@ import React from "react";
 import { colors } from "../../../colors";
 import { styles } from "../../constants/styles";
 import { Feather } from "@expo/vector-icons";
+import { useSelector } from "react-redux";
 
 const itemWidth = Dimensions.get("window").width;
 const itemHeight = Dimensions.get("window").height;
@@ -17,6 +18,8 @@ const PinComponent = ({
   pin,
   removePin,
 }) => {
+  const { isDark } = useSelector((state) => state.theme);
+
   return (
     <View
       style={{
@@ -26,7 +29,12 @@ const PinComponent = ({
         paddingVertical: itemHeight * 0.075,
       }}
     >
-      <Text style={[styles.mediumTxt, { fontWeight: "700" }]}>
+      <Text
+        style={[
+          styles.mediumTxt,
+          { fontWeight: "700", color: isDark ? colors.white : colors.black },
+        ]}
+      >
         {isNewPin ? "Confirm Pin" : "Enter PIN"}
       </Text>
 
@@ -37,6 +45,7 @@ const PinComponent = ({
             fontSize: itemWidth * 0.04,
             fontWeight: "500",
             width: itemWidth * 0.7,
+            color: isDark ? colors.white : colors.black,
           },
         ]}
       >
@@ -56,25 +65,37 @@ const PinComponent = ({
         <View
           style={[
             styles.pinInput,
-            { backgroundColor: pin[0] ? "#333" : "transparent" },
+            {
+              backgroundColor:
+                pin[0] && isDark ? "#e1e1e1" : pin[0] ? "#333" : "transparent",
+            },
           ]}
         ></View>
         <View
           style={[
             styles.pinInput,
-            { backgroundColor: pin[1] ? "#333" : "transparent" },
+            {
+              backgroundColor:
+                pin[1] && isDark ? "#e1e1e1" : pin[1] ? "#333" : "transparent",
+            },
           ]}
         ></View>
         <View
           style={[
             styles.pinInput,
-            { backgroundColor: pin[2] ? "#333" : "transparent" },
+            {
+              backgroundColor:
+                pin[2] && isDark ? "#e1e1e1" : pin[2] ? "#333" : "transparent",
+            },
           ]}
         ></View>
         <View
           style={[
             styles.pinInput,
-            { backgroundColor: pin[3] ? "#333" : "transparent" },
+            {
+              backgroundColor:
+                pin[3] && isDark ? "#e1e1e1" : pin[3] ? "#333" : "transparent",
+            },
           ]}
         ></View>
       </View>
@@ -216,7 +237,11 @@ const PinComponent = ({
             style={[styles.pinBtn, { backgroundColor: "transparent" }]}
             onPress={removePin}
           >
-            <Feather name="delete" size={28} color="black" />
+            <Feather
+              name="delete"
+              size={28}
+              color={isDark ? colors.soft : colors.black}
+            />
           </TouchableOpacity>
         </View>
       </View>

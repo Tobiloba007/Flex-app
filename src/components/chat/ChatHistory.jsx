@@ -21,6 +21,7 @@ const ChatHistory = ({
   devicesMessages,
   messages,
   user,
+  isDark,
 }) => {
   const navigation = useNavigation();
 
@@ -45,7 +46,10 @@ const ChatHistory = ({
             resizeMode="contain"
           />
 
-          <Text className={"text-xl font-semibold text-[#000] pt-6"}>
+          <Text
+            className={"text-xl font-semibold text-[#000] pt-6"}
+            style={{ color: isDark ? colors.white : colors.black }}
+          >
             Your Chat Is Empty
           </Text>
 
@@ -53,6 +57,7 @@ const ChatHistory = ({
             className={
               'text-center text-[#000000] p-8 text-[15px] font-["sans-regular"]'
             }
+            style={{ color: isDark ? colors.white : colors.black }}
           >
             It looks like you haven’t messaged anyone yet. Simply click on
             button below to begin chatting with your friends and colleagues.
@@ -81,7 +86,11 @@ const ChatHistory = ({
                   style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
                 >
                   <Text
-                    style={{ fontWeight: "400", fontSize: itemWidth * 0.038 }}
+                    style={{
+                      fontWeight: "400",
+                      fontSize: itemWidth * 0.038,
+                      color: isDark ? colors.white : colors.black,
+                    }}
                   >
                     {item?.name}
                   </Text>

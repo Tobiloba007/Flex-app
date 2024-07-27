@@ -2,6 +2,7 @@ import {
   Dimensions,
   Image,
   SafeAreaView,
+  StatusBar,
   Text,
   TouchableOpacity,
   View,
@@ -9,10 +10,13 @@ import {
 import React from "react";
 import { colors } from "../../colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useSelector } from "react-redux";
 
 const itemWidth = Dimensions.get("window").width;
 
 export default function Choose({ navigation }) {
+  const { isDark } = useSelector((state) => state.theme);
+
   const handleLogin = async () => {
     try {
       await AsyncStorage.setItem(
@@ -21,7 +25,6 @@ export default function Choose({ navigation }) {
       );
       console.log("User data stored successfully!");
       navigation.navigate("login");
-      navigation.navigate("loginScreen");
     } catch (error) {
       console.error("Error storing user data:", error);
     }
@@ -41,7 +44,14 @@ export default function Choose({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: isDark ? colors.black : colors.white }}
+    >
+      <StatusBar
+        backgroundColor={isDark ? colors.black : colors.white}
+        barStyle={isDark ? "light-content" : "dark-content"}
+      />
+
       <View
         style={{
           height: "100%",
@@ -82,6 +92,7 @@ export default function Choose({ navigation }) {
           >
             <Text
               className={`text-[15px] font-["sans-regular"] text-[#029CFC]`}
+              style={{ color: isDark ? colors.white : "#029CFC" }}
             >
               Login
             </Text>

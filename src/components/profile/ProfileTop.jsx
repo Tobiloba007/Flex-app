@@ -1,33 +1,18 @@
-import {
-  Dimensions,
-  Image,
-  Pressable,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Dimensions, Image, Text, TouchableOpacity, View } from "react-native";
 import React, { useEffect, useState } from "react";
-import dp from "../../../assets/images/dp.jpg";
 import { MaterialIcons } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
 import { BASE_URL } from "../../config";
-import { styles } from "../../constants/styles";
-import { useDispatch, useSelector } from "react-redux";
-import { resetMessageState } from "../../redux/directMessageReducer";
+import { colors } from "../../../colors";
 
 const itemHeight = Dimensions.get("window").height;
 
-export default function ProfileTop() {
+export default function ProfileTop({ isDark }) {
   const navigation = useNavigation();
-
-  const dispatch = useDispatch();
 
   const [user, setUser] = useState();
   const [userProfile, setUserProfile] = useState(null);
@@ -67,12 +52,6 @@ export default function ProfileTop() {
     }
   };
 
-  const handleLogout = async () => {
-    await AsyncStorage.setItem("user_data", "");
-    dispatch(resetMessageState());
-    // navigation.navigate("login");
-  };
-
   return (
     <View
       style={{
@@ -82,7 +61,12 @@ export default function ProfileTop() {
       }}
     >
       <TouchableOpacity className="absolute top-6 right-5">
-        <Ionicons name="settings-sharp" size={27} color="black" />
+        <Ionicons
+          name="settings-sharp"
+          size={27}
+          color={isDark ? colors.white : colors.black}
+          onPress={() => navigation.navigate("settings")}
+        />
       </TouchableOpacity>
 
       <View className="flex flex-col items-center justify-start w-full">
@@ -98,10 +82,16 @@ export default function ProfileTop() {
             resizeMode="cover"
           />
         </View>
-        <Text className={`text-xl text-[#029CFC] font-["sans-semibold"] mt-2`}>
+        <Text
+          className={`text-xl text-[#029CFC] font-["sans-semibold"] mt-2`}
+          style={{ color: isDark ? colors.white : colors.primary }}
+        >
           {user?.fname} {user?.lname}
         </Text>
-        <Text className={`text-sm text-[#000000] font-["sans-semibold"]`}>
+        <Text
+          className={`text-sm text-[#000000] font-["sans-semibold"]`}
+          style={{ color: isDark ? colors.soft : colors.black }}
+        >
           ${user?.fname?.toLowerCase()}
         </Text>
       </View>
@@ -109,46 +99,51 @@ export default function ProfileTop() {
       <View className="flex flex-row items-center justify-center w-full mt-5">
         <TouchableOpacity
           onPress={() => navigation.navigate("seeRequests")}
-          className="flex items-center justify-center bg-[#029CFC] w-[35%] h-11 rounded-xl"
+          className="flex items-center justify-center bg-[#029CFC] w-[50%] h-11 rounded-xl"
+          style={{ backgroundColor: isDark ? colors.white : colors.primary }}
         >
-          <Text className={`text-sm text-[#ffffff] font-["sans-medium"]`}>
+          <Text
+            className={`text-sm text-[#ffffff] font-["sans-medium"]`}
+            style={{ color: isDark ? colors.primary : colors.white }}
+          >
             SEE REQUESTS
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("editProfile")}
-          className="flex items-center justify-center bg-[#ffffff] w-[35%] h-11 rounded-xl"
-        >
-          <Text className={`text-sm text-[#000000] font-["sans-medium"]`}>
-            Edit Profile
           </Text>
         </TouchableOpacity>
       </View>
 
       <View className="flex flex-row items-center justify-center w-full mt-5">
         <TouchableOpacity className="mr-7">
-          <MaterialIcons name="phone-callback" size={24} color="#029CFC" />
+          <MaterialIcons
+            name="phone-callback"
+            size={20}
+            color={isDark ? colors.white : colors.primary}
+          />
         </TouchableOpacity>
 
         <TouchableOpacity className="mr-7">
-          <MaterialIcons name="facebook" size={27} color="#029CFC" />
+          <MaterialIcons
+            name="facebook"
+            size={20}
+            color={isDark ? colors.white : colors.primary}
+          />
         </TouchableOpacity>
 
         <TouchableOpacity className="mr-7">
-          <FontAwesome5 name="instagram" size={24} color="#029CFC" />
+          <FontAwesome5
+            name="instagram"
+            size={20}
+            color={isDark ? colors.white : colors.primary}
+          />
         </TouchableOpacity>
 
         <TouchableOpacity className="">
-          <FontAwesome6 name="x-twitter" size={24} color="#029CFC" />
+          <FontAwesome6
+            name="x-twitter"
+            size={20}
+            color={isDark ? colors.white : colors.primary}
+          />
         </TouchableOpacity>
       </View>
-
-      <Pressable
-        style={[styles.button, { marginTop: 15 }]}
-        onPress={handleLogout}
-      >
-        <Text style={[styles.buttonTxt, { color: "white" }]}>Logout</Text>
-      </Pressable>
     </View>
   );
 }

@@ -1,4 +1,10 @@
-import { Dimensions, SafeAreaView, ScrollView, View } from "react-native";
+import {
+  Dimensions,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  View,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { styles } from "../../constants/styles";
 import SendMoneyTop from "../../components/sendMoney/SendMoneyTop";
@@ -7,10 +13,14 @@ import TradePricing from "../../components/sendMoney/TradePricing";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { db } from "../../../firebaseConfig";
 import { onValue, ref } from "firebase/database";
+import { useSelector } from "react-redux";
+import { colors } from "../../../colors";
 
 const itemWidth = Dimensions.get("window").width;
 
 export default function SendMoney() {
+  const { isDark } = useSelector((state) => state.theme);
+
   const [user, setUser] = useState();
   const [users, setUsers] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
@@ -81,16 +91,23 @@ export default function SendMoney() {
   }, [users]);
 
   return (
-    <SafeAreaView style={{ flex: 0.92, backgroundColor: "white" }}>
-      <ScrollView horizontal={false}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: isDark ? colors.black : colors.white }}
+    >
+      <StatusBar
+        backgroundColor={isDark ? colors.black : colors.white}
+        barStyle={isDark ? "light-content" : "dark-content"}
+      />
+      
+      <ScrollView>
         <View
           style={[styles.container, { padding: 15, gap: 15, width: itemWidth }]}
         >
-          <SendMoneyTop />
+          <SendMoneyTop isDark={isDark} />
 
-          <PaymentMethod onlineUsers={onlineUsers} />
+          <PaymentMethod onlineUsers={onlineUsers} isDark={isDark} />
 
-          <TradePricing user={user} />
+          <TradePricing user={user} isDark={isDark} />
         </View>
       </ScrollView>
     </SafeAreaView>

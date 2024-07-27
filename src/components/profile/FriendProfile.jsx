@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   Dimensions,
   Linking,
+  StatusBar,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Entypo } from "@expo/vector-icons";
@@ -19,11 +20,14 @@ import { styles } from "../../constants/styles";
 import { db } from "../../../firebaseConfig";
 import { ref, onValue } from "firebase/database";
 import { sendNotification } from "../../constants/utils/SendNotification";
+import { useSelector } from "react-redux";
 
 const itemWidth = Dimensions.get("window").width;
 
 const FriendProfile = ({ route }) => {
   const { item } = route.params;
+
+  const { isDark } = useSelector((state) => state.theme);
 
   const [dropId, setDropId] = useState("");
   const [dropDown, setDropDown] = useState(false);
@@ -110,15 +114,22 @@ const FriendProfile = ({ route }) => {
       Alert.alert(resData?.message);
 
       // send push notification
-      const body = 'Sent you a friend request'
-      const title = `${user?.fname} ${user?.lname}`
+      const body = "Sent you a friend request";
+      const title = `${user?.fname} ${user?.lname}`;
 
       await sendNotification(fcmToken, title, body, data);
     } catch (error) {}
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: isDark ? colors.black : colors.white }}
+    >
+      <StatusBar
+        backgroundColor={isDark ? colors.black : colors.white}
+        barStyle={isDark ? "light-content" : "dark-content"}
+      />
+
       <View
         //   className="flex flex-col items-center justify-start w-full  rounded-3xl border-[1px] border-[#cccccc] px-5 py-3"
         style={{ marginBottom: 5, padding: itemWidth * 0.1 }}
@@ -133,10 +144,14 @@ const FriendProfile = ({ route }) => {
           </View>
           <Text
             className={`text-sm text-[#000000] font-["sans-semibold"] mt-2`}
+            style={{ color: isDark ? colors.white : colors.black }}
           >
             {item?.fname}
           </Text>
-          <Text className={`text-xs text-[#000000] font-["sans-regular"]`}>
+          <Text
+            className={`text-xs text-[#000000] font-["sans-regular"]`}
+            style={{ color: isDark ? colors.soft : colors.black }}
+          >
             ${item?.fname}
           </Text>
         </View>
@@ -202,28 +217,40 @@ const FriendProfile = ({ route }) => {
           <MaterialIcons
             name="phone-callback"
             size={24}
-            color={colors.primary}
+            color={isDark ? colors.white : colors.primary}
             onPress={() => Linking.openURL(`tel:${item?.phone}`)}
           />
           <Pressable
             disabled={!item?.facebook}
             onPress={() => Linking.openURL(item?.facebook)}
           >
-            <FontAwesome5 name="facebook" size={24} color={colors.primary} />
+            <FontAwesome5
+              name="facebook"
+              size={24}
+              color={isDark ? colors.white : colors.primary}
+            />
           </Pressable>
 
           <Pressable
             disabled={!item?.instagram}
             onPress={() => Linking.openURL(item?.instagram)}
           >
-            <FontAwesome6 name="instagram" size={24} color={colors.primary} />
+            <FontAwesome6
+              name="instagram"
+              size={24}
+              color={isDark ? colors.white : colors.primary}
+            />
           </Pressable>
 
           <Pressable
             disabled={!item?.twitter}
             onPress={() => Linking.openURL(item?.twitter)}
           >
-            <FontAwesome6 name="x-twitter" size={24} color={colors.primary} />
+            <FontAwesome6
+              name="x-twitter"
+              size={24}
+              color={isDark ? colors.white : colors.primary}
+            />
           </Pressable>
         </View>
       </View>

@@ -15,7 +15,7 @@ import { BASE_URL_P2P } from "../../config";
 
 const itemWidth = Dimensions.get("window").width;
 
-const TradePricing = ({ user }) => {
+const TradePricing = ({ user, isDark }) => {
   const [selectedCurrency, setSelectedCurrency] = useState("BTC");
   const [selectedPayment, setSelectedPayment] = useState(1);
   const [minTrade, setMinTrade] = useState(0);
@@ -34,9 +34,7 @@ const TradePricing = ({ user }) => {
     };
 
     if (data.min_trade_amount < 10) {
-      Alert.alert(
-        "Please set trade amount to minimum of 10"
-      );
+      Alert.alert("Please set trade amount to minimum of 10");
     } else {
       try {
         const res = await axios.post(`${BASE_URL_P2P}/offers/create`, data);
@@ -99,7 +97,15 @@ const TradePricing = ({ user }) => {
             { alignItems: "flex-start", gap: 10, width: "50%" },
           ]}
         >
-          <Text style={[styles.smallTxt, { fontWeight: "400" }]}>
+          <Text
+            style={[
+              styles.smallTxt,
+              {
+                fontWeight: "400",
+                color: isDark ? colors.white : colors.black,
+              },
+            ]}
+          >
             Payment Method
           </Text>
 
@@ -119,8 +125,10 @@ const TradePricing = ({ user }) => {
                   paddingHorizontal: 0,
                   paddingVertical: 0,
                   backgroundColor: "transparent",
+                  color: isDark ? colors.white : colors.black,
                 },
               ]}
+              dropdownIconColor={isDark ? colors.white : colors.black}
             >
               <Picker.Item label="Bank Transfer" value={1} />
               <Picker.Item label="Wire Transfer" value={2} />
@@ -139,7 +147,15 @@ const TradePricing = ({ user }) => {
             { alignItems: "flex-start", gap: 10, width: "50%" },
           ]}
         >
-          <Text style={[styles.smallTxt, { fontWeight: "400" }]}>
+          <Text
+            style={[
+              styles.smallTxt,
+              {
+                fontWeight: "400",
+                color: isDark ? colors.white : colors.black,
+              },
+            ]}
+          >
             Preferred Currency
           </Text>
 
@@ -158,8 +174,10 @@ const TradePricing = ({ user }) => {
                   paddingHorizontal: 0,
                   paddingVertical: 0,
                   backgroundColor: "transparent",
+                  color: isDark ? colors.white : colors.black,
                 },
               ]}
+              dropdownIconColor={isDark ? colors.white : colors.black}
             >
               <Picker.Item label="BTC" value="BTC" />
               <Picker.Item label="Eth" value="Eth" />
@@ -174,7 +192,15 @@ const TradePricing = ({ user }) => {
         </View>
       </View>
 
-      <Text style={[styles.smallTxt, { alignSelf: "flex-start" }]}>
+      <Text
+        style={[
+          styles.smallTxt,
+          {
+            alignSelf: "flex-start",
+            color: isDark ? colors.white : colors.black,
+          },
+        ]}
+      >
         Trade Pricing
       </Text>
 
@@ -183,29 +209,57 @@ const TradePricing = ({ user }) => {
           style={[styles.column, { width: "49%", alignItems: "flex-start" }]}
         >
           <View style={[styles.row, { gap: 5 }]}>
-            <View style={styles.radio}></View>
-            <Text>Market price</Text>
+            <View
+              style={[
+                styles.radio,
+                { borderColor: isDark ? colors.white : "#333" },
+              ]}
+            ></View>
+            <Text style={{ color: isDark ? colors.white : colors.black }}>
+              Market price
+            </Text>
           </View>
 
-          <Text style={{ fontSize: itemWidth * 0.024 }}>
+          <Text
+            style={{
+              fontSize: itemWidth * 0.024,
+              color: isDark ? colors.white : colors.black,
+            }}
+          >
             Your offer’s selling price will charge according to the market price
             of Bitcoin
           </Text>
         </View>
 
         <View
-          style={{ width: 1, backgroundColor: "#333", height: "100%" }}
+          style={{
+            width: 1,
+            backgroundColor: isDark ? colors.soft : "#333",
+            height: "100%",
+          }}
         ></View>
 
         <View
           style={[styles.column, { width: "49%", alignItems: "flex-start" }]}
         >
           <View style={[styles.row, { gap: 5 }]}>
-            <View style={styles.radio}></View>
-            <Text>Fixed price</Text>
+            <View
+              style={[
+                styles.radio,
+                { borderColor: isDark ? colors.white : "#333" },
+              ]}
+            ></View>
+            <Text style={{ color: isDark ? colors.white : colors.black }}>
+              Fixed price
+            </Text>
           </View>
 
-          <Text style={{ fontSize: itemWidth * 0.024 }}>
+          <Text
+            style={{
+              fontSize: itemWidth * 0.024,
+              color: isDark ? colors.white : colors.black,
+            }}
+          >
             Your offer’s selling price is locked when you create it, and you
             won’t change with the market price
           </Text>
@@ -213,7 +267,15 @@ const TradePricing = ({ user }) => {
       </View>
 
       <View style={[styles.rowSpace, { width: "100%" }]}>
-        <Text style={[styles.smallTxt, { alignSelf: "flex-start" }]}>
+        <Text
+          style={[
+            styles.smallTxt,
+            {
+              alignSelf: "flex-start",
+              color: isDark ? colors.white : colors.black,
+            },
+          ]}
+        >
           Offer Trade Limits
         </Text>
 
@@ -225,10 +287,11 @@ const TradePricing = ({ user }) => {
               fontSize: itemWidth * 0.028,
               borderWidth: 1,
               borderRadius: 4,
-              borderColor: "#333",
+              borderColor: isDark ? colors.soft : "#333",
               padding: 4,
               paddingHorizontal: 20,
               fontWeight: "500",
+              color: isDark ? colors.white : colors.black,
             },
           ]}
         >

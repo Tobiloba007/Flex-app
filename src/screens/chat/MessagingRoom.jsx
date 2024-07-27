@@ -16,6 +16,7 @@ import { db } from "../../../firebaseConfig";
 import moment from "moment";
 import { sendNotification } from "../../constants/utils/SendNotification";
 import MessagingRoomComp from "../../components/chat/MessagingRoomComp";
+import { useSelector } from "react-redux";
 
 const itemHeight = Dimensions.get("window").height;
 
@@ -24,6 +25,8 @@ const MessagingRoom = ({ route }) => {
   const item = route.params?.item;
   const user = route.params?.user;
   const channelMemberStatus = route.params?.channelMemberStatus;
+
+  const { isDark } = useSelector((state) => state.theme);
 
   const navigation = useNavigation();
 
@@ -412,8 +415,13 @@ const MessagingRoom = ({ route }) => {
   }, [item, channel, user]);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <StatusBar backgroundColor={colors.white} barStyle={"dark-content"} />
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: isDark ? colors.black : colors.white }}
+    >
+      <StatusBar
+        backgroundColor={isDark ? colors.black : colors.white}
+        barStyle={isDark ? "light-content" : "dark-content"}
+      />
 
       <MessagingRoomComp
         channel={channel}
@@ -433,6 +441,7 @@ const MessagingRoom = ({ route }) => {
         inputHeight={inputHeight}
         handleSendMessage={handleSendMessage}
         channelMembers={channelMembers}
+        isDark={isDark}
       />
     </SafeAreaView>
   );

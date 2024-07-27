@@ -1,12 +1,16 @@
-import { SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView, StatusBar, StyleSheet, Text, View } from "react-native";
 import React, { useRef, useState } from "react";
 import PagerView from "react-native-pager-view";
 import Registration1 from "../../components/authenticcation/Registration1";
 import RegistrationHeader from "../../components/authenticcation/RegistrationHeader";
 import Verification from "../../components/authenticcation/Verification";
 import AccountType from "./AccountType";
+import { useSelector } from "react-redux";
+import { colors } from "../../../colors";
 
 export default function Registration({ navigation }) {
+  const { isDark } = useSelector((state) => state.theme);
+
   const pagerRef = useRef(null);
   const [scroll, setScroll] = useState(0);
 
@@ -20,8 +24,15 @@ export default function Registration({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-      <RegistrationHeader navigation={navigation} scroll={scroll} />
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: isDark ? colors.black : colors.white }}
+    >
+      <StatusBar
+        backgroundColor={isDark ? colors.black : colors.white}
+        barStyle={isDark ? "light-content" : "dark-content"}
+      />
+
+      <RegistrationHeader navigation={navigation} scroll={scroll} isDark={isDark} />
       <PagerView
         style={styles.viewPager}
         ref={pagerRef}
@@ -33,10 +44,10 @@ export default function Registration({ navigation }) {
            <AccountType handleNextPage={handleNextPage} />
         </View> */}
         <View style={styles.page} key="1">
-          <Registration1 handleNextPage={handleNextPage} />
+          <Registration1 handleNextPage={handleNextPage} isDark={isDark} />
         </View>
         <View style={styles.page} key="2">
-          <Verification />
+          <Verification isDark={isDark} />
         </View>
       </PagerView>
     </SafeAreaView>

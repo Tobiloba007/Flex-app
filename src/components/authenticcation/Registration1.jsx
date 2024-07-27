@@ -1,19 +1,14 @@
 import {
   ActivityIndicator,
   Dimensions,
-  Image,
-  Platform,
   Pressable,
-  SafeAreaView,
   ScrollView,
-  StatusBar,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useEffect, useState } from "react";
-import RegistrationHeader from "./RegistrationHeader";
+import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
@@ -21,9 +16,8 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { createAccount } from "../../features/authentication/AuthActions";
-import { setError } from "../../features/authentication/AuthSlice";
 import { useNavigation } from "@react-navigation/native";
-import Verification from "./Verification";
+import { colors } from "../../../colors";
 
 const itemWidth = Dimensions.get("window").width;
 const itemHeight = Dimensions.get("window").height;
@@ -63,7 +57,7 @@ const validationSchema = yup.object().shape({
     ),
 });
 
-export default function Registration1({ handleNextPage }) {
+export default function Registration1({ handleNextPage, isDark }) {
   const [close, setClose] = useState(false);
   const [check1, setCheck1] = useState(false);
   const [check2, setCheck2] = useState(false);
@@ -114,10 +108,16 @@ export default function Registration1({ handleNextPage }) {
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ width: screenWidth, paddingBottom: screenWidth * 0.2 }}
+      contentContainerStyle={{
+        width: screenWidth,
+        paddingBottom: screenWidth * 0.2,
+      }}
     >
       <View className="items-start w-full px-5 mt-11">
-        <Text className={`text-[27px] font-["sans-semibold"]`}>
+        <Text
+          className={`text-[27px] font-["sans-semibold"]`}
+          style={{ color: isDark ? colors.white : colors.black }}
+        >
           Confirm your details
         </Text>
 
@@ -144,9 +144,13 @@ export default function Registration1({ handleNextPage }) {
             <>
               <View className="flex-row items-start justify-between w-full mt-8">
                 <View className="items-start w-[48%]">
-                  <Text className={`text-[12px] font-["sans-regular"]`}>
+                  <Text
+                    className={`text-[12px] font-["sans-regular"]`}
+                    style={{ color: isDark ? colors.white : colors.black }}
+                  >
                     First Name
                   </Text>
+
                   <TextInput
                     className={`h-[49px] w-full pl-4 border-[1px] border-[#8A8A8A] rounded-[6px] mt-2 text-[13px] ${
                       errors.first_name && "border-red-600"
@@ -159,7 +163,9 @@ export default function Registration1({ handleNextPage }) {
                     onBlur={handleBlur("first_name")}
                     value={values.first_name}
                     placeholder="John"
+                    placeholderTextColor={isDark ? colors.soft : colors.black}
                     keyboardType="default"
+                    style={{ color: isDark ? colors.white : colors.black }}
                   />
                   <Text className="text-red-600 text-xs">
                     {errors.first_name}
@@ -167,7 +173,10 @@ export default function Registration1({ handleNextPage }) {
                 </View>
 
                 <View className="items-start w-[48%]">
-                  <Text className={`text-[12px] font-["sans-regular"]`}>
+                  <Text
+                    className={`text-[12px] font-["sans-regular"]`}
+                    style={{ color: isDark ? colors.white : colors.black }}
+                  >
                     Last Name
                   </Text>
                   <TextInput
@@ -182,7 +191,9 @@ export default function Registration1({ handleNextPage }) {
                     onBlur={handleBlur("last_name")}
                     value={values.last_name}
                     placeholder="Doe"
+                    placeholderTextColor={isDark ? colors.soft : colors.black}
                     keyboardType="default"
+                    style={{ color: isDark ? colors.white : colors.black }}
                   />
                   <Text className="text-red-600 text-xs">
                     {errors.last_name}
@@ -191,13 +202,14 @@ export default function Registration1({ handleNextPage }) {
               </View>
               <Text
                 className={`text-[11px] font-["sans-regular"] text-[#8A8A8A]`}
+                style={{ color: isDark ? colors.white : colors.black }}
               >
                 Please ensure this is first and last name on your Government ID
                 document.
               </Text>
 
               <View className="items-start w-full mt-6">
-                <Text className={`text-[12px] font-["sans-regular"]`}>
+                <Text className={`text-[12px] font-["sans-regular"]`} style={{color:isDark ? colors.white : colors.black}}>
                   Email address
                 </Text>
                 <TextInput
@@ -208,13 +220,15 @@ export default function Registration1({ handleNextPage }) {
                   onBlur={handleBlur("email")}
                   value={values.email}
                   placeholder="name@gmail.com"
+                  placeholderTextColor={isDark ? colors.soft : colors.black}
                   keyboardType="email-address"
+                  style={{color: isDark ? colors.white : colors.black}}
                 />
                 <Text className="text-red-600 text-xs">{errors.email}</Text>
               </View>
 
               <View className="items-start w-full mt-6">
-                <Text className={`text-[12px] font-["sans-regular"]`}>
+                <Text className={`text-[12px] font-["sans-regular"]`} style={{color:isDark ? colors.white : colors.black}}>
                   Phone Number
                 </Text>
                 <TextInput
@@ -225,13 +239,15 @@ export default function Registration1({ handleNextPage }) {
                   onBlur={handleBlur("phone")}
                   value={values.phone}
                   placeholder="090 0000 0000"
+                  placeholderTextColor={isDark ? colors.soft : colors.black}
                   keyboardType="phone-pad"
+                  style={{color: isDark ? colors.white : colors.black}}
                 />
                 <Text className="text-red-600 text-xs">{errors.phone}</Text>
               </View>
 
               <View className="items-start w-full mt-6">
-                <Text className={`text-[12px] font-["sans-regular"]`}>
+                <Text className={`text-[12px] font-["sans-regular"]`} style={{color:isDark ? colors.white : colors.black}}>
                   Add Image
                 </Text>
                 <TextInput
@@ -258,7 +274,7 @@ export default function Registration1({ handleNextPage }) {
               </View>
 
               <View className="items-start w-full mt-6">
-                <Text className={`text-[12px] font-["sans-regular"]`}>
+                <Text className={`text-[12px] font-["sans-regular"]`} style={{color: isDark ? colors.white : colors.black}}>
                   Create password
                 </Text>
                 <TextInput
@@ -271,8 +287,10 @@ export default function Registration1({ handleNextPage }) {
                   onBlur={handleBlur("password")}
                   value={values.password}
                   placeholder="password"
+                  placeholderTextColor={isDark ? colors.soft : colors.black}
                   keyboardType="default"
                   secureTextEntry={close ? false : true}
+                  style={{color: isDark ? colors.white : colors.black}}
                 />
                 <Pressable
                   onPress={() => setClose(!close)}
@@ -281,14 +299,14 @@ export default function Registration1({ handleNextPage }) {
                   <Ionicons
                     name={close ? "eye-off-outline" : "eye-outline"}
                     size={23}
-                    color="black"
+                    color={isDark ? colors.white : colors.black}
                   />
                 </Pressable>
                 <Text className="text-red-600 text-xs">{errors.password}</Text>
               </View>
 
               <View className="items-start w-full mt-6">
-                <Text className={`text-[12px] font-["sans-regular"]`}>
+                <Text className={`text-[12px] font-["sans-regular"]`} style={{color: isDark ? colors.white : colors.black}}>
                   Confirm password
                 </Text>
                 <TextInput
@@ -302,8 +320,10 @@ export default function Registration1({ handleNextPage }) {
                   onChangeText={handleChange("confirmPassword")}
                   onBlur={handleBlur("confirmPassword")}
                   placeholder="confirmPassword"
+                  placeholderTextColor={isDark ? colors.soft : colors.black}
                   keyboardType="default"
                   secureTextEntry={close ? false : true}
+                  style={{color: isDark ? colors.white : colors.black}}
                 />
                 <Pressable
                   onPress={() => setClose(!close)}
@@ -312,7 +332,7 @@ export default function Registration1({ handleNextPage }) {
                   <Ionicons
                     name={close ? "eye-off-outline" : "eye-outline"}
                     size={23}
-                    color="black"
+                    color={isDark ? colors.white : colors.black}
                   />
                 </Pressable>
                 <Text className="text-red-600 text-xs">
@@ -321,7 +341,7 @@ export default function Registration1({ handleNextPage }) {
               </View>
 
               <View className="items-start w-full mt-6">
-                <Text className={`text-[12px] font-["sans-regular"]`}>
+                <Text className={`text-[12px] font-["sans-regular"]`} style={{color: isDark ? colors.white : colors.black}}>
                   Referral Code (optional)
                 </Text>
                 <TextInput
@@ -335,7 +355,9 @@ export default function Registration1({ handleNextPage }) {
                   onChangeText={handleChange("referral_id")}
                   onBlur={handleBlur("referral_id")}
                   placeholder="000000"
+                  placeholderTextColor={isDark ? colors.soft : colors.black}
                   keyboardType="numeric"
+                  style={{color: isDark ? colors.white : colors.black}}
                 />
                 <Text className="text-red-600 text-xs">
                   {errors.referral_id}
@@ -356,7 +378,7 @@ export default function Registration1({ handleNextPage }) {
                     />
                   )}
                 </Pressable>
-                <Text className={`text-[10px] font-["sans-regular"] px-5`}>
+                <Text className={`text-[10px] font-["sans-regular"] px-5`} style={{color: isDark ? colors.white : colors.black}}>
                   I acknowledge that I have read, understand, and agree to be
                   bound by Flex App's Merchant Service Agreement (MSA). Terms
                   and Conditions, and Privacy Notice
@@ -378,7 +400,7 @@ export default function Registration1({ handleNextPage }) {
                   )}
                 </Pressable>
 
-                <Text className={`text-[10px] font-["sans-regular"] px-5`}>
+                <Text className={`text-[10px] font-["sans-regular"] px-5`} style={{color: isDark ? colors.white : colors.black}}>
                   I agree to receive news, offers, and promotional materials
                   from Flex App.
                 </Text>

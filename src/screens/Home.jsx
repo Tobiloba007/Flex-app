@@ -1,4 +1,10 @@
-import { Dimensions, Pressable, SafeAreaView, ScrollView } from "react-native";
+import {
+  Dimensions,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import HomeTop from "../components/home/HomeTop";
@@ -9,6 +15,7 @@ import { db } from "../../firebaseConfig";
 import { colors } from "../../colors";
 import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
 
 const itemHeight = Dimensions.get("window").height;
 const itemWidth = Dimensions.get("window").width;
@@ -22,6 +29,8 @@ const item = {
 };
 
 export default function Home() {
+  const { isDark } = useSelector((state) => state.theme);
+
   const [user, setUser] = useState(null);
   const [fcmToken, setFcmToken] = useState("");
 
@@ -96,11 +105,16 @@ export default function Home() {
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: "white",
+        backgroundColor: isDark ? colors.black : colors.white,
         paddingVertical: itemHeight * 0.04,
         paddingHorizontal: itemWidth * 0.035,
       }}
     >
+      <StatusBar
+        backgroundColor={isDark ? colors.black : colors.white}
+        barStyle={isDark ? "light-content" : "dark-content"}
+      />
+
       <Pressable
         onPress={() =>
           navigation.navigate("MessagingRoom", {

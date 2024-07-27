@@ -1,17 +1,27 @@
-import { View, Text, Dimensions } from "react-native";
+import { View, Text, Dimensions, SafeAreaView, StatusBar } from "react-native";
 import React, { useState } from "react";
 import { styles } from "../../constants/styles";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import CountdownTimer from "../CountdownTimer";
+import { colors } from "../../../colors";
+import { useSelector } from "react-redux";
 
 const itemWidth = Dimensions.get("window").width;
 
-const AboutOffer = ({offer}) => {
+const AboutOffer = ({ offer }) => {
+  const { isDark } = useSelector((state) => state.theme);
+
   return (
     <View
       style={[
         styles.box,
-        { alignItems: "flex-start", borderRadius: 10, gap: 10, elevation: 5, paddingHorizontal: 15 },
+        {
+          alignItems: "flex-start",
+          borderRadius: 10,
+          gap: 10,
+          elevation: 5,
+          paddingHorizontal: 15,
+        },
       ]}
     >
       <View style={[styles.row, { gap: 5 }]}>
@@ -43,8 +53,14 @@ const AboutOffer = ({offer}) => {
         }}
       >
         <Text style={{ color: "gray" }}>Buy limits</Text>
-        <Text style={[styles.mediumTxt, { fontSize: itemWidth * 0.035, fontWeight: 700 }]}>
-          Min {offer?.min_trade_amount} {offer?.currency} - Max {offer?.max_trade_amount} {offer?.currency}
+        <Text
+          style={[
+            styles.mediumTxt,
+            { fontSize: itemWidth * 0.035, fontWeight: 700 },
+          ]}
+        >
+          Min {offer?.min_trade_amount} {offer?.currency} - Max{" "}
+          {offer?.max_trade_amount} {offer?.currency}
         </Text>
       </View>
 

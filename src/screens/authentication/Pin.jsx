@@ -7,8 +7,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import ResetPinModal from "./ResetPinModal";
 import PinComponent from "./PinComponent";
 import { BASE_URL } from "../../config";
+import { useSelector } from "react-redux";
 
 const Pin = () => {
+  const { isDark } = useSelector((state) => state.theme);
+
   const navigation = useNavigation();
 
   const [pin, setPin] = useState([]);
@@ -175,8 +178,13 @@ const Pin = () => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.white }}>
-      <StatusBar backgroundColor={"white"} barStyle={"dark-content"} />
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: isDark ? colors.black : "white" }}
+    >
+      <StatusBar
+        backgroundColor={isDark ? colors.black : "white"}
+        barStyle={isDark ? "light-content" : "dark-content"}
+      />
 
       <View style={styles.container}>
         <ScrollView showsVerticalScrollIndicator={false}>

@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, Dimensions } from "react-native";
+import { View, Text, SafeAreaView, Dimensions, StatusBar } from "react-native";
 import React, { useEffect, useState } from "react";
 import { styles } from "../../constants/styles";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -9,11 +9,14 @@ import AboutBuyer from "../../components/sendMoney/AboutBuyer";
 import WalletTop from "../../components/wallet/WalletTop";
 import { BASE_URL_P2P, BASE_URL } from "../../config";
 import axios from "axios";
+import { useSelector } from "react-redux";
 
 const itemWidth = Dimensions.get("window").width;
 
 const AboutOffers = ({ route }) => {
   const { id } = route.params;
+
+  const { isDark } = useSelector((state) => state.theme);
 
   const [offer, setOffer] = useState(null);
   const [user, setUser] = useState(null);
@@ -65,8 +68,15 @@ const AboutOffers = ({ route }) => {
   // console.log(user);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <WalletTop text={"About this offer"} />
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: isDark ? colors.black : colors.white }}
+    >
+      <StatusBar
+        backgroundColor={isDark ? colors.black : colors.white}
+        barStyle={isDark ? "light-content" : "dark-content"}
+      />
+
+      <WalletTop text={"About this offer"} isDark={isDark} />
 
       <View
         style={[
@@ -84,10 +94,15 @@ const AboutOffers = ({ route }) => {
             <MaterialCommunityIcons
               name="hand-extended"
               size={24}
-              color={colors.primary}
+              color={isDark ? colors.white : colors.primary}
             />
 
-            <Text style={[styles.smallTxt, { color: colors.primary }]}>
+            <Text
+              style={[
+                styles.smallTxt,
+                { color: isDark ? colors.white : colors.primary },
+              ]}
+            >
               About this offer
             </Text>
           </View>
@@ -95,9 +110,9 @@ const AboutOffers = ({ route }) => {
           <AboutOffer offer={offer} />
 
           <View style={[styles.row, { gap: 10 }]}>
-            <Ionicons name="person-sharp" size={20} color={colors.primary} />
+            <Ionicons name="person-sharp" size={20} color={isDark ? colors.white : colors.primary} />
 
-            <Text style={[styles.smallTxt, { color: colors.primary }]}>
+            <Text style={[styles.smallTxt, { color: isDark ? colors.white : colors.primary }]}>
               About this seller
             </Text>
           </View>

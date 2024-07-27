@@ -28,6 +28,8 @@ import { db } from "../../../firebaseConfig";
 const itemWidth = Dimensions.get("window").width;
 
 const ChatRoom = () => {
+  const { isDark } = useSelector((state) => state.theme);
+
   const devicesMessages = useSelector((state) => state.message.messages);
 
   const refRBChannelSheet = useRef();
@@ -134,8 +136,13 @@ const ChatRoom = () => {
   }, [user]);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <StatusBar backgroundColor={colors.white} barStyle={"dark-content"} />
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: isDark ? colors.black : colors.white }}
+    >
+      <StatusBar
+        backgroundColor={isDark ? colors.black : colors.white}
+        barStyle={isDark ? "light-content" : "dark-content"}
+      />
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <View
@@ -144,7 +151,10 @@ const ChatRoom = () => {
         >
           <>
             <View className={"w-[68px] items-center"}>
-              <Text className={"text-l font-semibold text-[#000] pt-6"}>
+              <Text
+                className={"text-l font-semibold text-[#000] pt-6"}
+                style={{ color: isDark ? colors.white : colors.black }}
+              >
                 Channels
               </Text>
 
@@ -182,6 +192,7 @@ const ChatRoom = () => {
                   className={
                     'text-[25px] font-bold text-center font-["sans-bold"]'
                   }
+                  style={{ color: isDark ? colors.white : colors.black }}
                 >
                   Chat Room
                 </Text>
@@ -206,6 +217,7 @@ const ChatRoom = () => {
                   devicesMessages={devicesMessages}
                   messages={messages}
                   user={user}
+                  isDark={isDark}
                 />
               )}
             </View>

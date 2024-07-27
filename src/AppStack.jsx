@@ -29,13 +29,14 @@ import Payment from "./screens/payment/Payment";
 import ChannelRequests from "./screens/chat/ChannelRequests";
 import MyOffers from "./screens/sendMoney/MyOffers";
 import FriendProfile from "./components/profile/FriendProfile";
-import Profile from "./screens/Profile";
+import Profile from "./screens/profile/Profile";
 import EditProfile from "./screens/profile/EditProfile";
 import SendImage from "./screens/chat/SendImage";
 import PhotoDisplay from "./components/PhotoDisplay";
 import ForgotPasswordEmail from "./screens/authentication/ForgotPasswordEmail";
 import ForgotPasswordVerify from "./screens/authentication/ForgotPasswordVerify";
 import ForgotPasswordNew from "./screens/authentication/ForgotPasswordNew";
+import Settings from "./screens/settings/Settings";
 
 const Stack = createStackNavigator();
 
@@ -100,6 +101,7 @@ const StackNavigator = () => {
       <Stack.Screen name="walletOffer" component={WalletOffer} />
       <Stack.Screen name="payment" component={Payment} />
       <Stack.Screen name="trade" component={Trade} />
+      <Stack.Screen name="settings" component={Settings} />
     </Stack.Navigator>
   );
 };
@@ -107,7 +109,7 @@ const StackNavigator = () => {
 const AuthNavigator = ({ showSplash }) => {
   return (
     <Stack.Navigator
-      initialRouteName={showSplash ? "splash" : "login"}
+      initialRouteName={showSplash ? "splash" : "choose"}
       screenOptions={{
         transitionSpec: { open: MyTransition, close: MyTransition },
         headerShown: false,
@@ -115,9 +117,9 @@ const AuthNavigator = ({ showSplash }) => {
     >
       {showSplash && <Stack.Screen name="splash" component={Splash} />}
 
+      <Stack.Screen name="choose" component={Choose} />
       <Stack.Screen name="login" component={Login} />
       <Stack.Screen name="pin" component={Pin} />
-      <Stack.Screen name="choose" component={Choose} />
       <Stack.Screen name="registration" component={Registration} />
       <Stack.Screen name="verification" component={Verification} />
       <Stack.Screen name="resendCode" component={ResendCode} />

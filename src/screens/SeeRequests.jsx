@@ -20,8 +20,11 @@ import { BASE_URL } from "../config";
 import SeeRequest from "../components/seeRequest/SeeRequest";
 import AddRequest from "../components/seeRequest/AddRequest";
 import { colors } from "../../colors";
+import { useSelector } from "react-redux";
 
 export default function SeeRequests() {
+  const { isDark } = useSelector((state) => state.theme);
+
   const [dropdown, setDropdown] = useState(false);
   const [report, setReport] = useState(false);
   const [block, setBlock] = useState(false);
@@ -101,17 +104,27 @@ export default function SeeRequests() {
 
   return (
     <SafeAreaView
-      className={`flex flex-col items-center justify-start w-full bg-white`}
-      style={{ paddingTop: StatusBar.currentHeight }}
+      className={`flex flex-col items-center justify-start w-full`}
+      style={{ flex: 1, backgroundColor: isDark ? colors.black : colors.white }}
     >
+      <StatusBar
+        backgroundColor={isDark ? colors.black : colors.white}
+        barStyle={isDark ? "light-content" : "dark-content"}
+      />
+
       <View
-        className={`flex flex-col items-center justify-start w-full h-full bg-white ${
+        className={`flex flex-col items-center justify-start w-full h-full ${
           report | block && "bg-[#cccccc] opacity-50"
         }`}
+        style={{ backgroundColor: isDark ? colors.black : colors.white }}
       >
-        <View className="flex items-center justify-center w-full h-[75px] bg-white shadow-3xl border-b-[1px] border-[#eeeeee]">
+        <View
+          className="flex items-center justify-center w-full h-[75px] bg-white shadow-3xl border-b-[1px] border-[#eeeeee]"
+          style={{ backgroundColor: isDark ? colors.black : colors.white }}
+        >
           <Text
             className={`text-center text-black font-["sans-semibold"] text-base mt-4`}
+            style={{ color: isDark ? colors.white : colors.black }}
           >
             {isFriends ? "ADD FRIEND" : "FRIEND REQUESTS"}
           </Text>
@@ -120,7 +133,11 @@ export default function SeeRequests() {
             onPress={() => navigation.goBack()}
             className="absolute top-8 left-3"
           >
-            <AntDesign name="arrowleft" size={24} color="black" />
+            <AntDesign
+              name="arrowleft"
+              size={24}
+              color={isDark ? colors.white : colors.black}
+            />
           </TouchableOpacity>
         </View>
 

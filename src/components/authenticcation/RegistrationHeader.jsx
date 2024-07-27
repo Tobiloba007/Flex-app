@@ -1,8 +1,9 @@
 import { Platform, SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { Ionicons } from '@expo/vector-icons';
+import { colors } from '../../../colors';
 
-export default function RegistrationHeader({navigation, scroll}) {
+export default function RegistrationHeader({navigation, scroll, isDark}) {
   return (
     <SafeAreaView className="items-center justify-center w-full" 
     style={{paddingTop: StatusBar.currentHeight, marginTop: Platform.OS === 'ios' ? 25 : 40}}>
@@ -14,7 +15,7 @@ export default function RegistrationHeader({navigation, scroll}) {
           <TouchableOpacity onPress={() => navigation.goBack()}
           className={`absolute left-5 bottom-0`}
           >
-              <Ionicons name="arrow-back-outline" size={24} color="black" />
+              <Ionicons name="arrow-back-outline" size={24} color={isDark ? colors.white : colors.black}/>
           </TouchableOpacity>
         </View>
     </SafeAreaView>

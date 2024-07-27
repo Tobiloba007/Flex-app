@@ -20,7 +20,7 @@ import { colors } from "../../../colors";
 
 const itemWidth = Dimensions.get("window").width;
 
-export default function ProfileTransactions() {
+export default function ProfileTransactions({isDark}) {
   const transData = [
     {
       id: 1,

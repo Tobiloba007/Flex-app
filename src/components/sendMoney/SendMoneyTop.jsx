@@ -9,7 +9,7 @@ import SideMenu from "../SideMenu";
 
 const itemWidth = Dimensions.get("window").width;
 
-const SendMoneyTop = () => {
+const SendMoneyTop = ({isDark}) => {
   const [sideMenu, setSideMenu] = useState(false);
 
   const navigation = useNavigation();

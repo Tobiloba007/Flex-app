@@ -3,10 +3,14 @@ import { Dimensions, Text, View } from "react-native";
 import axios from "axios";
 import { BASE_URL2 } from "../../config";
 import HomeFeedData from "./HomeFeedData";
+import { useSelector } from "react-redux";
+import { colors } from "../../../colors";
 
 const screenWidth = Dimensions.get("window").width;
 
 const HomeFeeds = () => {
+  const { isDark } = useSelector((state) => state.theme);
+
   const [feeds, setFeeds] = useState([]);
 
   const fetchFeeds = async () => {
@@ -33,7 +37,10 @@ const HomeFeeds = () => {
 
   return (
     <View className="flex flex-col items-start justify-start w-full pb-20">
-      <Text className={'text-xs text-black font-["sans-semibold"] mt-5'}>
+      <Text
+        className={'text-xs text-black font-["sans-semibold"] mt-5'}
+        style={{ color: isDark ? colors.white : colors.black }}
+      >
         {feeds.length > 0 ? "Feeds" : "Feeds appears here."}
       </Text>
 

@@ -179,8 +179,8 @@ export const styles = StyleSheet.create({
   },
 
   pinInput: {
-    height: itemWidth * 0.035,
-    width: itemWidth * 0.035,
+    height: itemWidth * 0.06,
+    width: itemWidth * 0.06,
     borderRadius: 50,
     borderWidth: 2,
     borderColor: "#E3E3E3",
@@ -190,7 +190,7 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    width: itemWidth * 0.57,
+    width: itemWidth * 0.7,
     marginVertical: itemHeight * 0.06,
   },
 
@@ -198,13 +198,13 @@ export const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: itemWidth * 0.06,
-    justifyContent: "flex-end",
+    gap: itemWidth * 0.04,
+    justifyContent: "center",
   },
 
   pinBtn: {
-    width: itemWidth * 0.14,
-    height: itemWidth * 0.14,
+    width: itemWidth * 0.18,
+    height: itemWidth * 0.18,
     backgroundColor: "#E3E3E3",
     borderRadius: 50,
     alignItems: "center",

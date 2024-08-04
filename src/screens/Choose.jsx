@@ -64,18 +64,18 @@ export default function Choose({ navigation }) {
           <Image
             // className="w-[140px] h-[144px]"
             style={{
-              height: itemWidth * 0.36,
-              width: itemWidth * 0.35,
+              height: itemWidth * 0.6,
+              width: itemWidth * 0.6,
               borderRadius: 50,
             }}
-            source={require("../../assets/images/flexLogo.png")}
+            source={require("../../assets/images/logo.png")}
           />
-          <Text
+          {/* <Text
             className={`font-["sans-bold"] text-[#029CFC]`}
             style={{ fontSize: itemWidth * 0.06 }}
           >
             Flex App
-          </Text>
+          </Text> */}
         </View>
 
         <View

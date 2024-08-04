@@ -17,21 +17,22 @@ export default function Splash({ navigation }) {
   const title1 = "Send Money to those who matter";
   const titleWidth1 = itemWidth * 0.3;
   const desc1 =
-    "Make international transfers to local bank account and mobile money wallets.";
-  const image1 = require("../../assets/images/splash1.png");
+    "Flexapp provides me with multiple exchange rate options to send money to my family back home.";
+  const image1 = require("../../assets/images/ob2.jpg");
   const imageStyle1 = "h-[275px] w-full";
 
-  const title2 = "Safe and secure transfers";
-  const titleWidth2 = itemWidth * 0.3;
-  const desc2 = "Your transactions and personal data are securely protected.";
-  const image2 = require("../../assets/images/splash2.png");
-  const imageStyle2 = "h-[325px] w-full";
-
-  const title3 = "Find local events and activities around you.";
+  const title3 = "Safe and secure transfers";
   const titleWidth3 = itemWidth * 0.3;
-  const desc3 = "";
-  const image3 = require("../../assets/images/splash3.png");
-  const imageStyle3 = "h-[289px] w-[80%]";
+  const desc3 = "Your transactions and personal data are securely protected.";
+  const image3 = require("../../assets/images/splash2.png");
+  const imageStyle3 = "h-[325px] w-full";
+
+  const title2 = "Meet New People";
+  const titleWidth2 = itemWidth * 0.3;
+  const desc2 =
+    "FlexApp was a solution for me to meet new people from my country when I first moved to the USA.";
+  const image2 = require("../../assets/images/ob4.jpg");
+  const imageStyle2 = "h-[289px] w-[80%]";
 
   const title4 = "Meet new people and explore what your friends are doing";
   const titleWidth4 = itemWidth * 0.3;
@@ -74,15 +75,15 @@ export default function Splash({ navigation }) {
             scroll === 2 && `bg-[${colors.primary}] w-[16px]`
           }`}
         ></View>
-        <View
+        {/* <View
           className={`bg-[#D9D9D9] h-[6px] w-[6px] rounded-full mr-[2px] ${
             scroll === 3 && `bg-[${colors.primary}] w-[16px]`
           }`}
-        ></View>
+        ></View> */}
       </View>
 
       <PagerView
-        style={{height: '100%'}}
+        style={{ height: "100%" }}
         ref={pagerRef}
         pageMargin={20}
         onPageSelected={onPageSelected}
@@ -114,10 +115,10 @@ export default function Splash({ navigation }) {
             image={image3}
             titleWidth={titleWidth3}
             imageStyle={imageStyle3}
-            handleBtn={() => handleNextPage(3)}
+            handleBtn={() => navigation.navigate("choose")}
           />
         </View>
-        <View key="4" className="items-center justify-center h-full w-full">
+        {/* <View key="4" className="items-center justify-center h-full w-full">
           <SplashScreen
             title={title4}
             desc={desc4}
@@ -126,7 +127,7 @@ export default function Splash({ navigation }) {
             imageStyle={imageStyle4}
             handleBtn={() => navigation.navigate("choose")}
           />
-        </View>
+        </View> */}
       </PagerView>
     </SafeAreaView>
   );

@@ -19,7 +19,7 @@ import ChatRoom from "../screens/chat/ChatRoom";
 import { useNavigation } from "@react-navigation/native";
 import dynamicLinks from "@react-native-firebase/dynamic-links";
 import axios from "axios";
-import { BASE_URL2 } from "../config";
+import { BASE_URL, BASE_URL2 } from "../config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { colors } from "../../colors";
 import { styles } from "../constants/styles";
@@ -29,6 +29,7 @@ import { onValue, ref } from "firebase/database";
 import { db } from "../../firebaseConfig";
 import { useFocusEffect } from "expo-router";
 import { useSelector } from "react-redux";
+import ResetPinModal from "../screens/authentication/ResetPinModal";
 
 const itemHeight = Dimensions.get("window").height;
 const itemWidth = Dimensions.get("window").width;
@@ -48,6 +49,16 @@ export default function Tab() {
   const [userPin, setUserPin] = useState();
   const [message, setMessage] = useState("");
   const [pin, setPin] = useState([]);
+  const [newPin, setNewPin] = useState(null);
+  const [confirmPin, setConfirmPin] = useState([]);
+  const [isNewPin, setIsNewPin] = useState(false);
+  const [isConfirmPin, setIsConfirmPin] = useState(false);
+  const [isPinSet, setIsPinSet] = useState(false);
+  const [isMaxPin, setIsMaxPin] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [unreadMessages, setUnReadMessages] = useState();
 
   const navigation = useNavigation();
@@ -240,6 +251,55 @@ export default function Tab() {
   };
 
   useEffect(() => {
+    if (!userPin && !isNewPin && pin.length === 4) {
+      setNewPin(pin.toString());
+      setIsNewPin(true);
+      setPin([]);
+    }
+  }, [pin]);
+
+  useEffect(() => {
+    if (!userPin && isNewPin && pin.length === 4) {
+      setConfirmPin(pin.toString());
+      setIsNewPin(false);
+      setIsConfirmPin(true);
+    }
+  }, [pin]);
+
+  const handleSaveNewPin = async () => {
+    if (newPin === confirmPin) {
+      await AsyncStorage.setItem("@user_pin", pin.toString()).then(() => {
+        setMessage(
+          "Pin saved successfully! You can now access this application with your set pin."
+        );
+
+        setTimeout(() => {
+          setMessage("");
+        }, 3000);
+      });
+
+      setIsPinSet(true);
+      setIsConfirmPin(false);
+      setPin([]);
+    } else {
+      setMessage("Comfirm pin must match the pin you set, please try again.");
+
+      setIsConfirmPin(false);
+      setPin([]);
+
+      setTimeout(() => {
+        setMessage("");
+      }, 3000);
+    }
+  };
+
+  useEffect(() => {
+    if (isConfirmPin) {
+      handleSaveNewPin();
+    }
+  }, [isConfirmPin]);
+
+  useEffect(() => {
     if (pin.length === 4 && userPin) {
       if (pin.toString() === userPin) {
         setShowPin(false);
@@ -258,7 +318,54 @@ export default function Tab() {
   }, [pin.length]);
 
   const handlePrompt = () => {
-    navigation.navigate("pin");
+    setModalVisible(true);
+  };
+
+  const handleResetPin = async () => {
+    if (!email && !password) {
+      setMessage(
+        "Input cannot be empty! Please input a valid data and try again."
+      );
+      // Close the modal
+      setModalVisible(false);
+    } else {
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("password", password);
+
+      try {
+        const response = await fetch(`${BASE_URL}/simplelogin_v6.php`, {
+          method: "POST",
+          body: formData,
+        });
+        const data = await response.json();
+
+        // console.log(data);
+
+        if (data.status === "true") {
+          await AsyncStorage.setItem("@user_pin", "").then(() => {
+            setMessage(
+              "Pin reset successfully! You can now enter a new pin to continue."
+            );
+          });
+
+          setIsPinSet(true);
+        }
+
+        if (data.status === "false") {
+          setMessage(data?.message);
+        }
+        // Close the modal
+        setModalVisible(false);
+
+        setTimeout(() => {
+          setMessage("");
+        }, 3000);
+      } catch (error) {
+        Alert.alert(error?.response?.data);
+        console.log(error);
+      }
+    }
   };
 
   return (
@@ -279,14 +386,23 @@ export default function Tab() {
           />
           <ScrollView showsVerticalScrollIndicator={false}>
             <PinComponent
-              isNewPin={undefined}
+              isNewPin={isNewPin}
               userPin={userPin}
               message={message}
               handlePin={handlePin}
               handlePrompt={handlePrompt}
-              isMaxPin={undefined}
+              isMaxPin={isMaxPin}
               pin={pin}
               removePin={removePin}
+            />
+
+            <ResetPinModal
+              modalVisible={modalVisible}
+              setModalVisible={setModalVisible}
+              setInputValue={setInputValue}
+              setEmail={setEmail}
+              setPassword={setPassword}
+              handleResetPin={handleResetPin}
             />
           </ScrollView>
         </View>

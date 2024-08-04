@@ -18,11 +18,11 @@ export default function SplashScreen(props) {
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{
         width: screenWidth,
-        height: screenHeight * 0.9,
+        height: "auto",
         justifyContent: "space-between",
       }}
     >
-      <View style={{ padding: screenWidth * 0.05 }}>
+      <View style={{ padding: screenWidth * 0.045 }}>
         <Text
           className={`text-[35px] font-["sans-bold"] text-[#000000] w-[${props.titleWidth}] leading-[47px]`}
         >
@@ -38,7 +38,7 @@ export default function SplashScreen(props) {
       <View>
         <Image
           source={props.image}
-          style={{ width: screenWidth, height: screenHeight * 0.35 }}
+          style={{ width: screenWidth, height: screenHeight * 0.5 }}
           resizeMode="cover"
         />
       </View>

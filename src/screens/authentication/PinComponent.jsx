@@ -42,7 +42,7 @@ const PinComponent = ({
         style={[
           styles.smallTxt,
           {
-            fontSize: itemWidth * 0.04,
+            fontSize: itemWidth * 0.045,
             fontWeight: "500",
             width: itemWidth * 0.7,
             color: isDark ? colors.white : colors.black,
@@ -130,7 +130,7 @@ const PinComponent = ({
             ]}
             onPress={() => handlePin(1)}
           >
-            <Text style={styles.smallTxt}>1</Text>
+            <Text style={[styles.smallTxt, {fontSize: itemWidth * 0.07}]}>1</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -141,7 +141,7 @@ const PinComponent = ({
             ]}
             onPress={() => handlePin(2)}
           >
-            <Text style={styles.smallTxt}>2</Text>
+            <Text style={[styles.smallTxt, {fontSize: itemWidth * 0.07}]}>2</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -152,7 +152,7 @@ const PinComponent = ({
             ]}
             onPress={() => handlePin(3)}
           >
-            <Text style={styles.smallTxt}>3</Text>
+            <Text style={[styles.smallTxt, {fontSize: itemWidth * 0.07}]}>3</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -163,7 +163,7 @@ const PinComponent = ({
             ]}
             onPress={() => handlePin(4)}
           >
-            <Text style={styles.smallTxt}>4</Text>
+            <Text style={[styles.smallTxt, {fontSize: itemWidth * 0.07}]}>4</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -174,7 +174,7 @@ const PinComponent = ({
             ]}
             onPress={() => handlePin(5)}
           >
-            <Text style={styles.smallTxt}>5</Text>
+            <Text style={[styles.smallTxt, {fontSize: itemWidth * 0.07}]}>5</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -185,7 +185,7 @@ const PinComponent = ({
             ]}
             onPress={() => handlePin(6)}
           >
-            <Text style={styles.smallTxt}>6</Text>
+            <Text style={[styles.smallTxt, {fontSize: itemWidth * 0.07}]}>6</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -196,7 +196,7 @@ const PinComponent = ({
             ]}
             onPress={() => handlePin(7)}
           >
-            <Text style={styles.smallTxt}>7</Text>
+            <Text style={[styles.smallTxt, {fontSize: itemWidth * 0.07}]}>7</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -207,7 +207,7 @@ const PinComponent = ({
             ]}
             onPress={() => handlePin(8)}
           >
-            <Text style={styles.smallTxt}>8</Text>
+            <Text style={[styles.smallTxt, {fontSize: itemWidth * 0.07}]}>8</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -218,7 +218,20 @@ const PinComponent = ({
             ]}
             onPress={() => handlePin(9)}
           >
-            <Text style={styles.smallTxt}>9</Text>
+            <Text style={[styles.smallTxt, {fontSize: itemWidth * 0.07}]}>9</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            activeOpacity={0.7}
+            style={[
+              styles.pinBtn,
+              {
+                borderColor: "none",
+                backgroundColor: "transparent",
+              },
+            ]}
+          >
+            <Text style={[styles.smallTxt, {fontSize: itemWidth * 0.07}]}></Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -229,7 +242,7 @@ const PinComponent = ({
             ]}
             onPress={() => handlePin(0)}
           >
-            <Text style={styles.smallTxt}>0</Text>
+            <Text style={[styles.smallTxt, {fontSize: itemWidth * 0.07}]}>0</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -239,7 +252,7 @@ const PinComponent = ({
           >
             <Feather
               name="delete"
-              size={28}
+              size={30}
               color={isDark ? colors.soft : colors.black}
             />
           </TouchableOpacity>
@@ -249,7 +262,7 @@ const PinComponent = ({
       {userPin && (
         <Text
           onPress={handlePrompt}
-          style={[styles.smallTxt, { color: colors.primary }]}
+          style={[styles.smallTxt, { color: colors.primary, fontSize: itemWidth * 0.045 }]}
         >
           Forgotten your PIN?
         </Text>

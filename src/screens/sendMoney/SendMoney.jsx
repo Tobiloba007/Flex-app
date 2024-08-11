@@ -30,7 +30,7 @@ export default function SendMoney() {
 
 
   return (
-    <SafeAreaView style={{ flex: 0.9, backgroundColor: "white" }}>
+    <SafeAreaView style={{ flex: 0.9, backgroundColor: "white", marginTop: 34 }}>
       <ScrollView horizontal={false}>
         <View
           style={[styles.container, { padding: 15, gap: 15, width: itemWidth }]}

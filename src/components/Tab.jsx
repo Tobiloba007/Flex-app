@@ -13,8 +13,11 @@ import { Foundation } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import Home from "../screens/Home";
 import SendMoney from "../screens/sendMoney/SendMoney";
+import Ads from "../screens/p2p/Ads";
 import Profile from "../screens/Profile";
 import ChatRoom from "../screens/chat/ChatRoom";
+import Wallet from "../screens/circleWallet/Wallet";
+import CreateAd from "../screens/p2p/CreateAds";
 import { useNavigation } from "@react-navigation/native";
 import dynamicLinks from "@react-native-firebase/dynamic-links";
 import axios from "axios";
@@ -170,6 +173,11 @@ export default function Tab() {
       label: "Home",
     },
     {
+      id: 5,
+      icon: <Ionicons name="wallet" size={24} color="#029CFC" />,
+      label: "Wallet",
+    },
+    {
       id: 2,
       icon: <Ionicons name="add-circle-sharp" size={33} color="#029CFC" />,
       label: "P2P crypto",
@@ -310,7 +318,18 @@ export default function Tab() {
                 >
                   <Home />
                 </Animated.View>
-              ) : count === 2 ? (
+              ) : count === 5 ? (
+                <Animated.View
+                  style={{
+                    opacity: animation.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [1, 0], // Map animation value from 0 to 1 to opacity from 1 to 0
+                    }),
+                    flex: 1,
+                  }}
+                >
+                  <Wallet />
+                </Animated.View> ): count === 2 ? (
                 <Animated.View
                   style={{
                     opacity: animation.interpolate({
@@ -320,7 +339,7 @@ export default function Tab() {
                     flex: 1,
                   }}
                 >
-                  <SendMoney />
+                  <CreateAd />
                 </Animated.View>
               ) : count === 3 ? (
                 <Animated.View

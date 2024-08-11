@@ -37,6 +37,9 @@ import ForgotPasswordEmail from "./screens/authentication/ForgotPasswordEmail";
 import ForgotPasswordVerify from "./screens/authentication/ForgotPasswordVerify";
 import ForgotPasswordNew from "./screens/authentication/ForgotPasswordNew";
 
+import CreateBuySellAd from "./screens/p2p/createAd";
+import ConfirmationScreen from "./screens/p2p/Confirmation";
+
 const Stack = createStackNavigator();
 
 const MyTransition = {
@@ -175,6 +178,8 @@ const AppStack = () => {
       <Stack.Screen name="walletOffer" component={WalletOffer} />
       <Stack.Screen name="payment" component={Payment} />
       <Stack.Screen name="trade" component={Trade} />
+      <Stack.Screen name="createbuysellad" component={CreateBuySellAd} />
+      <Stack.Screen name="confirmationPage" component={ConfirmationScreen} />
     </Stack.Navigator>
   );
 };

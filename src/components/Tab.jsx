@@ -333,7 +333,7 @@ export default function Tab() {
     if (!email && !password) {
       setMessage(
         "Input cannot be empty! Please input a valid data and try again."
-      );import Profile from "../screens/Profile";
+      );
 
       // Close the modal
       setModalVisible(false);

@@ -67,15 +67,15 @@ const MyTransition = {
 const StackNavigator = () => {
   return (
     <Stack.Navigator
-      initialRouteName={"tab"}
+      initialRouteName={"pin"}
       screenOptions={{
         transitionSpec: { open: MyTransition, close: MyTransition },
         headerShown: false,
       }}
     >
-      <Stack.Screen name="tab" component={Tab} />
-
       <Stack.Screen name="pin" component={Pin} />
+
+      <Stack.Screen name="tab" component={Tab} />
 
       <Stack.Screen name="ChatRoom" component={ChatRoom} />
       <Stack.Screen name="MessagingRoom" component={MessagingRoom} />

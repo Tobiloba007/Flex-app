@@ -6,33 +6,25 @@ import {
   Animated,
   Dimensions,
   ActivityIndicator,
-  ScrollView,
-  StatusBar,
 } from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import { Foundation } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import Home from "../screens/Home";
-import SendMoney from "../screens/sendMoney/SendMoney";
 import Profile from "../screens/profile/Profile";
-import Ads from "../screens/p2p/Ads";
 import ChatRoom from "../screens/chat/ChatRoom";
 import Wallet from "../screens/circleWallet/Wallet";
 import CreateAd from "../screens/p2p/CreateAds";
 import { useNavigation } from "@react-navigation/native";
 import dynamicLinks from "@react-native-firebase/dynamic-links";
 import axios from "axios";
-import { BASE_URL, BASE_URL2 } from "../config";
+import { BASE_URL2 } from "../config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { colors } from "../../colors";
 import { styles } from "../constants/styles";
-import Pin from "../screens/authentication/Pin";
-import PinComponent from "../screens/authentication/PinComponent";
 import { onValue, ref } from "firebase/database";
 import { db } from "../../firebaseConfig";
-import { useFocusEffect } from "expo-router";
 import { useSelector } from "react-redux";
-import ResetPinModal from "../screens/authentication/ResetPinModal";
 
 const itemHeight = Dimensions.get("window").height;
 const itemWidth = Dimensions.get("window").width;
@@ -48,20 +40,6 @@ export default function Tab() {
   const [channelMemberStatus, setChannelmemberStatus] = useState(null);
   const [error, setError] = useState("");
 
-  const [showPin, setShowPin] = useState(true);
-  const [userPin, setUserPin] = useState();
-  const [message, setMessage] = useState("");
-  const [pin, setPin] = useState([]);
-  const [newPin, setNewPin] = useState(null);
-  const [confirmPin, setConfirmPin] = useState([]);
-  const [isNewPin, setIsNewPin] = useState(false);
-  const [isConfirmPin, setIsConfirmPin] = useState(false);
-  const [isPinSet, setIsPinSet] = useState(false);
-  const [isMaxPin, setIsMaxPin] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [inputValue, setInputValue] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [unreadMessages, setUnReadMessages] = useState();
 
   const navigation = useNavigation();
@@ -82,20 +60,6 @@ export default function Tab() {
     };
 
     fetchData();
-  }, []);
-
-  useEffect(() => {
-    const getPin = async () => {
-      const storedPin = await AsyncStorage.getItem("@user_pin");
-
-      if (storedPin === null) {
-        setUserPin(storedPin);
-      } else {
-        setUserPin(storedPin);
-      }
-    };
-
-    getPin();
   }, []);
 
   const handleDynamicLink = useCallback(async (link) => {
@@ -245,341 +209,169 @@ export default function Tab() {
     }
   }, [user]);
 
-  const handlePin = (num) => {
-    if (pin.length < 4) {
-      setPin((prev) => [...prev, num]);
-    }
-  };
-
-  const removePin = () => {
-    if (pin.length > 0) {
-      pin.pop();
-      setPin((prev) => [...prev]);
-    }
-  };
-
-  useEffect(() => {
-    if (!userPin && !isNewPin && pin.length === 4) {
-      setNewPin(pin.toString());
-      setIsNewPin(true);
-      setPin([]);
-    }
-  }, [pin]);
-
-  useEffect(() => {
-    if (!userPin && isNewPin && pin.length === 4) {
-      setConfirmPin(pin.toString());
-      setIsNewPin(false);
-      setIsConfirmPin(true);
-    }
-  }, [pin]);
-
-  const handleSaveNewPin = async () => {
-    if (newPin === confirmPin) {
-      await AsyncStorage.setItem("@user_pin", pin.toString()).then(() => {
-        setMessage(
-          "Pin saved successfully! You can now access this application with your set pin."
-        );
-
-        setTimeout(() => {
-          setMessage("");
-        }, 3000);
-      });
-
-      setIsPinSet(true);
-      setIsConfirmPin(false);
-      setPin([]);
-    } else {
-      setMessage("Comfirm pin must match the pin you set, please try again.");
-
-      setIsConfirmPin(false);
-      setPin([]);
-
-      setTimeout(() => {
-        setMessage("");
-      }, 3000);
-    }
-  };
-
-  useEffect(() => {
-    if (isConfirmPin) {
-      handleSaveNewPin();
-    }
-  }, [isConfirmPin]);
-
-  useEffect(() => {
-    if (pin.length === 4 && userPin) {
-      if (pin.toString() === userPin) {
-        setShowPin(false);
-        setPin([]);
-      } else {
-        setMessage(
-          "The pin you input is incorrect, please try again or use forgot pin"
-        );
-
-        setTimeout(() => {
-          setPin([]);
-          setMessage("");
-        }, 3000);
-      }
-    }
-  }, [pin.length]);
-
-  const handlePrompt = () => {
-    setModalVisible(true);
-  };
-
-  const handleResetPin = async () => {
-    if (!email && !password) {
-      setMessage(
-        "Input cannot be empty! Please input a valid data and try again."
-      );
-
-      // Close the modal
-      setModalVisible(false);
-    } else {
-      const formData = new FormData();
-      formData.append("email", email);
-      formData.append("password", password);
-
-      try {
-        const response = await fetch(`${BASE_URL}/simplelogin_v6.php`, {
-          method: "POST",
-          body: formData,
-        });
-        const data = await response.json();
-
-        // console.log(data);
-
-        if (data.status === "true") {
-          await AsyncStorage.setItem("@user_pin", "").then(() => {
-            setMessage(
-              "Pin reset successfully! You can now enter a new pin to continue."
-            );
-          });
-
-          setIsPinSet(true);
-        }
-
-        if (data.status === "false") {
-          setMessage(data?.message);
-        }
-        // Close the modal
-        setModalVisible(false);
-
-        setTimeout(() => {
-          setMessage("");
-        }, 3000);
-      } catch (error) {
-        Alert.alert(error?.response?.data);
-        console.log(error);
-      }
-    }
-  };
-
   return (
     <View style={{ flex: 1 }}>
-      {showPin && (
+      <>
+        {!channelId && (
+          <>
+            {count === 1 ? (
+              <Animated.View
+                style={{
+                  opacity: animation.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [1, 0], // Map animation value from 0 to 1 to opacity from 1 to 0
+                  }),
+                  flex: 1,
+                }}
+              >
+                <Home />
+              </Animated.View>
+            ) : count === 5 ? (
+              <Animated.View
+                style={{
+                  opacity: animation.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [1, 0], // Map animation value from 0 to 1 to opacity from 1 to 0
+                  }),
+                  flex: 1,
+                }}
+              >
+                <Wallet />
+              </Animated.View>
+            ) : count === 2 ? (
+              <Animated.View
+                style={{
+                  opacity: animation.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [1, 0],
+                  }),
+                  flex: 1,
+                }}
+              >
+                <CreateAd />
+              </Animated.View>
+            ) : count === 3 ? (
+              <Animated.View
+                style={{
+                  opacity: animation.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [1, 0],
+                  }),
+                  flex: 1,
+                }}
+              >
+                <ChatRoom />
+              </Animated.View>
+            ) : count === 4 ? (
+              <Animated.View
+                style={{
+                  opacity: animation.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [1, 0],
+                  }),
+                  flex: 1,
+                }}
+              >
+                <Profile />
+              </Animated.View>
+            ) : null}
+          </>
+        )}
+
+        {channelId && (
+          <View
+            style={{
+              height: "100%",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <ActivityIndicator color={colors.primary} size={"large"} />
+          </View>
+        )}
+
+        {error && (
+          <View
+            style={{
+              height: "100%",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text style={[styles.smallTxt, { color: "#000" }]}>{error}</Text>
+          </View>
+        )}
+
         <View
           style={{
             position: "absolute",
-            zIndex: 999,
-            backgroundColor: isDark ? colors.black : colors.white,
+            bottom: 0,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
             width: "100%",
-            height: "100%",
+            height: itemHeight * 0.08,
+            backgroundColor: isDark ? colors.black : colors.white,
+            shadowColor: isDark ? colors.white : colors.black,
+            elevation: 5,
+            shadowOffset: { width: 0, height: -2 },
+            shadowOpacity: 0.2,
+            shadowRadius: 2,
+            paddingHorizontal: itemWidth * 0.1,
+            paddingVertical: 4,
           }}
         >
-          <StatusBar
-            backgroundColor={isDark ? colors.black : "white"}
-            barStyle={isDark ? "light-content" : "dark-content"}
-          />
-          <ScrollView showsVerticalScrollIndicator={false}>
-            <PinComponent
-              isNewPin={isNewPin}
-              userPin={userPin}
-              message={message}
-              handlePin={handlePin}
-              handlePrompt={handlePrompt}
-              isMaxPin={isMaxPin}
-              pin={pin}
-              removePin={removePin}
-            />
+          {tabs.map((item, index) => {
+            return (
+              <TouchableOpacity
+                onPress={() => handleTab(item.id)}
+                key={item.id}
+                className="flex flex-col items-center justify-center"
+              >
+                <View
+                  className={`flex items-center justify-center bg-[${
+                    item.id === count && "#CDEAFC"
+                  }] rounded-full h-10 w-10`}
+                >
+                  {item.icon}
+                </View>
 
-            <ResetPinModal
-              modalVisible={modalVisible}
-              setModalVisible={setModalVisible}
-              setInputValue={setInputValue}
-              setEmail={setEmail}
-              setPassword={setPassword}
-              handleResetPin={handleResetPin}
-            />
-          </ScrollView>
-        </View>
-      )}
-
-      {!showPin && (
-        <>
-          {!channelId && (
-            <>
-              {count === 1 ? (
-                <Animated.View
-                  style={{
-                    opacity: animation.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [1, 0], // Map animation value from 0 to 1 to opacity from 1 to 0
-                    }),
-                    flex: 1,
-                  }}
-                >
-                  <Home />
-                </Animated.View>
-              ) : count === 5 ? (
-                <Animated.View
-                  style={{
-                    opacity: animation.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [1, 0], // Map animation value from 0 to 1 to opacity from 1 to 0
-                    }),
-                    flex: 1,
-                  }}
-                >
-                  <Wallet />
-                </Animated.View>
-              ) : count === 2 ? (
-                <Animated.View
-                  style={{
-                    opacity: animation.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [1, 0],
-                    }),
-                    flex: 1,
-                  }}
-                >
-                  <CreateAd />
-                </Animated.View>
-              ) : count === 3 ? (
-                <Animated.View
-                  style={{
-                    opacity: animation.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [1, 0],
-                    }),
-                    flex: 1,
-                  }}
-                >
-                  <ChatRoom />
-                </Animated.View>
-              ) : count === 4 ? (
-                <Animated.View
-                  style={{
-                    opacity: animation.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [1, 0],
-                    }),
-                    flex: 1,
-                  }}
-                >
-                  <Profile />
-                </Animated.View>
-              ) : null}
-            </>
-          )}
-
-          {channelId && (
-            <View
-              style={{
-                height: "100%",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <ActivityIndicator color={colors.primary} size={"large"} />
-            </View>
-          )}
-
-          {error && (
-            <View
-              style={{
-                height: "100%",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Text style={[styles.smallTxt, { color: "#000" }]}>{error}</Text>
-            </View>
-          )}
-
-          <View
-            style={{
-              position: "absolute",
-              bottom: 0,
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              width: "100%",
-              height: itemHeight * 0.08,
-              backgroundColor: isDark ? colors.black : colors.white,
-              shadowColor: isDark ? colors.white : colors.black,
-              elevation: 5,
-              shadowOffset: { width: 0, height: -2 },
-              shadowOpacity: 0.2,
-              shadowRadius: 2,
-              paddingHorizontal: itemWidth * 0.1,
-              paddingVertical: 4,
-            }}
-          >
-            {tabs.map((item, index) => {
-              return (
-                <TouchableOpacity
-                  onPress={() => handleTab(item.id)}
-                  key={item.id}
-                  className="flex flex-col items-center justify-center"
-                >
+                {index === 2 && unreadMessages > 0 && (
                   <View
-                    className={`flex items-center justify-center bg-[${
-                      item.id === count && "#CDEAFC"
-                    }] rounded-full h-10 w-10`}
+                    style={{
+                      paddingHorizontal: 6,
+                      position: "absolute",
+                      backgroundColor: "white",
+                      borderRadius: 50,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      top: 0,
+                      right: 0,
+                      borderWidth: 2,
+                      borderColor: isDark ? colors.white : colors.primary,
+                    }}
                   >
-                    {item.icon}
-                  </View>
-
-                  {index === 2 && unreadMessages > 0 && (
-                    <View
+                    <Text
                       style={{
-                        paddingHorizontal: 6,
-                        position: "absolute",
-                        backgroundColor: "white",
-                        borderRadius: 50,
-                        alignItems: "center",
-                        justifyContent: "center",
-                        top: 0,
-                        right: 0,
-                        borderWidth: 2,
-                        borderColor: isDark ? colors.white : colors.primary,
+                        color: isDark ? colors.white : colors.primary,
                       }}
                     >
-                      <Text
-                        style={{
-                          color: isDark ? colors.white : colors.primary,
-                        }}
-                      >
-                        {unreadMessages}
-                      </Text>
-                    </View>
-                  )}
+                      {unreadMessages}
+                    </Text>
+                  </View>
+                )}
 
-                  <Text
-                    className={`text-[9px] text-[#029CFC] font-["sans-medium"]`}
-                    style={{ color: isDark ? colors.white : colors.primary }}
-                  >
-                    {item.label}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        </>
-      )}
+                <Text
+                  className={`text-[9px] text-[#029CFC] font-["sans-medium"]`}
+                  style={{ color: isDark ? colors.white : colors.primary }}
+                >
+                  {item.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </>
     </View>
   );
 }

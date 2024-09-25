@@ -149,7 +149,7 @@ const P2p = () => {
                     { color: colors.primary, fontWeight: "600" },
                   ]}
                 >
-                  Sell
+                  Offer
                 </Text>
               </Pressable>
 

@@ -5,6 +5,7 @@ import {
   TextInput,
   Alert,
   Pressable,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
 import { styles } from "../../constants/styles";
@@ -12,6 +13,7 @@ import { colors } from "../../../colors";
 import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
 import { BASE_URL_P2P } from "../../config";
+import User from "../User";
 
 const itemWidth = Dimensions.get("window").width;
 
@@ -20,6 +22,8 @@ const TradePricing = ({ user, isDark }) => {
   const [selectedPayment, setSelectedPayment] = useState(1);
   const [minTrade, setMinTrade] = useState(0);
   const [maxTrade, setMaxTrade] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [exchange_rate, setExchange_rate] = useState("");
 
   const createOffer = async () => {
     const data = {
@@ -28,7 +32,7 @@ const TradePricing = ({ user, isDark }) => {
       currency: selectedCurrency,
       min_trade_amount: minTrade,
       max_trade_amount: maxTrade,
-      exchange_rate: "live",
+      exchange_rate,
       terms_and_conditions: "Pay on time\n No delay",
       type: 1,
     };
@@ -36,11 +40,17 @@ const TradePricing = ({ user, isDark }) => {
     if (data.min_trade_amount < 10) {
       Alert.alert("Please set trade amount to minimum of 10");
     } else {
+      setLoading(true);
       try {
-        const res = await axios.post(`${BASE_URL_P2P}/offers/create`, data);
+        const res = await axios.post(`${BASE_URL_P2P}/ads/create`, data, {
+          headers: { user_id: user.id },
+        });
 
+        setLoading(false);
         Alert.alert(res.data?.message);
       } catch (error) {
+        setLoading(false);
+        Alert.alert(error?.response?.data?.message);
         console.log(error?.response?.data);
       }
     }
@@ -67,7 +77,7 @@ const TradePricing = ({ user, isDark }) => {
             {
               fontWeight: "400",
               textAlign: "left",
-              width: "65%",
+              width: "100%",
               fontSize: itemWidth * 0.028,
             },
           ]}
@@ -76,18 +86,6 @@ const TradePricing = ({ user, isDark }) => {
           If you want to use a different payment method or currency, go ahead
           and create a new offer.
         </Text>
-
-        <Pressable
-          onPress={createOffer}
-          style={{
-            backgroundColor: colors.primary,
-            paddingHorizontal: 15,
-            paddingVertical: 8,
-            borderRadius: 10,
-          }}
-        >
-          <Text style={{ color: "white" }}>Create offer</Text>
-        </Pressable>
       </View>
 
       <View style={[styles.rowSpace, { width: "100%", gap: 10 }]}>
@@ -205,7 +203,7 @@ const TradePricing = ({ user, isDark }) => {
       </Text>
 
       <View style={[styles.row, { width: "100%", gap: 10 }]}>
-        <View
+        {/* <View
           style={[styles.column, { width: "49%", alignItems: "flex-start" }]}
         >
           <View style={[styles.row, { gap: 5 }]}>
@@ -263,10 +261,24 @@ const TradePricing = ({ user, isDark }) => {
             Your offer’s selling price is locked when you create it, and you
             won’t change with the market price
           </Text>
-        </View>
+        </View> */}
+
+        <TextInput
+          style={{
+            width: "100%",
+            paddingHorizontal: 10,
+            borderWidth: 1,
+            height: 50,
+            borderColor: colors.soft,
+            borderRadius: 8,
+          }}
+          placeholder="1000"
+          keyboardType="default"
+          onChangeText={(value) => setExchange_rate(value)}
+        />
       </View>
 
-      <View style={[styles.rowSpace, { width: "100%" }]}>
+      {/* <View style={[styles.rowSpace, { width: "100%" }]}>
         <Text
           style={[
             styles.smallTxt,
@@ -297,7 +309,7 @@ const TradePricing = ({ user, isDark }) => {
         >
           Use fixed price
         </Text>
-      </View>
+      </View> */}
 
       <View
         style={[
@@ -324,7 +336,7 @@ const TradePricing = ({ user, isDark }) => {
           <View
             style={[
               styles.column,
-              { width: "40%", alignItems: "flex-start", gap: 8 },
+              { width: "49%", alignItems: "flex-start", gap: 8 },
             ]}
           >
             <Text
@@ -370,7 +382,7 @@ const TradePricing = ({ user, isDark }) => {
           <View
             style={[
               styles.column,
-              { width: "40%", alignItems: "flex-start", gap: 8 },
+              { width: "49%", alignItems: "flex-start", gap: 8 },
             ]}
           >
             <Text
@@ -419,6 +431,25 @@ const TradePricing = ({ user, isDark }) => {
           worth of cryptocurrency in your FlexApp Wallet.
         </Text>
       </View>
+
+      <Pressable
+        onPress={createOffer}
+        style={{
+          backgroundColor: colors.primary,
+          paddingHorizontal: 15,
+          paddingVertical: 12,
+          borderRadius: 10,
+          width: "80%",
+          alignItems: "center",
+          alignSelf: "center",
+        }}
+      >
+        {loading ? (
+          <ActivityIndicator color={"#ffff"} />
+        ) : (
+          <Text style={{ color: "white" }}>Create offer</Text>
+        )}
+      </Pressable>
     </View>
   );
 };

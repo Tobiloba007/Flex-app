@@ -15,6 +15,8 @@ const Offer = ({ item, type, isDark }) => {
 
   const navigation = useNavigation();
 
+  // console.log(item?.max_trade_amount)
+
   useEffect(() => {
     const fetchUserDet = async () => {
       const formData = new FormData();

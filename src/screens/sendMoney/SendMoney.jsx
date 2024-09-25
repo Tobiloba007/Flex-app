@@ -15,32 +15,16 @@ import { db } from "../../../firebaseConfig";
 import { onValue, ref } from "firebase/database";
 import { useSelector } from "react-redux";
 import { colors } from "../../../colors";
+import User from "../../components/User";
 
 const itemWidth = Dimensions.get("window").width;
 
 export default function SendMoney() {
   const { isDark } = useSelector((state) => state.theme);
+  const { user } = User();
 
-  const [user, setUser] = useState();
   const [users, setUsers] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const storedItems = await AsyncStorage.getItem("user_data");
-
-        if (storedItems !== null) {
-          const parsedItems = JSON.parse(storedItems);
-          setUser(parsedItems);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   const getFcmUsers = async () => {
     try {

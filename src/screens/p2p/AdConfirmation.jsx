@@ -28,7 +28,7 @@ const AdConfirmation = ({ route }) => {
   const { inputs } = route.params;
   const { user } = User();
 
-  console.log(inputs)
+  // console.log(inputs)
 
   const { isDark } = useSelector((state) => state.theme);
 

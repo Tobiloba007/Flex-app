@@ -46,6 +46,7 @@ import SuccessTransaction from "./screens/p2p/SuccessTransaction";
 import { useSelector } from "react-redux";
 import { current } from "@reduxjs/toolkit";
 import TransactionReciever from "./screens/p2p/TransactionReciever";
+import SendMoney from "./screens/sendMoney/SendMoney";
 
 const Stack = createStackNavigator();
 
@@ -117,6 +118,7 @@ const StackNavigator = () => {
       <Stack.Screen name="adConfirmation" component={AdConfirmation} />
       <Stack.Screen name="settings" component={Settings} />
       <Stack.Screen name="TransactionReciever" component={TransactionReciever} />
+      <Stack.Screen name="SendMoney" component={SendMoney} />
     </Stack.Navigator>
   );
 };

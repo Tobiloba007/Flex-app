@@ -8,7 +8,7 @@ const itemWidth = Dimensions.get("window").width;
 const PaymentMethod = ({ onlineUsers, isDark }) => {
   return (
     <View style={[styles.column, { gap: 15, alignItems: "flex-start" }]}>
-      <View
+      {/* <View
         style={{
           gap: 6,
           backgroundColor: isDark ? colors.primary : colors.white,
@@ -86,7 +86,7 @@ const PaymentMethod = ({ onlineUsers, isDark }) => {
             69,963.03 USD
           </Text>
         </Text>
-      </View>
+      </View> */}
 
       <View style={[styles.row]}>
         <Text

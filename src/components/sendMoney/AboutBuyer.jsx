@@ -1,22 +1,38 @@
 import { View, Text, Dimensions, Image, Pressable } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { styles } from "../../constants/styles";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 import { colors } from "../../../colors";
 import { useNavigation } from "@react-navigation/native";
+import { BASE_URL } from "../../config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const itemWidth = Dimensions.get("window").width;
 
-const AboutBuyer = ({ user, offer }) => {
+const AboutBuyer = ({ offerUser, offer }) => {
   const navigation = useNavigation();
 
-  const item = {
-    id: offer?.user_id,
-  };
+  const [user, setUser] = useState(null);
 
-  // console.log(user)
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const storedItems = await AsyncStorage.getItem("user_data");
+        // console.log(storedItems);
+
+        if (storedItems !== null) {
+          const parsedItems = JSON.parse(storedItems);
+          setUser(parsedItems);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <View
@@ -61,7 +77,12 @@ const AboutBuyer = ({ user, offer }) => {
 
         <Pressable
           style={[styles.row, { gap: 5 }]}
-          onPress={() => navigation.navigate("MessagingRoom", { item })}
+          onPress={() =>
+            navigation.navigate("MessagingRoom", {
+              item: user,
+              user: offerUser,
+            })
+          }
         >
           <Ionicons
             name="chatbubble-ellipses-sharp"

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,88 +6,297 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
+  Dimensions,
+  SafeAreaView,
+  StatusBar,
+  Pressable,
+  ActivityIndicator,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { styles } from "../../constants/styles";
+import { colors } from "../../../colors";
+import { useSelector } from "react-redux";
+import User from "../../components/User";
+import axios from "axios";
+import { BASE_URL_P2P } from "../../config";
+import moment from "moment";
+import { useNavigation } from "@react-navigation/native";
+import WalletTop from "../../components/wallet/WalletTop";
+import Octicons from "@expo/vector-icons/Octicons";
+import Clipboard from "@react-native-clipboard/clipboard";
 
-const data = [
-  { title: "Wrapped Ether", subtitle: "ETH: 1", id: "$3272.53" },
-  { title: "Tether USDT", subtitle: "USDT: 250", id: "$250" },
-  { title: "USDC", subtitle: "USDC: 100", id: "$100" },
-  { title: "Uniswap", subtitle: "UNI: 10", id: "$73.4" },
-  { title: "Chainlink", subtitle: "LINK: 10", id: "$131.3" },
-];
+const width = Dimensions.get("window").width;
+const height = Dimensions.get("window").height;
 
 const Wallet = () => {
+  const { isDark } = useSelector((state) => state.theme);
+  const { user } = User();
+  const fullname = user?.lname + user?.fname;
+
+  const [wallet, setWallet] = useState();
+  const [walletCreated, setWalletCreated] = useState();
+  const [isSend, setIsSend] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [transactions, setTransactions] = useState([]);
+
+  const navigation = useNavigation();
+
+  const createNewWallet = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        `${BASE_URL_P2P}/wallet/${user.id}`,
+        {},
+        {
+          headers: { user_id: user.id },
+        }
+      );
+
+      // console.log(response.data);
+
+      setWalletCreated(response.data);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.log(error?.response?.data);
+    }
+  };
+
+  // console.log(user.id)
+
+  useEffect(() => {
+    const fetchWallet = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          `${BASE_URL_P2P}/wallet/user/${user.id}`,
+          {
+            headers: { user_id: user.id },
+          }
+        );
+
+        setWallet(response.data);
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        console.log(error?.response?.data);
+      }
+    };
+
+    fetchWallet();
+  }, [walletCreated, user]);
+
+  // fetch transactions
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL_P2P}/p2p/transactions`, {
+          headers: { user_id: user.id },
+        });
+
+        setTransactions(response.data);
+      } catch (error) {
+        console.log(error?.response?.data);
+      }
+    };
+
+    fetchTransactions();
+  }, [user]);
+
+  // console.log(transactions);
+
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>WALLET</Text>
-        <View style={styles.balanceContainer}>
-          <Text style={styles.balanceText}>$3827.23</Text>
-        </View>
-        <View style={styles.actions}>
-          <TouchableOpacity style={{alignItems:'center'}}>
-            <Ionicons style={{borderColor:'#fff', borderWidth: 2, borderRadius: 100, alignSelf: 'center', padding: 7}} name="arrow-down" size={40} color="#fff" />
-            <Text style={{color: '#fff', fontSize: 18}}>Receive</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={{alignItems:'center'}}>
-            <Ionicons style={{borderColor:'#fff', borderWidth: 2, borderRadius: 100, alignSelf: 'center', padding: 7}} name="arrow-up" size={40} color="#fff" />
-            <Text style={{color: '#fff', fontSize: 18}}>Send</Text>
-          </TouchableOpacity>
-          
-        </View>
-      </View>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: isDark ? colors.black : colors.white }}
+    >
+      <StatusBar
+        backgroundColor={isDark ? colors.black : colors.white}
+        barStyle={isDark ? "light-content" : "dark-content"}
+      />
 
       <ScrollView>
-        <View style={styles.listSection}>
-          <Text style={styles.listHeader}>Available Tokens: </Text>
-          {data.map((item, index) => (
-            <TouchableOpacity key={index} style={styles.listItem}>
-              <Image
-                source={{ uri: "https://via.placeholder.com/50" }}
-                style={styles.avatar}
-              />
-              <View style={styles.itemTextContainer}>
-                <Text style={styles.itemTitle}>{item.title}</Text>
-                <Text style={styles.itemSubtitle}>{item.subtitle}</Text>
-              </View>
-              <Text style={styles.itemId}>{item.id}</Text>
-            </TouchableOpacity>
-          ))}
+        <WalletTop text={"Wallet"} />
+        <View style={style.container}>
+          <View style={style.header}>
+            <Text
+              style={[styles.smallTxt, { textAlign: "left", color: "white" }]}
+            >
+              My wallet
+            </Text>
+
+            {wallet && (
+              <>
+                <Text
+                  style={[
+                    style.balanceText,
+                    {
+                      backgroundColor: "white",
+                      color: colors.primary,
+                      padding: 10,
+                    },
+                  ]}
+                >
+                  Only send USDC avalanche network to this address
+                </Text>
+
+                <View style={styles.row}>
+                  <Text style={style.balanceText}>
+                    {wallet?.wallet?.address}
+                  </Text>
+                  <Octicons
+                    name="copy"
+                    size={16}
+                    color="white"
+                    onPress={() => Clipboard.setString(wallet?.wallet?.address)}
+                  />
+                </View>
+              </>
+            )}
+
+            {!wallet && (
+              <Pressable
+                onPress={createNewWallet}
+                style={{
+                  backgroundColor: colors.white,
+                  padding: 10,
+                  borderRadius: 10,
+                  alignItems: "center",
+                  marginTop: 10,
+                }}
+              >
+                {loading ? (
+                  <ActivityIndicator color={colors.primary} />
+                ) : (
+                  <Text>Create a new wallet</Text>
+                )}
+              </Pressable>
+            )}
+
+            {/* <View style={style.actions}>
+              <TouchableOpacity style={{ alignItems: "center" }}>
+                <View
+                  style={{
+                    borderWidth: 1,
+                    padding: 4,
+                    borderColor: "#fff",
+                    borderRadius: 50,
+                  }}
+                >
+                  <Ionicons name="arrow-down" size={28} color="#fff" />
+                </View>
+                <Text style={{ color: "#fff", fontSize: width * 0.035 }}>
+                  Receive
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={{ alignItems: "center" }}>
+                <View
+                  style={{
+                    borderWidth: 1,
+                    padding: 4,
+                    borderColor: "#fff",
+                    borderRadius: 50,
+                  }}
+                >
+                  <Ionicons name="arrow-up" size={24} color="#fff" />
+                </View>
+                <Text style={{ color: "#fff", fontSize: width * 0.035 }}>
+                  Send
+                </Text>
+              </TouchableOpacity>
+            </View> */}
+          </View>
+
+          <View style={style.listSection}>
+            <Text style={style.listHeader}>Transaction History: </Text>
+            {transactions?.transactions?.map((item, index) => (
+              <>
+                {item.seller_name === fullname && (
+                  <TouchableOpacity
+                    key={index}
+                    style={style.listItem}
+                    onPress={() =>
+                      navigation.navigate("TransactionReciever", {
+                        transactionId: item.id,
+                      })
+                    }
+                  >
+                    <Image
+                      source={{ uri: "https://via.placeholder.com/50" }}
+                      style={styles.avatar}
+                    />
+                    <View style={style.itemTextContainer}>
+                      <Text style={style.itemTitle}>{item.buyer_name}</Text>
+                      <Text style={style.itemSubtitle}>USDC {item.amount}</Text>
+                    </View>
+
+                    <View>
+                      <Text style={style.itemId}>{item.status}</Text>
+                      <Text style={style.itemId}>
+                        {moment(item.created_at).fromNow()}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                )}
+              </>
+            ))}
+          </View>
+
+          {/* <View style={[styles.row, { gap: 10 }]}>
+            <MaterialIcons
+              name="access-time-filled"
+              size={20}
+              color={isDark ? colors.white : colors.primary}
+            />
+
+            <Text
+              style={[
+                styles.smallTxt,
+                { color: isDark ? colors.white : colors.primary },
+              ]}
+            >
+              Last Transactions
+            </Text>
+          </View>
+
+          <View>
+            <Transactions isSend={isSend} isDark={isDark} />
+            <Transactions isSend={isSend} isDark={isDark} />
+            <Transactions isSend={isSend} isDark={isDark} />
+            <Transactions isSend={isSend} isDark={isDark} />
+            <Transactions isSend={isSend} isDark={isDark} />
+            <Transactions isSend={isSend} isDark={isDark} />
+          </View> */}
         </View>
-      </ScrollView> 
-    </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
+const style = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: "#ffffff",
-    height: '100%',
-    maxHeight: '92%',
+    padding: 10,
+    height: "auto",
+    paddingBottom: height * 0.09,
   },
   header: {
     flexDirection: "column",
-    backgroundColor: "#029CFC",
-    padding: 36,
-    height: "25%",
-    width: '90%',
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    justifyContent: 'space-between',
-    borderCurve: 'circular',
-    alignSelf: 'center',
-    marginTop: 34
+    backgroundColor: colors.primary,
+    padding: 16,
+    height: "auto",
+    width: "100%",
+    borderRadius: 12,
+    justifyContent: "space-between",
+    borderCurve: "circular",
+    alignSelf: "center",
+    gap: 10,
   },
   headerTitle: {
     color: "#fff",
-    fontSize: 30,
+    fontSize: width * 0.04,
     fontStyle: "normal",
-    fontFamily: "serif",
-    fontWeight: '800'
+    fontWeight: "700",
+    textAlign: "center",
   },
   iconButton: {
     marginLeft: 16,
@@ -96,31 +305,27 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 24,
   },
-  balanceContainer: {
-    padding: 16,
-    alignItems: "center",
-  },
   actions: {
     flexDirection: "row",
     justifyContent: "space-between",
-    width: '60%',
-    alignContent: 'center',
-    alignSelf: 'center',
+    width: "40%",
+    alignContent: "center",
+    alignSelf: "center",
   },
   balanceText: {
     color: "#ffffff",
-    fontSize: 36,
+    fontSize: width * 0.03,
+    textAlign: "left",
   },
   ethText: {
     color: "#ffffff",
     fontSize: 16,
   },
   listSection: {
-    padding: 26,
-    paddingRight: 40,
+    padding: 4,
   },
   listHeader: {
-    fontSize: 22,
+    fontSize: width * 0.05,
     marginBottom: 36,
     marginTop: 20,
     fontWeight: "bold",
@@ -129,10 +334,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 16,
-    borderTopColor: '#029CFC',
+    borderTopColor: "#029CFC",
     borderTopWidth: 0.5,
     padding: 6,
-    paddingTop: 16
+    paddingTop: 16,
   },
   avatar: {
     width: 50,
@@ -144,10 +349,12 @@ const styles = StyleSheet.create({
     marginLeft: 16,
   },
   itemTitle: {
-    fontSize: 16,
+    fontSize: width * 0.036,
+    fontWeight: "600",
   },
   itemSubtitle: {
     color: "#888888",
+    fontSize: width * 0.03,
   },
   itemId: {
     color: "#888888",

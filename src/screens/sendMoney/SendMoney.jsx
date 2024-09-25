@@ -98,7 +98,7 @@ export default function SendMoney() {
         backgroundColor={isDark ? colors.black : colors.white}
         barStyle={isDark ? "light-content" : "dark-content"}
       />
-      
+
       <ScrollView>
         <View
           style={[styles.container, { padding: 15, gap: 15, width: itemWidth }]}

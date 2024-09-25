@@ -66,6 +66,7 @@ export default function Login() {
   const navigation = useNavigation();
 
   useEffect(() => {
+    // console.log(response.params)
     if (response && response?.type === "success") {
       const { id_token } = response.params;
 

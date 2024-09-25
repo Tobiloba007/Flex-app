@@ -40,6 +40,12 @@ import Settings from "./screens/settings/Settings";
 
 import CreateBuySellAd from "./screens/p2p/createAd";
 import ConfirmationScreen from "./screens/p2p/Confirmation";
+import FindOffer from "./screens/sendMoney/FindOffer";
+import AdConfirmation from "./screens/p2p/AdConfirmation";
+import SuccessTransaction from "./screens/p2p/SuccessTransaction";
+import { useSelector } from "react-redux";
+import { current } from "@reduxjs/toolkit";
+import TransactionReciever from "./screens/p2p/TransactionReciever";
 
 const Stack = createStackNavigator();
 
@@ -98,6 +104,7 @@ const StackNavigator = () => {
       <Stack.Screen name="notification" component={Notification} />
       <Stack.Screen name="buy" component={Buy} />
       <Stack.Screen name="offers" component={Offers} />
+      <Stack.Screen name="findOffer" component={FindOffer} />
       <Stack.Screen name="myOffers" component={MyOffers} />
       <Stack.Screen name="aboutOffers" component={AboutOffers} />
       <Stack.Screen name="wallet" component={Wallet} />
@@ -105,8 +112,11 @@ const StackNavigator = () => {
       <Stack.Screen name="payment" component={Payment} />
       <Stack.Screen name="trade" component={Trade} />
       <Stack.Screen name="createbuysellad" component={CreateBuySellAd} />
-      <Stack.Screen name="confirmationPage" component={ConfirmationScreen} />
+      <Stack.Screen name="successTransaction" component={SuccessTransaction} />
+      <Stack.Screen name="confirmation" component={ConfirmationScreen} />
+      <Stack.Screen name="adConfirmation" component={AdConfirmation} />
       <Stack.Screen name="settings" component={Settings} />
+      <Stack.Screen name="TransactionReciever" component={TransactionReciever} />
     </Stack.Navigator>
   );
 };
@@ -124,7 +134,7 @@ const AuthNavigator = ({ showSplash }) => {
 
       <Stack.Screen name="choose" component={Choose} />
       <Stack.Screen name="login" component={Login} />
-      <Stack.Screen name="pin" component={Pin} />
+      {/* <Stack.Screen name="pin" component={Pin} /> */}
       <Stack.Screen name="registration" component={Registration} />
       <Stack.Screen name="verification" component={Verification} />
       <Stack.Screen name="resendCode" component={ResendCode} />
@@ -142,6 +152,7 @@ const AuthNavigator = ({ showSplash }) => {
 };
 
 const AppStack = () => {
+  const { currentUser } = useSelector((state) => state.user);
   const [showSplash, setShowSplash] = useState(true);
   const [user, setUser] = useState(null);
 
@@ -182,7 +193,13 @@ const AppStack = () => {
     };
   }, []);
 
-  return !user ? <AuthNavigator showSplash={showSplash} /> : <StackNavigator />;
+  // console.log(user)
+
+  if (!currentUser) {
+    return <AuthNavigator showSplash={showSplash} />;
+  }
+
+  return <StackNavigator />;
 };
 
 export default AppStack;

@@ -259,7 +259,7 @@ const MessagingRoom = ({ route }) => {
       messageData.append("message", message.trim());
       image && messageData.append("image", image);
 
-      const title = `${item?.name}`;
+      const title = `${item?.name || item?.fname + user?.lname}`;
       const body = message.trim();
       const data = {
         screen: "MessagingRoom",
@@ -413,6 +413,8 @@ const MessagingRoom = ({ route }) => {
       getFcmUser();
     }
   }, [item, channel, user]);
+
+  // console.log(fcmToken)
 
   return (
     <SafeAreaView

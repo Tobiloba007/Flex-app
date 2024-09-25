@@ -117,7 +117,7 @@ const AboutOffers = ({ route }) => {
             </Text>
           </View>
 
-          <AboutBuyer user={user} offer={offer} />
+          <AboutBuyer offerUser={user} offer={offer} />
         </View>
       </View>
     </SafeAreaView>

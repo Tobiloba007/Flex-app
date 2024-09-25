@@ -28,11 +28,12 @@ const WalletTop = ({ text, isDark }) => {
           },
         ]}
       >
-        <Entypo
+        <View />
+        {/* <Entypo
           name="home"
           size={24}
           color={isDark ? colors.white : colors.black}
-        />
+        /> */}
 
         <Text
           style={[
@@ -43,12 +44,13 @@ const WalletTop = ({ text, isDark }) => {
           {text}
         </Text>
 
-        <Pressable
+        {/* <Pressable
           style={{ backgroundColor: colors.primary, borderRadius: 6 }}
           onPress={() => handleSideMenu(true)}
         >
           <Entypo name="menu" size={22} color="white" />
-        </Pressable>
+        </Pressable> */}
+        <View />
       </View>
 
       {sideMenu && <SideMenu handleSideMenu={handleSideMenu} />}

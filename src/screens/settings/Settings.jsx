@@ -22,6 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { changeThemeState } from "../../redux/themeReducer";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
+import { logoutUser } from "../../redux/userReducer";
 
 const itemWidth = Dimensions.get("window").width;
 
@@ -37,6 +38,7 @@ const Settings = () => {
 
   const handleLogout = async () => {
     await AsyncStorage.setItem("user_data", "");
+    dispatch(logoutUser());
     // dispatch(resetMessageState());
     // navigation.navigate("login");
   };

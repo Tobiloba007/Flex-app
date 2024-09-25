@@ -1,45 +1,92 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   SafeAreaView,
   StatusBar,
+  Image,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useSelector } from "react-redux";
+import { colors } from "../../../colors";
+import SendMoneyTop from "../../components/sendMoney/SendMoneyTop";
+import padAnsix923 from "crypto-js/pad-ansix923";
+import PaymentMethod from "../../components/sendMoney/PaymentMethod";
 
 const CreateAd = () => {
+  const { isDark } = useSelector((state) => state.theme);
+
   const navigation = useNavigation();
+
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const storedItems = await AsyncStorage.getItem("user_data");
+        // console.log(storedItems);
+
+        if (storedItems !== null) {
+          const parsedItems = JSON.parse(storedItems);
+          setUser(parsedItems);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
-      <View style={styles.header}>
-        <View style={styles.iconPlaceholder} />
-        <View style={styles.tabContainer}>
-          <Text style={[styles.tabText, styles.activeTab]}>P2P</Text>
-        </View>
-        <View style={styles.avatarPlaceholder} />
-      </View>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: isDark ? colors.black : colors.white }}
+    >
+      <StatusBar
+        backgroundColor={isDark ? colors.black : colors.white}
+        barStyle={isDark ? "light-content" : "dark-content"}
+      />
 
-      <View style={styles.content}>
-        <Text style={styles.emptyStateText}>
-          You haven't posted any ads yet
-        </Text>
-        <TouchableOpacity
-          style={styles.postButton}
-          onPress={() => navigation.navigate("createbuysellad")}
-        >
-          <Text style={styles.postButtonText}>Post an ad</Text>
-        </TouchableOpacity>
-      </View>
+      <View style={styles.container}>
+        <SendMoneyTop />
 
-      <View style={styles.footer}>
-        <View style={styles.footerIcon} />
-        <View style={styles.footerIcon} />
-        <View style={[styles.footerIcon, styles.activeFooterIcon]}>
-          <Text style={styles.footerIconText}>Ads</Text>
+        <PaymentMethod />
+
+        {/* <View style={styles.header}>
+          <View style={styles.iconPlaceholder} />
+          <View style={[styles.tabContainer, { alignSelf: "center" }]}>
+            <Text style={[styles.tabText, styles.activeTab]}>P2P</Text>
+          </View>
+          <View style={styles.avatarPlaceholder}>
+            <Image
+              source={{ uri: user?.image }}
+              style={{ height: "100%", width: "100%", borderRadius: 50 }}
+            />
+          </View>
+        </View> */}
+
+        <View style={styles.content}>
+          {/* <Text style={styles.emptyStateText}>
+            You haven't posted any ads yet
+          </Text> */}
+          <TouchableOpacity
+            style={styles.postButton}
+            onPress={() => navigation.navigate("createbuysellad")}
+          >
+            <Text style={styles.postButtonText}>Post an ad</Text>
+          </TouchableOpacity>
         </View>
-        <View style={styles.footerIcon} />
+
+        <View style={styles.footer}>
+          <View style={styles.footerIcon} />
+          <View style={styles.footerIcon} />
+          <View style={[styles.footerIcon, styles.activeFooterIcon]}>
+            <Text style={styles.footerIconText}>Ads</Text>
+          </View>
+          <View style={styles.footerIcon} />
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -49,10 +96,11 @@ const styles = {
   container: {
     flex: 1,
     backgroundColor: "white",
+    padding: 10,
   },
   header: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
     alignItems: "center",
     padding: 16,
   },
@@ -74,7 +122,7 @@ const styles = {
     paddingHorizontal: 16,
     paddingVertical: 8,
     color: "#888",
-    width: "80%",
+    width: "100%",
     textAlign: "center",
   },
   activeTab: {

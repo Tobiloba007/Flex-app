@@ -2,6 +2,7 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import directMessageReducer from "./directMessageReducer";
 import authReducer from "../features/authentication/AuthSlice";
 import themeReducer from "./themeReducer";
+import userReducer from "./userReducer";
 import {
   persistStore,
   persistReducer,
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
   message: directMessageReducer,
   auth: authReducer,
   theme: themeReducer,
+  user: userReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

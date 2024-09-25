@@ -38,7 +38,7 @@ const SendMoneyTop = ({isDark}) => {
         </View>
 
         <View style={styles.row}>
-          <Pressable
+          {/* <Pressable
             style={styles.buyButton}
             onPress={() => navigation.navigate("offers", { type: 0 })}
           >
@@ -52,7 +52,7 @@ const SendMoneyTop = ({isDark}) => {
           >
             <Text>Sell</Text>
             <FontAwesome name="angle-down" size={24} color="black" />
-          </Pressable>
+          </Pressable> */}
 
           <Pressable
             style={{ backgroundColor: colors.primary, borderRadius: 6 }}

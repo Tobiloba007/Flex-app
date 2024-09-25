@@ -326,4 +326,21 @@ export const styles = StyleSheet.create({
     borderWidth: 5,
     borderColor: "#CDEAFC",
   },
+
+  inputOutlined: {
+    borderWidth: 1,
+    borderRadius: 8,
+    borderColor: colors.soft,
+    paddingHorizontal: 10,
+  },
+
+  walletBox: {
+    backgroundColor: colors.white,
+    elevation: 5,
+    height: itemHeight * 0.12,
+    width: itemWidth * 0.285,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 8,
+  },
 });

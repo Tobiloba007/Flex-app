@@ -25,6 +25,11 @@ import { styles } from "../constants/styles";
 import { onValue, ref } from "firebase/database";
 import { db } from "../../firebaseConfig";
 import { useSelector } from "react-redux";
+import SendMoney from "../screens/sendMoney/SendMoney";
+import Offers from "../screens/sendMoney/Offers";
+import FindOffer from "../screens/sendMoney/FindOffer";
+import P2p from "../screens/sendMoney/P2p";
+// import Wallet from "../screens/wallet/Wallet";
 
 const itemHeight = Dimensions.get("window").height;
 const itemWidth = Dimensions.get("window").width;
@@ -248,7 +253,7 @@ export default function Tab() {
                   flex: 1,
                 }}
               >
-                <CreateAd />
+                <P2p />
               </Animated.View>
             ) : count === 3 ? (
               <Animated.View
@@ -336,7 +341,7 @@ export default function Tab() {
                   {item.icon}
                 </View>
 
-                {index === 2 && unreadMessages > 0 && (
+                {index === 3 && unreadMessages > 0 && (
                   <View
                     style={{
                       paddingHorizontal: 6,

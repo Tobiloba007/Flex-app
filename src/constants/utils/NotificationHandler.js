@@ -57,6 +57,8 @@ const NotificationHandler = () => {
           navigation.navigate(data.screen, { item, user });
         } else if (channel) {
           navigation.navigate(data.screen, { channel, user });
+        } else {
+          navigation.navigate(data.screen);
         }
       }
     });

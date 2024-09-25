@@ -9,6 +9,7 @@ import {
   setUser,
 } from "./AuthSlice";
 import { BASE_URL } from "../../config";
+import { saveUser } from "../../redux/userReducer";
 
 // CREATE ACCOUNT
 export const createAccount =
@@ -158,6 +159,8 @@ export const loginUser =
             console.log("User data stored in AsyncStorage.");
           }
         );
+        
+        dispatch(saveUser(userData));
 
         dispatch(setIsLoggedIn(true));
         // navigation.navigate("pin");

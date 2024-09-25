@@ -15,7 +15,7 @@ const ConfirmationScreen = () => {
           <Text style={styles.closeButtonText}>×</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Confirmation</Text>
-        <TouchableOpacity style={styles.inoButton}>
+        <TouchableOpacity style={styles.infoButton}>
           {/* <Text style={styles.infoButtonText}>i</Text> */}
         </TouchableOpacity>
       </View>

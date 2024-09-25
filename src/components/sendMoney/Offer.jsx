@@ -40,11 +40,19 @@ const Offer = ({ item, type, isDark }) => {
   // console.log(item);
 
   return (
-    <View
+    <Pressable
       style={[
         styles.column,
-        { gap: 10, alignItems: "flex-start", width: "100%" },
+        {
+          alignItems: "flex-start",
+          width: "100%",
+          backgroundColor: colors.white,
+          borderBottomWidth: 1,
+          borderColor: isDark ? colors.soft : "#e1e1e1",
+          paddingVertical: 15,
+        },
       ]}
+      onPress={() => navigation.navigate("aboutOffers", { id: item?.offer_id })}
     >
       <View style={styles.box}>
         <View style={styles.rowSpace}>
@@ -59,9 +67,19 @@ const Offer = ({ item, type, isDark }) => {
             />
 
             <Text style={styles.smallTxt}>{userDet?.fname}</Text>
+            <MaterialIcons name="verified" size={16} color={colors.primary} />
           </View>
 
-          <View
+          <Text
+            style={[
+              styles.smallTxt,
+              { color: "gray", fontSize: itemWidth * 0.03 },
+            ]}
+          >
+            Trades: 279_ <Text style={{ color: colors.primary }}>100%</Text>
+          </Text>
+
+          {/* <View
             style={[
               styles.row,
               {
@@ -81,70 +99,28 @@ const Offer = ({ item, type, isDark }) => {
             >
               Verified
             </Text>
-          </View>
+          </View> */}
         </View>
 
         <View style={styles.rowSpace}>
           <View style={[styles.row, { gap: 5 }]}>
-            <Ionicons name="time-outline" size={16} color="black" />
+            <Ionicons name="time-outline" size={14} color="black" />
 
             <Text
               style={[
                 styles.smallTxt,
-                { color: colors.primary, fontSize: itemWidth * 0.03 },
+                { color: colors.primary, fontSize: itemWidth * 0.028 },
               ]}
             >
-              Seen 30 min ago{" "}
+              Seen few min ago{" "}
             </Text>
           </View>
-
-          <Text
-            style={[
-              styles.smallTxt,
-              { color: "gray", fontSize: itemWidth * 0.03 },
-            ]}
-          >
-            Trades: 279_ <Text style={{ color: colors.primary }}>100%</Text>
-          </Text>
         </View>
-      </View>
-
-      <View style={[styles.rowSpace, { width: "100%" }]}>
-        <View>
-          <Text
-            style={[
-              styles.smallTxt,
-              {
-                textAlign: "left",
-                fontWeight: "400",
-                fontSize: itemWidth * 0.03,
-                color: isDark ? colors.white : colors.black,
-              },
-            ]}
-          >
-            {
-              "MTN Mobile Money\nRange: 10 - 68 USD\nBuy BTC with MTN Cashout\nTrade speed: Under a minute"
-            }
-          </Text>
-        </View>
-
-        <Pressable
-          style={{
-            backgroundColor: "lightgray",
-            padding: 6,
-            paddingHorizontal: 15,
-          }}
-          onPress={() =>
-            navigation.navigate("aboutOffers", { id: item?.offer_id })
-          }
-        >
-          <FontAwesome name="angle-down" size={24} color="black" />
-        </Pressable>
       </View>
 
       <View style={styles.box}>
         <View style={styles.rowSpace}>
-          <View>
+          <View style={{ alignItems: "flex-start" }}>
             <Text style={styles.mediumTxt}>
               {item?.max_trade_amount}{" "}
               <Text
@@ -156,22 +132,57 @@ const Offer = ({ item, type, isDark }) => {
                   },
                 ]}
               >
-                (-3.55%) <Text style={{ color: "gray" }}>{item?.currency}</Text>
+                <Text style={{ color: "gray", fontSize: itemWidth * 0.028 }}>
+                  {item?.currency}
+                </Text>
               </Text>
             </Text>
+            {/* 
+            <View style={{ flexDirection: "row", gap: 5 }}>
+              <Text
+                style={[
+                  styles.smallTxt,
+                  {
+                    fontWeight: "400",
+                    fontSize: itemWidth * 0.028,
+                    color: "#b1b1b1",
+                  },
+                ]}
+              >
+                Available
+              </Text>
+              <Text
+                style={[
+                  styles.smallTxt,
+                  { fontWeight: "400", fontSize: itemWidth * 0.028 },
+                ]}
+              >
+                {`32,000.96 ${item?.currency}`}
+              </Text>
+            </View> */}
 
-            <Text
-              style={[
-                styles.smallTxt,
-                {
-                  textAlign: "left",
-                  fontWeight: "400",
-                  fontSize: itemWidth * 0.03,
-                },
-              ]}
-            >
-              {`1,043,133.62 GHS\n1 USD = 1.03 USD of ${item?.currency}`}
-            </Text>
+            <View style={{ flexDirection: "row", gap: 5 }}>
+              <Text
+                style={[
+                  styles.smallTxt,
+                  {
+                    fontWeight: "400",
+                    fontSize: itemWidth * 0.03,
+                    color: "#b1b1b1",
+                  },
+                ]}
+              >
+                Limit
+              </Text>
+              <Text
+                style={[
+                  styles.smallTxt,
+                  { fontWeight: "400", fontSize: itemWidth * 0.03 },
+                ]}
+              >
+                {`${item.min_trade_amount} - ${item.max_trade_amount} ${item?.currency}`}
+              </Text>
+            </View>
           </View>
 
           <Pressable
@@ -183,13 +194,22 @@ const Offer = ({ item, type, isDark }) => {
                 paddingVertical: 6,
                 paddingHorizontal: 15,
                 borderRadius: 8,
+                width: itemWidth * 0.2,
+                alignItems: "center",
+                justifyContent: "center",
               },
             ]}
-            onPress={() => navigation.navigate("trade")}
+            onPress={() =>
+              navigation.navigate("trade", {
+                id: item?.user_id,
+                adId: item.ad_id,
+                amount: item?.max_trade_amount
+              })
+            }
           >
-            <View style={styles.btcImgCon}>
+            {/* <View style={styles.btcImgCon}>
               <Image source={require("../../../assets/images/btc.png")} />
-            </View>
+            </View> */}
 
             <Text style={{ color: "white" }}>
               {type === 0 ? "Buy" : "Sell"}
@@ -197,7 +217,7 @@ const Offer = ({ item, type, isDark }) => {
           </Pressable>
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 };
 

@@ -23,6 +23,7 @@ import { useNavigation } from "@react-navigation/native";
 import WalletTop from "../../components/wallet/WalletTop";
 import Octicons from "@expo/vector-icons/Octicons";
 import Clipboard from "@react-native-clipboard/clipboard";
+import CoinbaseWebView from "../../components/coinbase/onramp";
 
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
@@ -33,12 +34,22 @@ const Wallet = () => {
   const fullname = user?.lname + user?.fname;
 
   const [wallet, setWallet] = useState();
+  const [project, setProject] = useState();
   const [walletCreated, setWalletCreated] = useState();
   const [isSend, setIsSend] = useState(true);
   const [loading, setLoading] = useState(false);
   const [transactions, setTransactions] = useState([]);
+  const [showWebView, setShowWebView] = useState(false);
 
   const navigation = useNavigation();
+
+  const navigateToCoinbaseWebView = () => {
+    navigation.navigate('CoinbaseWebView', {
+      amount: 10, 
+      address: wallet?.wallet?.address, 
+      project: project
+    });
+  };
 
   const createNewWallet = async () => {
     setLoading(true);
@@ -104,6 +115,25 @@ const Wallet = () => {
 
   // console.log(transactions);
 
+   // fetch Coinbase Project ID
+   useEffect(() => {
+    const fetchProject = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL_P2P}/wallet/payment/productId`, {
+          headers: { user_id: user.id },
+        });
+
+        setProject(response.data);
+      } catch (error) {
+        console.log(error?.response?.data);
+      }
+    };
+
+    fetchProject();
+  }, [user]);
+
+  //console.log(project);
+
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: isDark ? colors.black : colors.white }}
@@ -117,11 +147,19 @@ const Wallet = () => {
         <WalletTop text={"Wallet"} />
         <View style={style.container}>
           <View style={style.header}>
+            <View style={{
+              flexDirection: 'row', justifyContent: 'space-between'
+            }}>
             <Text
               style={[styles.smallTxt, { textAlign: "left", color: "white" }]}
             >
               My wallet
             </Text>
+            <TouchableOpacity onPress={() => navigateToCoinbaseWebView()}>
+              <Text style={[styles.smallTxt, { color: "white" }]}>Deposit</Text>
+            </TouchableOpacity>
+
+            </View>
 
             {wallet && (
               <>
@@ -135,7 +173,7 @@ const Wallet = () => {
                     },
                   ]}
                 >
-                  Only send USDC avalanche network to this address
+                  Only send USDC ({project.network} network) to this address
                 </Text>
 
                 <View style={styles.row}>

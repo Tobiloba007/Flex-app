@@ -47,6 +47,8 @@ import { useSelector } from "react-redux";
 import { current } from "@reduxjs/toolkit";
 import TransactionReciever from "./screens/p2p/TransactionReciever";
 
+import CoinbaseWebView from "./components/coinbase/onramp";
+
 const Stack = createStackNavigator();
 
 const MyTransition = {
@@ -117,6 +119,7 @@ const StackNavigator = () => {
       <Stack.Screen name="adConfirmation" component={AdConfirmation} />
       <Stack.Screen name="settings" component={Settings} />
       <Stack.Screen name="TransactionReciever" component={TransactionReciever} />
+      <Stack.Screen name="CoinbaseWebView" component={CoinbaseWebView} />
     </Stack.Navigator>
   );
 };

@@ -18,7 +18,7 @@ import User from "../User";
 const itemWidth = Dimensions.get("window").width;
 
 const TradePricing = ({ user, isDark }) => {
-  const [selectedCurrency, setSelectedCurrency] = useState("BTC");
+  const [selectedCurrency, setSelectedCurrency] = useState("USDC");
   const [selectedPayment, setSelectedPayment] = useState(1);
   const [minTrade, setMinTrade] = useState(0);
   const [maxTrade, setMaxTrade] = useState(0);
@@ -177,9 +177,9 @@ const TradePricing = ({ user, isDark }) => {
               ]}
               dropdownIconColor={isDark ? colors.white : colors.black}
             >
-              <Picker.Item label="BTC" value="BTC" />
+              {/* <Picker.Item label="BTC" value="BTC" />
               <Picker.Item label="Eth" value="Eth" />
-              <Picker.Item label="Tether" value="Tether" />
+              <Picker.Item label="Tether" value="Tether" /> */}
               <Picker.Item label="USDC" value="USDC" />
             </Picker>
 

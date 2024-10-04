@@ -58,12 +58,12 @@ const SendMoneyTop = ({isDark}) => {
             style={{ backgroundColor: colors.primary, borderRadius: 6 }}
             onPress={() => handleSideMenu(true)}
           >
-            <Entypo name="menu" size={22} color="white" />
+            {/* <Entypo name="menu" size={22} color="white" /> */}
           </Pressable>
         </View>
       </View>
 
-      {sideMenu && <SideMenu handleSideMenu={handleSideMenu} />}
+      {/* {sideMenu && <SideMenu handleSideMenu={handleSideMenu} />} */}
     </>
   );
 };

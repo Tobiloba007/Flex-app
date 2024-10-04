@@ -120,7 +120,7 @@ const PaymentMethod = ({ onlineUsers, isDark }) => {
       </Text>
 
       <View style={styles.row}>
-        <Pressable style={styles.btcButton}>
+        {/* <Pressable style={styles.btcButton}>
           <View style={styles.btcImgCon}>
             <Image
               source={require("../../../assets/images/btc.png")}
@@ -156,7 +156,7 @@ const PaymentMethod = ({ onlineUsers, isDark }) => {
           >
             Eth
           </Text>
-        </Pressable>
+        </Pressable> */}
 
         <Pressable style={styles.btcButton}>
           <View style={[styles.btcImgCon, { backgroundColor: "#029CFC" }]}>
@@ -177,7 +177,7 @@ const PaymentMethod = ({ onlineUsers, isDark }) => {
           </Text>
         </Pressable>
 
-        <Pressable style={styles.btcButton}>
+        {/* <Pressable style={styles.btcButton}>
           <View style={[styles.btcImgCon, { backgroundColor: "#4BF9C5" }]}>
             <Image
               source={require("../../../assets/images/t.png")}
@@ -194,7 +194,7 @@ const PaymentMethod = ({ onlineUsers, isDark }) => {
           >
             Tether
           </Text>
-        </Pressable>
+        </Pressable> */}
       </View>
 
       <Text

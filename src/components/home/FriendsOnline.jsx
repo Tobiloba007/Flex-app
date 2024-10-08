@@ -29,6 +29,7 @@ export default function FriendsOnline({ user }) {
         `${BASE_URL}/api/v1/chat/friends.php?user_id=${user?.id}`
       );
 
+      console.log(res.data)
       setFriends(res.data);
     } catch (error) {
       console.log(error);

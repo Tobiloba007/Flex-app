@@ -1,17 +1,18 @@
-// App.js
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
-  Button,
+  ActivityIndicator,
   StyleSheet,
   Dimensions,
   TouchableOpacity,
   SafeAreaView,
   StatusBar,
   Text,
+  Image
 } from "react-native";
 import { colors } from "../../../../colors";
 import axios from "axios";
+import User from "../../../components/User";
 import PagerView from "react-native-pager-view";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Step1 from "../../../components/authenticcation/verification/Step1";
@@ -19,10 +20,15 @@ import Step5 from "../../../components/authenticcation/verification/Step5";
 import Step6 from "../../../components/authenticcation/verification/Step6";
 import Step7 from "../../../components/authenticcation/verification/Step7";
 
+import { BASE_URL_BLOCKCHAIN } from "../../../config";
+import mime from "mime";
+import { DevMenu } from "expo-dev-client";
+
 const width = Dimensions.get("window").width;
-export default function App() {
+export default function UserVerification() {
   const pagerRef = useRef(null);
   const [page, setPage] = useState(0);
+  const { user } = User();
 
   const [full_name, setFullName] = useState("");
   const [nationality, setNationality] = useState("");
@@ -31,6 +37,34 @@ export default function App() {
   const [selfie, setSelfie] = useState("");
   const [proofOfAddress, setProofOfAddress] = useState("");
   const [identityDoc, setIdentityDoc] = useState("");
+
+  const [isVerified, setIsVerified] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (user) {
+      setFullName(`${user.fname} ${user.lname}` || "");
+      setAddress(user.address || "");
+      fetchVerificationStatus(user.id);
+    }
+  }, [user]);
+
+  const fetchVerificationStatus = async (userId) => {
+    try {
+      const response = await axios.get(
+        `${BASE_URL_BLOCKCHAIN}/api/v1/verification/user_verification.php`, 
+        { params: { user_id: userId }}
+      );
+      if (response.data.verification_status_code != 0) {
+        setIsVerified(response.data.verification_status);
+      }
+      
+    } catch (error) {
+      console.error("Error fetching verification status", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleNext = () => {
     if (pagerRef.current) {
@@ -47,60 +81,37 @@ export default function App() {
   };
 
   const handleSubmit = async () => {
-    // const data = new FormData();
+    const data = new FormData();
 
-    // data.append("user_id", "245"); //Edit this
-    // data.append("full_name", full_name);
-    // data.append("nationality", nationality);
-    // data.append("city", city);
-    // data.append("address", address);
+    data.append("user_id", user?.id || "245");
+    data.append("full_name", full_name);
+    data.append("nationality", nationality);
+    data.append("city", city);
+    data.append("address", address);
 
-    const data = {
-      "user_id": "245",
-      full_name,
-      nationality,
-      city,
-      address,
-      "live_selfie": "selfie.jpg",
-      "proof_of_address": "proofOfAddress.jpg",
-      "identity_document": "identityDoc.jpg",
+    const appendFile = (key, uri) => {
+      if (uri) {
+        data.append(key, {
+          uri: uri,
+          name: uri.split("/").pop(),
+          type: mime.getType(uri),
+        });
+      } else {
+        console.log(`${key} is not set`);
+      }
     };
-
-    if (selfie) {
-      // data.append("live_selfie", {
-      //   uri: selfie,
-      //   type: "image/jpeg",
-      //   name: "selfie.jpg",
-      // });
-      //data.append("live_selfie", "selfie.jpg")
-    }
-
-    if (proofOfAddress) {
-      // data.append("proof_of_address", {
-      //   uri: proofOfAddress,
-      //   type: "image/jpeg",
-      //   name: "proofOfAddress.jpg",
-      // });
-      //data.append("proof_of_address", "proofOfAddress.jpg");
-    }
-
-    if (identityDoc) {
-      // data.append("identity_document", {
-      //   uri: identityDoc,
-      //   type: "image/jpeg",
-      //   name: "identityDoc.jpg",
-      // });
-      //data.append("identity_document", "identityDoc.jpg")
-    }
-
+  
+    appendFile("live_selfie", selfie);
+    appendFile("proof_of_address", proofOfAddress);
+    appendFile("identity_document", identityDoc);
     try {
       const response = await axios.post(
-        "https://gotflexapp.com/blockchain/api/v1/verification/user_verification.php",
+        `${BASE_URL_BLOCKCHAIN}/api/v1/verification/user_verification.php`,
         data,
         {
           headers: {
-            "Content-Type": "application/json",
-          },
+            'Content-Type': 'multipart/form-data',
+          }
         }
       );
       console.log("Upload success", response.data);
@@ -113,12 +124,7 @@ export default function App() {
   const isStepValid = () => {
     switch (page) {
       case 0:
-        return (
-          full_name.length > 0 &&
-          nationality.length > 0 &&
-          city.length > 0 &&
-          address.length > 0
-        );
+        return nationality.length > 0 && city.length > 0;
       case 1:
         return selfie.length > 0;
       case 2:
@@ -130,12 +136,34 @@ export default function App() {
     }
   };
 
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#3498db" />
+      </View>
+    );
+  }
+
+  if (isVerified) {
+    return (
+      <View className="flex-1 items-center justify-center">
+        <Text style={{
+          fontSize: 25,
+          fontWeight: '700'
+        }}>Verification {isVerified}!</Text>
+          <Image 
+          source={require("../../../../assets/icons/verified.png")}
+          />
+        </View>
+    )
+  }
+  
   return (
     <SafeAreaView
       className="h-full w-full"
       style={{ paddingTop: StatusBar.currentHeight }}
     >
-      <View
+        <View
         className="flex-row"
         style={{
           width: width * 0.83,
@@ -248,5 +276,11 @@ const styles = StyleSheet.create({
   navButtonText: {
     color: "#fff",
     fontWeight: "bold",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
   },
 });

@@ -130,6 +130,76 @@ const Settings = () => {
                   paddingVertical: 12,
                 },
               ]}
+              onPress={() => navigation.navigate("referral")}
+            >
+              <View style={styles.row}>
+                <AntDesign
+                  name="addusergroup"
+                  size={20}
+                  color={isDark ? "white" : colors.black}
+                />
+                <Text
+                  style={[
+                    styles.smallTxt,
+                    { color: isDark ? "white" : colors.black },
+                  ]}
+                >
+                  Referral
+                </Text>
+              </View>
+
+              <FontAwesome
+                name="angle-right"
+                size={24}
+                color={isDark ? "white" : colors.black}
+              />
+            </Pressable>
+
+            <Pressable
+              style={[
+                styles.rowSpace,
+                {
+                  width: "100%",
+                  borderBottomWidth: 1,
+                  borderBlockColor: "#e1e1e1",
+                  paddingVertical: 12,
+                },
+              ]}
+              onPress={() => navigation.navigate("userVerification")}
+            >
+              <View style={styles.row}>
+                <AntDesign
+                  name="checkcircleo"
+                  size={20}
+                  color={isDark ? "white" : colors.black}
+                />
+                <Text
+                  style={[
+                    styles.smallTxt,
+                    { color: isDark ? "white" : colors.black },
+                  ]}
+                >
+                  Verification
+                </Text>
+              </View>
+
+              <FontAwesome
+                name="angle-right"
+                size={24}
+                color={isDark ? "white" : colors.black}
+              />
+            </Pressable>
+
+            <Pressable
+              style={[
+                styles.rowSpace,
+                {
+                  width: "100%",
+                  borderBottomWidth: 1,
+                  borderBlockColor: "#e1e1e1",
+                  paddingVertical: 12,
+                },
+              ]}
             >
               <View style={styles.row}>
                 <Ionicons

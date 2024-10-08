@@ -48,6 +48,8 @@ import { current } from "@reduxjs/toolkit";
 import TransactionReciever from "./screens/p2p/TransactionReciever";
 
 import CoinbaseWebView from "./components/coinbase/onramp";
+import ReferAndEarnScreen from "./screens/referral/referral";
+import UserVerification from "./screens/authentication/verification";
 
 const Stack = createStackNavigator();
 
@@ -120,6 +122,8 @@ const StackNavigator = () => {
       <Stack.Screen name="settings" component={Settings} />
       <Stack.Screen name="TransactionReciever" component={TransactionReciever} />
       <Stack.Screen name="CoinbaseWebView" component={CoinbaseWebView} />
+      <Stack.Screen name="referral" component={ReferAndEarnScreen} />
+      <Stack.Screen name="userVerification" component={UserVerification} />
     </Stack.Navigator>
   );
 };
@@ -197,7 +201,7 @@ const AppStack = () => {
   }, []);
 
   // console.log(user)
-
+ // console.log(currentUser)
   if (!currentUser) {
     return <AuthNavigator showSplash={showSplash} />;
   }

@@ -1,6 +1,7 @@
 // CombinedStep.js
 import React from 'react';
 import { View, StyleSheet, TextInput, Text } from 'react-native';
+import User from '../../User';
 
 export default function Step1({
   setFullName,
@@ -12,12 +13,14 @@ export default function Step1({
   setAddress,
   address,
 }) {
+  
+  const { user } = User();
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Verification</Text>
       <TextInput
         placeholder="Full Name"
-        value={fullName}
+        value={user? `${user.fname} ${user.lname}` : ""}
         onChangeText={setFullName}
         style={styles.input}
       />
@@ -35,7 +38,7 @@ export default function Step1({
       />
       <TextInput
         placeholder="Address"
-        value={address}
+        value={user? user.address : ''}
         onChangeText={setAddress}
         style={styles.input}
       />

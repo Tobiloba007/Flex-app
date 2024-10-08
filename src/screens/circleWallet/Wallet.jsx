@@ -23,7 +23,6 @@ import { useNavigation } from "@react-navigation/native";
 import WalletTop from "../../components/wallet/WalletTop";
 import Octicons from "@expo/vector-icons/Octicons";
 import Clipboard from "@react-native-clipboard/clipboard";
-import CoinbaseWebView from "../../components/coinbase/onramp";
 
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
@@ -173,7 +172,7 @@ const Wallet = () => {
                     },
                   ]}
                 >
-                  Only send USDC ({project.network} network) to this address
+                  Only send USDC ({project? project.network: ''} network) to this address
                 </Text>
 
                 <View style={styles.row}>

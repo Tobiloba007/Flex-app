@@ -8,7 +8,7 @@ const itemWidth = Dimensions.get("window").width;
 const PaymentMethod = ({ onlineUsers, isDark }) => {
   return (
     <View style={[styles.column, { gap: 15, alignItems: "flex-start" }]}>
-      <View
+      {/* <View
         style={{
           gap: 6,
           backgroundColor: isDark ? colors.primary : colors.white,
@@ -86,7 +86,7 @@ const PaymentMethod = ({ onlineUsers, isDark }) => {
             69,963.03 USD
           </Text>
         </Text>
-      </View>
+      </View> */}
 
       <View style={[styles.row]}>
         <Text
@@ -120,7 +120,7 @@ const PaymentMethod = ({ onlineUsers, isDark }) => {
       </Text>
 
       <View style={styles.row}>
-        <Pressable style={styles.btcButton}>
+        {/* <Pressable style={styles.btcButton}>
           <View style={styles.btcImgCon}>
             <Image
               source={require("../../../assets/images/btc.png")}
@@ -156,7 +156,7 @@ const PaymentMethod = ({ onlineUsers, isDark }) => {
           >
             Eth
           </Text>
-        </Pressable>
+        </Pressable> */}
 
         <Pressable style={styles.btcButton}>
           <View style={[styles.btcImgCon, { backgroundColor: "#029CFC" }]}>
@@ -177,7 +177,7 @@ const PaymentMethod = ({ onlineUsers, isDark }) => {
           </Text>
         </Pressable>
 
-        <Pressable style={styles.btcButton}>
+        {/* <Pressable style={styles.btcButton}>
           <View style={[styles.btcImgCon, { backgroundColor: "#4BF9C5" }]}>
             <Image
               source={require("../../../assets/images/t.png")}
@@ -194,7 +194,7 @@ const PaymentMethod = ({ onlineUsers, isDark }) => {
           >
             Tether
           </Text>
-        </Pressable>
+        </Pressable> */}
       </View>
 
       <Text

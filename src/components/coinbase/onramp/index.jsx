@@ -30,7 +30,9 @@ const CoinbaseWebView = ({ route, navigation }) => {
       console.error(error);
     }
   }, []);
-  return <WebView source={{ uri: coinbaseURL }} onMessage={onMessage} />;
+
+  // console.log(coinbaseURL)
+  return <WebView source={{ uri: coinbaseURL ?? '' }} onMessage={onMessage} />;
 };
 
 export default CoinbaseWebView;

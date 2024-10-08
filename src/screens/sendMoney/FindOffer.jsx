@@ -27,6 +27,7 @@ const FindOffer = () => {
 
   const [paymentMethod, setPaymentMethod] = useState("");
   const [type, setType] = useState(0);
+  const [amount, setAmount] = useState(undefined);
 
   return (
     <SafeAreaView
@@ -105,7 +106,9 @@ const FindOffer = () => {
 
           <View style={{ gap: 25 }}>
             <View style={{ gap: 10 }}>
-              <Text style={[styles.smallTxt, { textAlign: "left" }]}>{type === 0 ? "Buy" : "Sell"}</Text>
+              <Text style={[styles.smallTxt, { textAlign: "left" }]}>
+                {type === 0 ? "Buy" : "Sell"}
+              </Text>
 
               <View style={styles.inputOutlined}>
                 <Picker
@@ -142,7 +145,7 @@ const FindOffer = () => {
 
             <View style={{ gap: 10 }}>
               <Text style={[styles.smallTxt, { textAlign: "left" }]}>
-                I Want To Add
+                I Want To {type === 0 ? "Add" : "Sell"}
               </Text>
 
               <View style={[styles.inputOutlined, { flexDirection: "row" }]}>
@@ -150,6 +153,7 @@ const FindOffer = () => {
                   placeholder="Enter amount"
                   keyboardType="number-pad"
                   style={{ width: "60%" }}
+                  onChangeText={(value) => setAmount(value)}
                 />
 
                 <Picker
@@ -204,11 +208,11 @@ const FindOffer = () => {
               <Text style={[styles.smallTxt, { textAlign: "left" }]}>
                 FlexApp verified Offers Only
               </Text>
-              <Ionicons name="toggle" size={36} color={"#e1e1e1"} />
+              <Ionicons name="toggle" size={36} color={colors.primary} />
             </View>
 
             <Pressable
-              onPress={() => navigation.navigate("offers")}
+              onPress={() => navigation.navigate("offers", { offerType: type, amount })}
               style={[
                 styles.button,
                 { alignSelf: "center", marginTop: itemHeight * 0.02 },

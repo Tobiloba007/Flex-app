@@ -121,7 +121,12 @@ const CreateBuySellAd = () => {
 
           <View style={style.tabContainer}>
             <Text style={[style.tabText, style.activeTab]}>Buy</Text>
-            <Text style={style.tabText}>Sell</Text>
+            <Text
+              style={style.tabText}
+              onPress={() => navigation.navigate("SendMoney")}
+            >
+              Sell
+            </Text>
           </View>
 
           <View style={{ gap: 8 }}>
@@ -356,12 +361,12 @@ const CreateBuySellAd = () => {
             />
           </View>
 
-          <View style={style.totalContainer}>
+          {/* <View style={style.totalContainer}>
             <Text style={[styles.smallTxt, { textAlign: "left" }]}>
               Total price:
             </Text>
             <Text style={style.totalPrice}>0.00 USD</Text>
-          </View>
+          </View> */}
 
           <View style={{ gap: 8 }}>
             <Text style={[styles.smallTxt, { textAlign: "left" }]}>

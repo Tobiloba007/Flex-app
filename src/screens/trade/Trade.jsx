@@ -211,7 +211,7 @@ const Trade = ({ route }) => {
             <Text
               style={[
                 styles.smallTxt,
-                { color: colors.white, backgroundColor: colors.primary },
+                { color: colors.white, backgroundColor: colors.primary, padding: 10 },
               ]}
             >
               Please do no leave this page till trade is completed.

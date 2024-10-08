@@ -52,14 +52,15 @@ const cryptocurrency = [
 ];
 
 const Offers = ({ route }) => {
-  // const type = route?.params?.type || 0;
+  const offerType = route?.params?.offerType;
+  const amount = route?.params?.amount;
 
   const { isDark } = useSelector((state) => state.theme);
   const { userId } = User();
 
   const navigation = useNavigation();
 
-  const [type, setType] = useState(0);
+  const [type, setType] = useState(offerType);
   const [offers, setOffers] = useState([]);
   const [selectedCurrency, setSelectedCurrency] = useState();
   const [selectedImg, setSelectedImg] = useState({
@@ -84,7 +85,12 @@ const Offers = ({ route }) => {
     getOffers();
   }, [type]);
 
-  const reverseOffers = [...offers].reverse();
+  const reverseOffers = [...offers]
+    .reverse()
+    .filter((item) =>
+      amount && amount >= Number(item.max_trade_amount) ? item : item
+    );
+  // console.log(amount)
 
   return (
     <SafeAreaView

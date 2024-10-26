@@ -1,285 +1,191 @@
-import {
-  View,
-  Text,
-  SafeAreaView,
-  StatusBar,
-  ScrollView,
-  Dimensions,
-  Image,
-  Pressable,
-} from "react-native";
-import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { colors } from "../../../colors";
-import { styles } from "../../constants/styles";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { useNavigation } from "@react-navigation/native";
-import { BASE_URL_P2P } from "../../config";
-import User from "../../components/User";
-import axios from "axios";
+import React from 'react';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
 
-const itemWidth = Dimensions.get("window").width;
-const itemHeight = Dimensions.get("window").height;
-
-const P2p = () => {
-  const { isDark } = useSelector((state) => state.theme);
-  const { user, userId, userId2 } = User();
-
-  const navigation = useNavigation();
-
-  const [visible, setVisible] = useState(false);
-  const [walletBalance, setWalletBalance] = useState(null);
-
-  const handleVisibilityChange = () => {
-    setVisible((prev) => !prev);
-  };
-
-  useEffect(() => {
-    const fetchWalletBalance = async () => {
-      try {
-        const response = await axios.get(
-          `${BASE_URL_P2P}/wallet/balances/${user.id}`,
-          {
-            headers: { user_id: user.id },
-          }
-        );
-
-        console.log(response.data);
-
-        setWalletBalance(response.data);
-      } catch (error) {
-        console.log(error?.response?.data);
-      }
-    };
-
-    fetchWalletBalance();
-  }, [user]);
-
-  // console.log(walletBalance?.details[0]?.token?.symbol);
-
+const FlexApp = () => {
   return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: isDark ? colors.black : colors.white }}
-    >
-      <StatusBar
-        backgroundColor={isDark ? colors.black : colors.white}
-        barStyle={isDark ? "light-content" : "dark-content"}
-      />
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.logo}>FlexApp</Text>
+        <Text style={styles.sell}>Sell</Text>
+        <View style={styles.buyContainer}>
+          <Text style={styles.buy}>Buy</Text>
+          <Ionicons name="chevron-down" size={24} color="black" />
+        </View>
+        <Ionicons name="menu" size={24} color="black" />
+      </View>
 
-      <ScrollView>
-        <View
-          style={[styles.container, { padding: 15, gap: 0, width: itemWidth }]}
-        >
-          <View style={{ gap: 16 }}>
-            <View style={styles.rowSpace}>
-              <Text style={[styles.mediumTxt, { color: colors.primary }]}>
-                Hi, {user?.fname}
-              </Text>
-
-              <Ionicons name="notifications" size={28} color={colors.primary} />
-            </View>
-
-            <View style={styles.rowSpace}>
-              <View style={{ gap: 6 }}>
-                <Text
-                  style={[
-                    styles.smallTxt,
-                    { textAlign: "left", color: colors.primary },
-                  ]}
-                >
-                  Your balance
-                </Text>
-
-                <Text
-                  style={[
-                    styles.mediumTxt,
-                    { color: colors.primary, textAlign: "left" },
-                  ]}
-                >
-                  {visible
-                    ? "*****"
-                    : walletBalance?.details[0]
-                    ? walletBalance?.details[0]?.amount
-                    : 0}{" "}
-                  {walletBalance?.details[0]?.token?.symbol || "USDC"}
-                </Text>
-              </View>
-
-              <Ionicons
-                name={visible ? "eye-off" : "eye"}
-                size={24}
-                color={colors.primary}
-                onPress={handleVisibilityChange}
-              />
-            </View>
-
-            <View style={styles.row}>
-              <Pressable
-                onPress={() => navigation.navigate("findOffer")}
-                style={styles.walletBox}
-              >
-                <MaterialCommunityIcons
-                  name="briefcase-download-outline"
-                  size={30}
-                  color={colors.primary}
-                />
-                <Text
-                  style={[
-                    styles.smallTxt,
-                    { color: colors.primary, fontWeight: "600" },
-                  ]}
-                >
-                  Add
-                </Text>
-              </Pressable>
-
-              <Pressable
-                onPress={() => navigation.navigate("createbuysellad")}
-                style={styles.walletBox}
-              >
-                <MaterialCommunityIcons
-                  name="briefcase-download-outline"
-                  size={30}
-                  color={colors.primary}
-                />
-                <Text
-                  style={[
-                    styles.smallTxt,
-                    { color: colors.primary, fontWeight: "600" },
-                  ]}
-                >
-                  Offer
-                </Text>
-              </Pressable>
-
-              <View style={styles.walletBox}>
-                <MaterialCommunityIcons
-                  name="briefcase-download-outline"
-                  size={30}
-                  color={colors.primary}
-                />
-                <Text
-                  style={[
-                    styles.smallTxt,
-                    { color: colors.primary, fontWeight: "600" },
-                  ]}
-                >
-                  Transfer
-                </Text>
-              </View>
-            </View>
-
-            <View style={[styles.row, { width: "100%" }]}>
-              <View
-                style={[
-                  styles.box,
-                  {
-                    borderWidth: 1,
-                    borderColor: "lightgray",
-                    width: "48%",
-                    borderRadius: 6,
-                  },
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.smallTxt,
-                    { textAlign: "left", fontWeight: "600" },
-                  ]}
-                >
-                  HOW FLEX WORKS
-                </Text>
-                <Text style={[styles.smallTxt, { textAlign: "left" }]}>
-                  We connect you to over 400 payment methods so you can add and
-                  withdraw funds.
-                </Text>
-              </View>
-
-              <View
-                style={[
-                  styles.box,
-                  {
-                    borderWidth: 1,
-                    borderColor: "lightgray",
-                    width: "48%",
-                    borderRadius: 6,
-                  },
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.smallTxt,
-                    { textAlign: "left", fontWeight: "600" },
-                  ]}
-                >
-                  HOW FLEX WORKS
-                </Text>
-                <Text style={[styles.smallTxt, { textAlign: "left" }]}>
-                  We connect you to over 400 payment methods so you can add and
-                  withdraw funds.
-                </Text>
-              </View>
-            </View>
-
-            <View
-              style={[
-                styles.box,
-                {
-                  borderWidth: 1,
-                  borderColor: "lightgray",
-                  width: "100%",
-                  borderRadius: 6,
-                },
-              ]}
-            >
-              <Text style={{ fontWeight: "600" }}>USDC Today</Text>
-              <Text
-                style={{
-                  color: colors.red,
-                  fontSize: itemWidth * 0.045,
-                  fontWeight: "600",
-                }}
-              >
-                $1.00 USD
-              </Text>
-              <Text style={{ fontSize: itemWidth * 0.025 }}>Past 24 hours</Text>
-            </View>
-
-            <View
-              style={[
-                styles.row,
-                styles.box,
-                { backgroundColor: colors.black, width: "100%" },
-              ]}
-            >
-              <Image
-                source={require("../../../assets/images/bitcoin.png")}
-                style={{ width: "30%" }}
-              />
-
-              <View style={{ width: "70%" }}>
-                <Text
-                  style={{
-                    color: colors.white,
-                    fontWeight: "600",
-                    fontSize: itemWidth * 0.04,
-                  }}
-                >
-                  Get Paid in Flex
-                </Text>
-                <Text style={{ color: colors.white }}>
-                  With our partners, you can make dollars and get paid directly
-                  to your Flex account. income opportunities include payment
-                  from $1-$200.
-                </Text>
-              </View>
-            </View>
+      <ScrollView style={styles.content}>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>USDC</Text>
+          <Text style={styles.cardSubtitle}>1 USDC = 43,736.80 USD</Text>
+          <Text style={styles.cardAmount}>120.08 USD</Text>
+          <Text style={styles.cardSubAmount}>0.00245343 USDC</Text>
+          <View style={styles.cardButtons}>
+            <TouchableOpacity style={styles.cardButton}>
+              <Ionicons name="send" size={24} color="white" />
+              <Text style={styles.cardButtonText}>Send</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.cardButton}>
+              <MaterialCommunityIcons name="sale" size={24} color="white" />
+              <Text style={styles.cardButtonText}>Sell</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.cardButton}>
+              <FontAwesome5 name="shopping-cart" size={24} color="white" />
+              <Text style={styles.cardButtonText}>Buy</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.cardButton}>
+              <Ionicons name="swap-horizontal" size={24} color="white" />
+              <Text style={styles.cardButtonText}>Swap</Text>
+            </TouchableOpacity>
           </View>
         </View>
+
+        <View style={styles.infoCard}>
+          <Text style={styles.infoCardTitle}>HOW FLEX WORKS</Text>
+          <Text style={styles.infoCardSubtitle}>How to Buy</Text>
+          <Text style={styles.infoCardText}>We provide you with over 100 payment methods to exchange your local currency to coins.</Text>
+          <Text style={styles.infoCardLink}>Learn More</Text>
+        </View>
+
+        <View style={styles.paidCard}>
+          <Text style={styles.paidCardTitle}>Get paid in FlexApp</Text>
+          <Text style={styles.paidCardText}>FlexApp is a web3-powered remittance product that allow individuals and businesses to send, receive, and save via stablecoin peer to peer. We are enabling real-time cross-border payments with multiple exchange rates.</Text>
+        </View>
+
+        <View style={styles.marketSection}>
+          <Text style={styles.marketTitle}>Market</Text>
+          {/* Market data components would go here */}
+        </View>
       </ScrollView>
-    </SafeAreaView>
+
+      <View style={styles.tabBar}>
+        {/* Tab bar icons would go here */}
+      </View>
+    </View>
   );
 };
 
-export default P2p;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 15,
+    backgroundColor: 'white',
+  },
+  logo: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#0066cc',
+  },
+  sell: {
+    fontSize: 16,
+  },
+  buyContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  buy: {
+    fontSize: 16,
+    marginRight: 5,
+  },
+  content: {
+    flex: 1,
+  },
+  card: {
+    backgroundColor: '#0066cc',
+    borderRadius: 10,
+    padding: 20,
+    margin: 15,
+  },
+  cardTitle: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  cardSubtitle: {
+    color: 'white',
+    fontSize: 14,
+  },
+  cardAmount: {
+    color: 'white',
+    fontSize: 32,
+    fontWeight: 'bold',
+    marginTop: 10,
+  },
+  cardSubAmount: {
+    color: 'white',
+    fontSize: 14,
+  },
+  cardButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+  },
+  cardButton: {
+    alignItems: 'center',
+  },
+  cardButtonText: {
+    color: 'white',
+    marginTop: 5,
+  },
+  infoCard: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    margin: 15,
+  },
+  infoCardTitle: {
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  infoCardSubtitle: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  infoCardText: {
+    marginBottom: 10,
+  },
+  infoCardLink: {
+    color: '#0066cc',
+  },
+  paidCard: {
+    backgroundColor: '#333366',
+    borderRadius: 10,
+    padding: 20,
+    margin: 15,
+  },
+  paidCardTitle: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 18,
+    marginBottom: 10,
+  },
+  paidCardText: {
+    color: 'white',
+  },
+  marketSection: {
+    margin: 15,
+  },
+  marketTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  tabBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 10,
+    backgroundColor: 'white',
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+  },
+});
+
+export default FlexApp;

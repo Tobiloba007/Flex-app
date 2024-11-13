@@ -34,6 +34,7 @@ const Wallet = () => {
 
   const [wallet, setWallet] = useState();
   const [project, setProject] = useState();
+  const [yellowCardUrl, setYellowCardUrl] = useState();
   const [walletCreated, setWalletCreated] = useState();
   const [isSend, setIsSend] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -46,7 +47,8 @@ const Wallet = () => {
     navigation.navigate('CoinbaseWebView', {
       amount: 10, 
       address: wallet?.wallet?.address, 
-      project: project
+      project: project,
+      yellowCardUrl: yellowCardUrl,
     });
   };
 
@@ -121,7 +123,7 @@ const Wallet = () => {
         const response = await axios.get(`${BASE_URL_P2P}/wallet/payment/productId`, {
           headers: { user_id: user.id },
         });
-
+        console.log(response.data)
         setProject(response.data);
       } catch (error) {
         console.log(error?.response?.data);
@@ -133,6 +135,23 @@ const Wallet = () => {
 
   //console.log(project);
 
+     // fetch Coinbase Project ID
+     useEffect(() => {
+      const fetchYellowCardURL = async () => {
+        try {
+          const response = await axios.get(`${BASE_URL_P2P}/payment/url/${user.id}`, {
+            headers: { user_id: user.id },
+          });
+          setYellowCardUrl(response.data.url);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+  
+      fetchYellowCardURL();
+     }, [user]);
+  
+ // console.log(yellowCardUrl);
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: isDark ? colors.black : colors.white }}

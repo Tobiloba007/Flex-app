@@ -51,6 +51,7 @@ import SendMoney from "./screens/sendMoney/SendMoney";
 import CoinbaseWebView from "./components/coinbase/onramp";
 import ReferAndEarnScreen from "./screens/referral/referral";
 import UserVerification from "./screens/authentication/verification";
+import WithdrawalForm from "./screens/withdrawal/withdraw";
 
 const Stack = createStackNavigator();
 
@@ -124,6 +125,7 @@ const StackNavigator = () => {
       <Stack.Screen name="TransactionReciever" component={TransactionReciever} />
       <Stack.Screen name="SendMoney" component={SendMoney} />
       <Stack.Screen name="CoinbaseWebView" component={CoinbaseWebView} />
+      <Stack.Screen name="WithdrawView" component={WithdrawalForm} />
       <Stack.Screen name="referral" component={ReferAndEarnScreen} />
       <Stack.Screen name="userVerification" component={UserVerification} />
     </Stack.Navigator>

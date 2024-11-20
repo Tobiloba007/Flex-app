@@ -38,6 +38,12 @@ const navigateToCoinbaseWebView = () => {
     yellowCardUrl: yellowCardUrl,
   });
   };
+
+  const navigateToYellowCardWebView = () => {
+    navigation.navigate('YellowCardWebView', {
+      yellowCardUrl,
+    });
+    };
   
   const navigateToWithdrawView = () => {
     navigation.navigate('WithdrawView', {
@@ -94,6 +100,7 @@ useEffect(() => {
         headers: { user_id: user.id },
       });
       setProject(response.data);
+      setYellowCardUrl(response.data.yellowCardUrl);
     } catch (error) {
       console.error(error);
     }
@@ -164,7 +171,7 @@ useEffect(() => {
                   <Text style={styles.cardButtonText}>Send</Text>
                 </View>
                 <View style={styles.cardButtonView}>
-                  <TouchableOpacity style={[styles.cardButton, {opacity: 0.6}]}>
+                  <TouchableOpacity style={styles.cardButton} onPress={() => navigateToYellowCardWebView()}>
                     <Ionicons name="arrow-down" size={24} color="white" />
                   </TouchableOpacity>
                   <Text style={styles.cardButtonText}>Sell</Text>

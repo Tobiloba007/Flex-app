@@ -1,8 +1,11 @@
 import React from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 const FlexApp = () => {
+  const navigation = useNavigation()
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -22,7 +25,7 @@ const FlexApp = () => {
           <Text style={styles.cardAmount}>120.08 USD</Text>
           <Text style={styles.cardSubAmount}>0.00245343 USDC</Text>
           <View style={styles.cardButtons}>
-            <TouchableOpacity style={styles.cardButton}>
+            <TouchableOpacity style={styles.cardButton} onPress={()=> navigation.navigate('MoneyTransfer')} >
               <Ionicons name="send" size={24} color="white" />
               <Text style={styles.cardButtonText}>Send</Text>
             </TouchableOpacity>

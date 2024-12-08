@@ -161,11 +161,11 @@ export default function Tab() {
       icon: <Ionicons name="wallet" size={24} color="#029CFC" />,
       label: "Wallet",
     },
-    {
-      id: 2,
-      icon: <Ionicons name="add-circle-sharp" size={33} color="#029CFC" />,
-      label: "P2P crypto",
-    },
+    // {
+    //   id: 2,
+    //   icon: <Ionicons name="add-circle-sharp" size={33} color="#029CFC" />,
+    //   label: "P2P crypto",
+    // },
     {
       id: 3,
       icon: <Ionicons name="chatbubble" size={24} color="#029CFC" />,
@@ -241,7 +241,8 @@ export default function Tab() {
                   flex: 1,
                 }}
               >
-                <Wallet />
+                <P2p />
+                {/* <Wallet /> */}
               </Animated.View>
             ) : count === 2 ? (
               <Animated.View

@@ -119,7 +119,7 @@ const FlexApp = () => {
             style={{ height: 50, width: 50 }}
             source={require("../../../assets/p2p/logo.png")}
           />
-          <Text style={[styles.logo, { fontSize: 30 }]}>Flex App</Text>
+          <Text style={[styles.logo, { fontSize: 20 }]}>Flex App</Text>
         </View>
         {/* <Text style={styles.sell}>Sell</Text>
         <View style={styles.buyContainer}>
@@ -153,7 +153,7 @@ const FlexApp = () => {
             <View>
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <Image
-                  style={{ height: 50, width: 50 }}
+                  style={{ height: 40, width: 40 }}
                   source={require("../../../assets/p2p/logo.png")}
                 />
                 <View style={{ marginLeft: 6 }}>
@@ -169,7 +169,7 @@ const FlexApp = () => {
                     style={styles.cardButton}
                     onPress={() => navigateToWithdrawView()}
                   >
-                    <Ionicons name="send-outline" size={24} color="white" />
+                    <Ionicons name="send-outline" size={20} color="white" />
                   </TouchableOpacity>
                   <Text style={styles.cardButtonText}>Send</Text>
                 </View>
@@ -178,7 +178,7 @@ const FlexApp = () => {
                     style={styles.cardButton}
                     onPress={() => navigateToYellowCardWebView()}
                   >
-                    <Ionicons name="arrow-down" size={24} color="white" />
+                    <Ionicons name="arrow-down" size={20} color="white" />
                   </TouchableOpacity>
                   <Text style={styles.cardButtonText}>Sell</Text>
                 </View>
@@ -187,7 +187,7 @@ const FlexApp = () => {
                     style={styles.cardButton}
                     onPress={() => navigateToCoinbaseWebView()}
                   >
-                    <Ionicons name="card-outline" size={24} color="white" />
+                    <Ionicons name="card-outline" size={20} color="white" />
                   </TouchableOpacity>
                   <Text style={styles.cardButtonText}>Buy</Text>
                 </View>
@@ -196,7 +196,7 @@ const FlexApp = () => {
                     style={[styles.cardButton, { opacity: 0.6 }]}
                     onPress={() => navigation.navigate("MoneyTransfer")}
                   >
-                    <Ionicons name="swap-horizontal" size={24} color="white" />
+                    <Ionicons name="swap-horizontal" size={20} color="white" />
                   </TouchableOpacity>
                   <Text style={styles.cardButtonText}>Swap</Text>
                 </View>
@@ -205,7 +205,7 @@ const FlexApp = () => {
           )}
         </View>
 
-        <ScrollView horizontal={true}>
+        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
           <View style={[styles.infoCard, { backgroundColor: "#3F3665" }]}>
             <View style={{ width: "70%", marginLeft: 23 }}>
               <Text style={[styles.infoCardTitle, { color: "#fff" }]}>
@@ -327,53 +327,52 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: "#C5E5FA",
     borderRadius: 10,
-    padding: 20,
+    padding: 12,
+    paddingHorizontal: 16,
     margin: 15,
   },
   cardTitle: {
     color: "#000",
-    fontSize: 32,
+    fontSize: 17,
     fontWeight: "bold",
     fontFamily: "monospace",
   },
   cardSubtitle: {
     color: "#000",
-    fontSize: 14,
+    fontSize: 10,
     fontWeight: "bold",
     fontFamily: "serif",
   },
   cardAmount: {
     color: "#000",
-    fontSize: 32,
+    fontSize: 17,
     fontWeight: "bold",
     marginTop: 10,
     fontFamily: "serif",
   },
   cardSubAmount: {
     color: "#817F7F",
-    fontSize: 14,
+    fontSize: 10,
     fontFamily: "Open Sans",
     lineHeight: 20,
   },
   cardButtons: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 20,
+    justifyContent: "space-evenly",
+    marginTop: 10,
   },
   cardButton: {
     alignItems: "center",
     backgroundColor: "#029CFC",
-    padding: 20,
-    paddingLeft: 23,
-    paddingRight: 23,
-    borderRadius: 23,
+    padding: 10,
+    borderRadius: 50,
   },
   cardButtonText: {
     color: "#000",
     marginTop: 5,
-    fontSize: 17,
+    fontSize: 12,
     fontWeight: "500",
-    fontFamily: "serif",
+    fontFamily: "Open Sans",
     lineHeight: 19.6,
     letterSpacing: 2,
   },
@@ -385,9 +384,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     margin: 15,
-    marginLeft: 6,
-    marginRight: 6,
-    width: Dimensions.get("window").width * 0.9,
+    // marginLeft: 6,
+    // marginRight: 6,
+    width: Dimensions.get("window").width * 0.92,
     height: 180,
     alignItems: "center",
     flex: 1,
@@ -397,17 +396,17 @@ const styles = StyleSheet.create({
   infoCardTitle: {
     fontWeight: "bold",
     marginBottom: 5,
-    fontSize: 25,
+    fontSize: 18,
     fontFamily: "serif",
   },
   infoCardSubtitle: {
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 14,
     marginBottom: 5,
   },
   infoCardText: {
     marginBottom: 10,
-    fontSize: 20,
+    fontSize: 12,
     fontFamily: "sans-serif",
   },
   infoCardLink: {
@@ -427,13 +426,13 @@ const styles = StyleSheet.create({
   paidCardTitle: {
     color: "white",
     fontWeight: "bold",
-    fontSize: 23,
-    marginBottom: 10,
+    fontSize: 17,
+    marginBottom: 4,
     fontFamily: "serif",
   },
   paidCardText: {
     color: "white",
-    fontSize: 18,
+    fontSize: 12,
     fontFamily: "sans-serif",
   },
   marketSection: {

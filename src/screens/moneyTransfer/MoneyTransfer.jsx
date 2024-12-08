@@ -73,7 +73,7 @@ export default function MoneyTransfer() {
             <Text style={styles.currencySymbol}>$</Text>
             <TextInput
               style={styles.amountInput}
-              value="1,000.00"
+              placeholder="1,000.00"
               keyboardType="numeric"
             />
             <TouchableOpacity style={styles.currencySelector}>
@@ -108,14 +108,14 @@ export default function MoneyTransfer() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Recipients will Gets</Text>
           <View style={styles.inputContainer}>
-            <Text style={styles.currencySymbol}>$</Text>
+            <Text style={styles.currencySymbol}>₦</Text>
             <TextInput
               style={styles.amountInput}
               value="1,000.00"
               keyboardType="numeric"
             />
             <TouchableOpacity style={styles.currencySelector}>
-              <Text style={styles.currencyCode}>CAD</Text>
+              <Text style={styles.currencyCode}>NGN</Text>
               <Ionicons name="chevron-down" size={20} color="#000" />
             </TouchableOpacity>
           </View>

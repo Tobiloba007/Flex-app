@@ -31,12 +31,12 @@ export default function PaymentScreen() {
       icon: "wallet-outline",
       description: "Payment arrived Instantly",
     },
-    {
-      id: "coinbase",
-      name: "Coinbase Pay",
-      icon: "logo-bitcoin",
-      description: "Payment arrived Instantly",
-    },
+    // {
+    //   id: "coinbase",
+    //   name: "Coinbase Pay",
+    //   icon: "logo-bitcoin",
+    //   description: "Payment arrived Instantly",
+    // },
   ];
 
   const filteredMethods = paymentMethods.filter((method) =>
@@ -143,30 +143,13 @@ export default function PaymentScreen() {
             </TouchableOpacity>
           ))}
         </View>
-      </View>
 
-      {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="home-outline" size={24} color="#666" />
-          <Text style={styles.navText}>Home</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="wallet-outline" size={24} color="#666" />
-          <Text style={styles.navText}>Wallet</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItemCenter}>
-          <View style={styles.sendButton}>
-            <Ionicons name="send" size={24} color="#fff" />
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="chatbubble-outline" size={24} color="#666" />
-          <Text style={styles.navText}>Chat</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="person-outline" size={24} color="#666" />
-          <Text style={styles.navText}>Profile</Text>
+        {/* Continue Button */}
+        <TouchableOpacity
+          style={styles.continueButton}
+          onPress={() => navigation.navigate("PaymentScreen")}
+        >
+          <Text style={styles.continueButtonText}>Continue</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -342,5 +325,17 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     alignItems: "center",
     justifyContent: "center",
+  },
+  continueButton: {
+    backgroundColor: "#0099ff",
+    borderRadius: 8,
+    padding: 16,
+    alignItems: "center",
+    marginTop:'10%'
+  },
+  continueButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
